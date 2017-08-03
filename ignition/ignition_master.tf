@@ -1,5 +1,5 @@
 data "template_file" "master-get-ssl" {
-  template = "${file("resources/get-ssl.service")}"
+  template = "${file("${path.module}/resources/get-ssl.service")}"
 
   vars {
     ssl_tar_url = "s3://${var.ssl_s3_bucket}/certs/k8s-worker.tar"
@@ -12,7 +12,7 @@ data "ignition_systemd_unit" "master-get-ssl" {
 }
 
 data "template_file" "master-kubelet" {
-  template = "${file("resources/master-kubelet.service")}"
+  template = "${file("${path.module}/resources/master-kubelet.service")}"
 
   vars {
     kubelet_image_url = "${var.hyperkube_image_url}"
@@ -28,7 +28,7 @@ data "ignition_systemd_unit" "master-kubelet" {
 }
 
 data "template_file" "master-kube-proxy" {
-  template = "${file("resources/master-kube-proxy.yaml")}"
+  template = "${file("${path.module}/resources/master-kube-proxy.yaml")}"
 
   vars {
     hyperkube_image_url = "${var.hyperkube_image_url}"
@@ -52,12 +52,12 @@ data "ignition_file" "master-kubeconfig" {
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
-    content = "${file("resources/master-kubeconfig")}"
+    content = "${file("${path.module}/resources/master-kubeconfig")}"
   }
 }
 
 data "template_file" "kube-apiserver" {
-  template = "${file("resources/kube-apiserver.yaml")}"
+  template = "${file("${path.module}/resources/kube-apiserver.yaml")}"
 
   vars {
     hyperkube_image_url   = "${var.hyperkube_image_url}"
@@ -82,7 +82,7 @@ data "ignition_file" "kube-apiserver" {
 }
 
 data "template_file" "kube-controller-manager" {
-  template = "${file("resources/kube-controller-manager.yaml")}"
+  template = "${file("${path.module}/resources/kube-controller-manager.yaml")}"
 
   vars {
     hyperkube_image_url = "${var.hyperkube_image_url}"
@@ -103,7 +103,7 @@ data "ignition_file" "kube-controller-manager" {
 }
 
 data "template_file" "kube-scheduler" {
-  template = "${file("resources/kube-scheduler.yaml")}"
+  template = "${file("${path.module}/resources/kube-scheduler.yaml")}"
 
   vars {
     hyperkube_image_url = "${var.hyperkube_image_url}"

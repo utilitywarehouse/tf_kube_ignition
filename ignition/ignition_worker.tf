@@ -1,5 +1,5 @@
 data "template_file" "worker-get-ssl" {
-  template = "${file("resources/get-ssl.service")}"
+  template = "${file("${path.module}/resources/get-ssl.service")}"
 
   vars {
     ssl_tar_url = "s3://${var.ssl_s3_bucket}/certs/k8s-worker.tar"
@@ -12,7 +12,7 @@ data "ignition_systemd_unit" "worker-get-ssl" {
 }
 
 data "template_file" "worker-kubelet" {
-  template = "${file("resources/worker-kubelet.service")}"
+  template = "${file("${path.module}/resources/worker-kubelet.service")}"
 
   vars {
     kubelet_image_url = "${var.hyperkube_image_url}"
@@ -29,7 +29,7 @@ data "ignition_systemd_unit" "worker-kubelet" {
 }
 
 data "template_file" "worker-kube-proxy" {
-  template = "${file("resources/worker-kube-proxy.yaml")}"
+  template = "${file("${path.module}/resources/worker-kube-proxy.yaml")}"
 
   vars {
     hyperkube_image_url = "${var.hyperkube_image_url}"
@@ -49,7 +49,7 @@ data "ignition_file" "worker-kube-proxy" {
 }
 
 data "template_file" "worker-kubeconfig" {
-  template = "${file("resources/worker-kubeconfig")}"
+  template = "${file("${path.module}/resources/worker-kubeconfig")}"
 
   vars {
     master_address = "${var.master_address}"
