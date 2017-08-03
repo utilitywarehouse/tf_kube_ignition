@@ -1,0 +1,9 @@
+[Unit]
+Description=Get ssl artifacts from s3 bucket using IAM role
+After=network-online.target
+Requires=network-online.target
+[Service]
+ExecStartPre=-/usr/bin/mkdir -p /etc/kubernetes/ssl
+ExecStart=/bin/sh -c "/opt/bin/s3-iam-get ${ssl_tar_url} | tar xv -C /etc/kubernetes/ssl/"
+RemainAfterExit=yes
+Type=oneshot
