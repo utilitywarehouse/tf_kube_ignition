@@ -62,7 +62,7 @@ data "template_file" "kube-apiserver" {
   vars {
     hyperkube_image_url   = "${var.hyperkube_image_url}"
     hyperkube_image_tag   = "${var.hyperkube_image_tag}"
-    etcd_endpoints        = "${join(",", formatlist("https://%s:2379", var.etcd_endpoints))}"
+    etcd_endpoints        = "${join(",", formatlist("https://%s:2379", var.etcd_addresses))}"
     service_network       = "${var.service_network}"
     master_instance_count = "${var.master_instance_count}"
     cloud_provider        = "${var.cloud_provider}"

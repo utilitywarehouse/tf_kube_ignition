@@ -3,6 +3,36 @@ variable "enable_container_linux_updates" {
   default     = true
 }
 
+variable "etcd_image_url" {
+  description = "Where to get the etcd image from."
+  default     = "quay.io/coreos/etcd"
+}
+
+variable "etcd_image_tag" {
+  description = "The version of the etcd image to use."
+  default     = "v3.2.2"
+}
+
+variable "node_exporter_image_url" {
+  description = "Where to get the node_exporter image from."
+  default     = "quay.io/prometheus/node-exporter"
+}
+
+variable "node_exporter_image_tag" {
+  description = "The version of the node_exporter image to use."
+  default     = "v0.14.0"
+}
+
+variable "fluentd_image_url" {
+  description = "Where to get the fluentd image from."
+  default     = "utilitywarehouse/fluentd"
+}
+
+variable "fluentd_image_tag" {
+  description = "The version of the fluentd image to use."
+  default     = "2.0.3"
+}
+
 variable "hyperkube_image_url" {
   description = "Where to get the hyperkube image from."
   default     = "quay.io/coreos/hyperkube"
@@ -34,8 +64,8 @@ variable "master_instance_count" {
   description = "The number of master instances in the kubernetes cluster. Used by the API server."
 }
 
-variable "etcd_endpoints" {
-  description = "A list of IP addresses or hostnames for the etcd nodes. Used by the API server."
+variable "etcd_addresses" {
+  description = "A list of IP addresses for the etcd nodes. Used by the etcd services and the API server."
   type        = "list"
 }
 
@@ -55,4 +85,8 @@ variable "service_network" {
 variable "pod_network" {
   description = "The subnet to use for kubernetes pod addressing. Used by the Controller Manager"
   default     = "10.2.0.0/16"
+}
+
+variable "sumologic_url" {
+  description = "The SumoLogic collector endpoint to ship logs to. Used by fluentd on etcd nodes."
 }

@@ -5,3 +5,7 @@ output "master" {
 output "worker" {
   value = "${data.ignition_config.worker.rendered}"
 }
+
+output "etcd" {
+  value = ["${data.ignition_config.etcd.*.rendered}"]
+}
