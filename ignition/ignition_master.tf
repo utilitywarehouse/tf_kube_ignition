@@ -38,7 +38,7 @@ data "template_file" "master-kube-proxy" {
 }
 
 data "ignition_file" "master-kube-proxy" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-proxy.yaml"
 
@@ -48,7 +48,7 @@ data "ignition_file" "master-kube-proxy" {
 }
 
 data "ignition_file" "master-kubeconfig" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/var/lib/kubelet/kubeconfig"
 
@@ -73,7 +73,7 @@ data "template_file" "kube-apiserver" {
 }
 
 data "ignition_file" "kube-apiserver" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-apiserver.yaml"
 
@@ -94,7 +94,7 @@ data "template_file" "kube-controller-manager" {
 }
 
 data "ignition_file" "kube-controller-manager" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
 
@@ -113,7 +113,7 @@ data "template_file" "kube-scheduler" {
 }
 
 data "ignition_file" "kube-scheduler" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-scheduler.yaml"
 
@@ -123,7 +123,7 @@ data "ignition_file" "kube-scheduler" {
 }
 
 data "ignition_file" "master-prom-machine-role" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/prom-text-collectors/machine_role.prom"
 

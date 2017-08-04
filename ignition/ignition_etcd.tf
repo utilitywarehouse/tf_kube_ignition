@@ -13,7 +13,7 @@ data "ignition_systemd_unit" "etcd-get-ssl" {
 }
 
 data "ignition_file" "etcd-prom-machine-role" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/prom-text-collectors/machine_role.prom"
 
@@ -23,7 +23,7 @@ data "ignition_file" "etcd-prom-machine-role" {
 }
 
 data "ignition_file" "etcd-td-agent-conf" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/td-agent/td-agent.conf"
 
@@ -45,7 +45,7 @@ data "template_file" "etcdctl-wrapper" {
 
 data "ignition_file" "etcdctl-wrapper" {
   count      = "${length(var.etcd_addresses)}"
-  mode       = 755
+  mode       = 0755
   filesystem = "root"
   uid        = 500
   gid        = 500

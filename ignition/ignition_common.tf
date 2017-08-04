@@ -16,7 +16,7 @@ data "ignition_systemd_unit" "locksmithd" {
 }
 
 data "ignition_file" "s3-iam-get" {
-  mode       = 755
+  mode       = 0755
   filesystem = "root"
   path       = "/opt/bin/s3-iam-get"
 

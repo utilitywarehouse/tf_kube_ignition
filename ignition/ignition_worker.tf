@@ -40,7 +40,7 @@ data "template_file" "worker-kube-proxy" {
 }
 
 data "ignition_file" "worker-kube-proxy" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-proxy.yaml"
 
@@ -58,7 +58,7 @@ data "template_file" "worker-kubeconfig" {
 }
 
 data "ignition_file" "worker-kubeconfig" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/var/lib/kubelet/kubeconfig"
 
@@ -68,7 +68,7 @@ data "ignition_file" "worker-kubeconfig" {
 }
 
 data "ignition_file" "worker-prom-machine-role" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/prom-text-collectors/machine_role.prom"
 
@@ -78,7 +78,7 @@ data "ignition_file" "worker-prom-machine-role" {
 }
 
 data "ignition_file" "worker-sysctl-vm" {
-  mode       = 644
+  mode       = 0644
   filesystem = "root"
   path       = "/etc/sysctl.d/vm.conf"
 
