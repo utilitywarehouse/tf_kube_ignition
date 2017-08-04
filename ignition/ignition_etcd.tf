@@ -19,7 +19,7 @@ data "ignition_file" "etcd-prom-machine-role" {
   path       = "/etc/prom-text-collectors/machine_role.prom"
 
   content {
-    content = "machine_role{role=\"etcd\"} 1"
+    content = "machine_role{role=\"etcd\"} 1\n"
   }
 }
 

@@ -72,7 +72,7 @@ data "ignition_file" "worker-prom-machine-role" {
   path       = "/etc/prom-text-collectors/machine_role.prom"
 
   content {
-    content = "machine_role{role=\"worker\"} 1"
+    content = "machine_role{role=\"worker\"} 1\n"
   }
 }
 
