@@ -2,7 +2,8 @@ data "template_file" "worker-get-ssl" {
   template = "${file("${path.module}/resources/get-ssl.service")}"
 
   vars {
-    ssl_tar_url = "s3://${var.ssl_s3_bucket}/certs/k8s-worker.tar"
+    ssl_tar_url      = "s3://${var.ssl_s3_bucket}/certs/k8s-worker.tar"
+    destination_path = "/etc/kubernetes/ssl/"
   }
 }
 

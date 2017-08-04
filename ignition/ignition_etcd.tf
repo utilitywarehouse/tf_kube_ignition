@@ -1,10 +1,9 @@
-# sumologic_url        = "${var.sumologic_url}"
-
 data "template_file" "etcd-get-ssl" {
   template = "${file("${path.module}/resources/get-ssl.service")}"
 
   vars {
-    ssl_tar_url = "s3://${var.ssl_s3_bucket}/certs/k8s-etcd.tar"
+    ssl_tar_url      = "s3://${var.ssl_s3_bucket}/certs/k8s-etcd.tar"
+    destination_path = "/etc/etcd/ssl/"
   }
 }
 
