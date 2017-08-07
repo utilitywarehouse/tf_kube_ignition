@@ -1,0 +1,27 @@
+[Unit]
+Description=Prometheus node_exporter
+Requires=docker.socket
+After=docker.socket
+[Service]
+ExecStartPre=-/usr/bin/docker kill "$(docker ps -q --filter=name=%p_)"
+ExecStartPre=-/usr/bin/docker rm "$(docker ps -q --filter=name=%p_)"
+ExecStartPre=-/usr/bin/mkdir -p /etc/prom-text-collectors
+ExecStart=/bin/sh -c "\
+    /usr/bin/docker run --rm \
+      --name %p_$(uuidgen) \
+      -p 9100:9100 \
+      -v /proc:/host/proc \
+      -v /sys:/host/sys \
+      -v /:/rootfs \
+      -v /etc/prom-text-collectors:/text-collectors \
+      --net=host \
+      ${node_exporter_image_url}:${node_exporter_image_tag} \
+        -collector.procfs /host/proc \
+        -collector.sysfs /host/sys \
+        -collector.filesystem.ignored-mount-points '^/(sys|proc|dev|host|etc)($|/)' \
+        -collector.textfile.directory=/text-collectors"
+ExecStop=-/bin/bash -c 'docker stop -t 3 "$(docker ps -q --filter=name=%p_)"'
+Restart=on-failure
+RestartSec=60
+[Install]
+WantedBy=multi-user.target
