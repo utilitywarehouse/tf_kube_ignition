@@ -54,7 +54,7 @@ resource "aws_instance" "etcd" {
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.etcd.id}"]
   subnet_id              = "${var.private_subnet_ids[count.index]}"
-  private_ip             = "${cidrhost(element(data.aws_subnet.private.*.cidr_block, count.index), 5)}"
+  private_ip             = "${cidrhost(data.aws_subnet.private.*.cidr_block[count.index], 4)}"
 
   lifecycle {
     ignore_changes = ["ami"]
