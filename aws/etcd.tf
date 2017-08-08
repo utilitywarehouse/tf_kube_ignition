@@ -46,14 +46,14 @@ EOS
 
 // EC2 instance
 resource "aws_instance" "etcd" {
-  ami                    = "${var.containerlinux_ami_id}"
   count                  = "${var.etcd_instance_count}"
+  ami                    = "${var.containerlinux_ami_id}"
   instance_type          = "${var.etcd_instance_type}"
   user_data              = "${var.etcd_user_data[count.index]}"
   iam_instance_profile   = "${aws_iam_instance_profile.etcd.name}"
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.etcd.id}"]
-  subnet_id              = "${var.private_subnets[count.index]}"
+  subnet_id              = "${var.private_subnet_ids[count.index]}"
   private_ip             = "${cidrhost(element(data.aws_subnet.private.*.cidr_block, count.index), 5)}"
 
   lifecycle {

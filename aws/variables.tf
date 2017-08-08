@@ -11,12 +11,12 @@ variable "vpc_id" {
   description = "The ID of the VPC to create resources in."
 }
 
-variable "public_subnets" {
+variable "public_subnet_ids" {
   description = "A list of the available public subnets in which EC2 instances can be created."
   type        = "list"
 }
 
-variable "private_subnets" {
+variable "private_subnet_ids" {
   description = "A list of the available private subnets in which EC2 instances can be created."
   type        = "list"
 }
