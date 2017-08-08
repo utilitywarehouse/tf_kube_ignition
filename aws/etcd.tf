@@ -79,7 +79,7 @@ resource "aws_instance" "etcd" {
 
 resource "aws_ebs_volume" "etcd-data" {
   count             = "${var.etcd_instance_count}"
-  availability_zone = "${element(data.aws_subnet.private.*.availability_zone, count.index)}"
+  availability_zone = "${data.aws_subnet.private.*.availability_zone[count.index]}"
   size              = 50
   type              = "gp2"
 
@@ -97,11 +97,11 @@ resource "aws_ebs_volume" "etcd-data" {
   }
 }
 
-resource "aws_volume_attachment" "etcd-data-ebs-attachment" {
+resource "aws_volume_attachment" "etcd-data" {
   count       = "${var.etcd_instance_count}"
   device_name = "/dev/xvdf"
-  volume_id   = "${element(aws_ebs_volume.etcd-data.*.id, count.index)}"
-  instance_id = "${element(aws_instance.etcd.*.id, count.index)}"
+  volume_id   = "${aws_ebs_volume.etcd-data.*.id[count.index]}"
+  instance_id = "${aws_instance.etcd.*.id[count.index]}"
 }
 
 // VPC Security Group
@@ -146,22 +146,20 @@ resource "aws_route53_record" "etcd-all" {
   records = ["${aws_instance.etcd.*.private_ip}"]
 }
 
-resource "aws_route53_record" "etcd-kube-by-instance" {
-  zone_id = "${var.route53_zone_id}"
+resource "aws_route53_record" "etcd-by-instance" {
   count   = "${var.etcd_instance_count}"
+  zone_id = "${var.route53_zone_id}"
   name    = "${count.index}.etcd.${var.cluster_name}.${data.aws_route53_zone.main.name}"
   type    = "A"
   ttl     = "30"
-  records = ["${element(aws_instance.etcd.*.private_ip,count.index)}"]
+  records = ["${aws_instance.etcd.*.private_ip[count.index]}"]
 }
 
 resource "aws_route53_record" "etcd-PTR-by-instance" {
-  zone_id = "${var.route53_inaddr_arpa_zone_id}"
   count   = "${var.etcd_instance_count}"
-  name    = "${element(split(".", element(aws_instance.etcd.*.private_ip,count.index)), 3)}.${element(split(".", element(aws_instance.etcd.*.private_ip,count.index)), 2)}.${data.aws_route53_zone.inaddr_arpa.name}"
+  zone_id = "${var.route53_inaddr_arpa_zone_id}"
+  name    = "${element(split(".", aws_instance.etcd.*.private_ip[count.index]), 3)}.${element(split(".", aws_instance.etcd.*.private_ip[count.index]), 2)}.${data.aws_route53_zone.inaddr_arpa.name}"
   type    = "PTR"
   ttl     = "30"
-
-  # Don't duplicate assembled DNS record names, instead, reference the name attribute of the correct A-record:
-  records = ["${element(aws_route53_record.etcd-kube-by-instance.*.name, count.index)}."] # trailing '.' is correct
+  records = ["${aws_route53_record.etcd-by-instance.*.name[count.index]}."]                                                                                                                           # trailing '.' is correct
 }
