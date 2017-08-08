@@ -136,6 +136,24 @@ resource "aws_security_group_rule" "ingress-etcd-to-self" {
   security_group_id        = "${aws_security_group.etcd.id}"
 }
 
+resource "aws_security_group_rule" "ingress-master-to-etcd" {
+  type                     = "ingress"
+  from_port                = 2379
+  to_port                  = 2379
+  protocol                 = "tcp"
+  source_security_group_id = "${aws_security_group.master.id}"
+  security_group_id        = "${aws_security_group.etcd.id}"
+}
+
+resource "aws_security_group_rule" "etcd-ssh" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = "${var.ssh_security_group_id}"
+  security_group_id        = "${aws_security_group.etcd.id}"
+}
+
 // Route53 records
 resource "aws_route53_record" "etcd-all" {
   zone_id = "${var.route53_zone_id}"

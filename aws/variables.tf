@@ -25,6 +25,10 @@ variable "key_name" {
   description = "The name of the AWS Key Pair to be used when launching EC2 instances."
 }
 
+variable "ssh_security_group_id" {
+  description = "The ID of the Security Group to open port 22 to."
+}
+
 variable "environment" {}
 
 variable "ssl_s3_bucket_name" {
@@ -32,7 +36,7 @@ variable "ssl_s3_bucket_name" {
 }
 
 variable "containerlinux_ami_id" {
-  description = "The ID of the Container Linux AMI to use for servers."
+  description = "The ID of the Container Linux AMI to use for instances."
 }
 
 variable "route53_zone_id" {
@@ -46,15 +50,30 @@ variable "route53_inaddr_arpa_zone_id" {
 // etcd nodes
 variable "etcd_instance_count" {
   default     = "3"
-  description = "The number of etcd servers to launch."
+  description = "The number of etcd instances to launch."
 }
 
 variable "etcd_instance_type" {
   default     = "t2.small"
-  description = "The type of etcd servers to launch."
+  description = "The type of etcd instances to launch."
 }
 
 variable "etcd_user_data" {
   description = "A list of the user data to provide to the etcd instances. Must be the same length as etcd_instance_count."
   type        = "list"
+}
+
+// master nodes
+variable "master_instance_count" {
+  default     = "3"
+  description = "The number of master kubernetes instances to launch."
+}
+
+variable "master_instance_type" {
+  default     = "t2.small"
+  description = "The type of master kubernetes instances to launch."
+}
+
+variable "master_user_data" {
+  description = "The user data to provide to the master kubernetes instances."
 }
