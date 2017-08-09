@@ -145,6 +145,26 @@ resource "aws_security_group_rule" "ingress-master-to-etcd" {
   security_group_id        = "${aws_security_group.etcd.id}"
 }
 
+# prometheus needs to scrape etcd metrics
+resource "aws_security_group_rule" "ingress-worker-to-etcd-client" {
+  type                     = "ingress"
+  from_port                = 2379
+  to_port                  = 2379
+  protocol                 = "tcp"
+  source_security_group_id = "${aws_security_group.worker.id}"
+  security_group_id        = "${aws_security_group.etcd.id}"
+}
+
+# prometheus needs to scrape node_exporter metrics
+resource "aws_security_group_rule" "ingress-worker-to-etcd-node-metrics" {
+  type                     = "ingress"
+  from_port                = 9100
+  to_port                  = 9100
+  protocol                 = "tcp"
+  source_security_group_id = "${aws_security_group.worker.id}"
+  security_group_id        = "${aws_security_group.etcd.id}"
+}
+
 resource "aws_security_group_rule" "etcd-ssh" {
   type                     = "ingress"
   from_port                = 22
@@ -179,5 +199,5 @@ resource "aws_route53_record" "etcd-PTR-by-instance" {
   name    = "${element(split(".", aws_instance.etcd.*.private_ip[count.index]), 3)}.${element(split(".", aws_instance.etcd.*.private_ip[count.index]), 2)}.${data.aws_route53_zone.inaddr_arpa.name}"
   type    = "PTR"
   ttl     = "30"
-  records = ["${aws_route53_record.etcd-by-instance.*.name[count.index]}."]                                                                                                                           # trailing '.' is correct
+  records = ["${aws_route53_record.etcd-by-instance.*.name[count.index]}."]
 }

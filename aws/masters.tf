@@ -111,9 +111,8 @@ resource "aws_autoscaling_group" "master" {
 
 // ELBs
 resource "aws_elb" "master" {
-  name    = "${var.cluster_name}-master-elb"
-  subnets = ["${var.public_subnet_ids}"]
-
+  name            = "${var.cluster_name}-master-elb"
+  subnets         = ["${var.public_subnet_ids}"]
   security_groups = ["${aws_security_group.master-elb.id}"]
 
   cross_zone_load_balancing = true
@@ -178,6 +177,15 @@ resource "aws_security_group_rule" "ingress-elb-https-to-master" {
   to_port                  = 443
   protocol                 = "tcp"
   source_security_group_id = "${aws_security_group.master-elb.id}"
+  security_group_id        = "${aws_security_group.master.id}"
+}
+
+resource "aws_security_group_rule" "ingress-worker-to-master" {
+  type                     = "ingress"
+  from_port                = 0
+  to_port                  = 0
+  protocol                 = "-1"
+  source_security_group_id = "${aws_security_group.worker.id}"
   security_group_id        = "${aws_security_group.master.id}"
 }
 

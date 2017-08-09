@@ -62,6 +62,7 @@ variable "cloud_provider" {
 
 variable "master_instance_count" {
   description = "The number of master instances in the kubernetes cluster. Used by the API server."
+  default     = 3
 }
 
 variable "etcd_addresses" {

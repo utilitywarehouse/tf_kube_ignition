@@ -66,14 +66,43 @@ variable "etcd_user_data" {
 // master nodes
 variable "master_instance_count" {
   default     = "3"
-  description = "The number of master kubernetes instances to launch."
+  description = "The number of kubernetes master instances to launch."
 }
 
 variable "master_instance_type" {
   default     = "t2.small"
-  description = "The type of master kubernetes instances to launch."
+  description = "The type of kubernetes master instances to launch."
 }
 
 variable "master_user_data" {
-  description = "The user data to provide to the master kubernetes instances."
+  description = "The user data to provide to the kubernetes master instances."
+}
+
+// worker nodes
+variable "worker_ondemand_instance_count" {
+  default     = "3"
+  description = "The number of kubernetes worker on-demand instances to launch."
+}
+
+variable "worker_spot_instance_count" {
+  default     = "0"
+  description = "The number of kubernetes worker spot instances to launch."
+}
+
+variable "worker_spot_instance_bid" {
+  description = "The price to bid for kubernetes worker spot instances."
+}
+
+variable "worker_instance_type" {
+  default     = "m4.large"
+  description = "The type of kubernetes worker instances to launch."
+}
+
+variable "worker_user_data" {
+  description = "The user data to provide to the kubernetes worker instances."
+}
+
+variable "worker_elb_names" {
+  description = "A list of ELB names to be attached to the worker autoscaling groups."
+  type        = "list"
 }
