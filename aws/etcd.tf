@@ -152,26 +152,6 @@ resource "aws_security_group_rule" "ingress-master-to-etcd" {
   security_group_id        = "${aws_security_group.etcd.id}"
 }
 
-# prometheus needs to scrape etcd metrics
-resource "aws_security_group_rule" "ingress-worker-to-etcd-client" {
-  type                     = "ingress"
-  from_port                = 2379
-  to_port                  = 2379
-  protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.worker.id}"
-  security_group_id        = "${aws_security_group.etcd.id}"
-}
-
-# prometheus needs to scrape node_exporter metrics
-resource "aws_security_group_rule" "ingress-worker-to-etcd-node-metrics" {
-  type                     = "ingress"
-  from_port                = 9100
-  to_port                  = 9100
-  protocol                 = "tcp"
-  source_security_group_id = "${aws_security_group.worker.id}"
-  security_group_id        = "${aws_security_group.etcd.id}"
-}
-
 resource "aws_security_group_rule" "etcd-ssh" {
   type                     = "ingress"
   from_port                = 22
