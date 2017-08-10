@@ -1,5 +1,5 @@
 output "etcd_ip_list" {
-  value = "${aws_instance.etcd.*.private_ip}"
+  value = ["${null_resource.etcd_address.*.triggers.address}"]
 }
 
 output "master_address" {

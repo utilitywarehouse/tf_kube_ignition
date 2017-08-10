@@ -45,6 +45,22 @@ EOS
 }
 
 // EC2 instance
+# module "etcd_address" {
+#   source = "./cidrhost"
+#
+#   count      = "${var.etcd_instance_count}"
+#   cidr_block = "${data.aws_subnet.private.*.cidr_block[count.index]}"
+#   host       = "${count.index}"
+# }
+
+resource "null_resource" "etcd_address" {
+  count = "${var.etcd_instance_count}"
+
+  triggers {
+    address = "${cidrhost(data.aws_subnet.private.*.cidr_block[count.index], 4 + (count.index / length(var.private_subnet_ids)))}"
+  }
+}
+
 resource "aws_instance" "etcd" {
   count                  = "${var.etcd_instance_count}"
   ami                    = "${var.containerlinux_ami_id}"
@@ -54,7 +70,7 @@ resource "aws_instance" "etcd" {
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.etcd.id}"]
   subnet_id              = "${var.private_subnet_ids[count.index]}"
-  private_ip             = "${cidrhost(data.aws_subnet.private.*.cidr_block[count.index], 4)}"
+  private_ip             = "${null_resource.etcd_address.*.triggers.address[count.index]}"
 
   lifecycle {
     ignore_changes = ["ami"]
