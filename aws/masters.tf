@@ -104,7 +104,7 @@ resource "aws_autoscaling_group" "master" {
 
   tag {
     key                 = "Name"
-    value               = "master ${var.cluster_name} ${var.environment} server"
+    value               = "master ${var.cluster_name}"
     propagate_at_launch = true
   }
 }
@@ -134,7 +134,7 @@ resource "aws_elb" "master" {
   }
 
   tags {
-    Name = "${var.cluster_name} ${var.environment} elb"
+    Name = "master ${var.cluster_name}"
     role = "apiserver"
   }
 }
@@ -142,11 +142,11 @@ resource "aws_elb" "master" {
 // VPC Security Group
 resource "aws_security_group" "master" {
   name        = "${var.cluster_name}-master"
-  description = "k8s master security group ${var.environment}"
+  description = "k8s master security group"
   vpc_id      = "${var.vpc_id}"
 
   tags {
-    "Name" = "master ${var.cluster_name} ${var.environment} sg"
+    "Name" = "master ${var.cluster_name}"
 
     # used by kubelet's aws provider to determine cluster
     "KubernetesCluster" = "${var.cluster_name}"
@@ -204,7 +204,7 @@ resource "aws_security_group" "master-elb" {
   vpc_id      = "${var.vpc_id}"
 
   tags {
-    "Name" = "external_elb ${var.cluster_name} ${var.environment} sg"
+    "Name" = "master elb ${var.cluster_name}"
 
     // used by kubelet's aws provider to determine cluster
     "KubernetesCluster" = "${var.cluster_name}"

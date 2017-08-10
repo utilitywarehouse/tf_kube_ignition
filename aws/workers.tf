@@ -134,7 +134,7 @@ resource "aws_autoscaling_group" "worker" {
 
   tag {
     key                 = "Name"
-    value               = "worker ${var.cluster_name} ${var.environment} server"
+    value               = "worker ${var.cluster_name}"
     propagate_at_launch = true
   }
 }
@@ -175,7 +175,7 @@ resource "aws_autoscaling_group" "worker-spot" {
 
   tag {
     key                 = "Name"
-    value               = "worker-spot ${var.cluster_name} ${var.environment} server"
+    value               = "worker-spot ${var.cluster_name}"
     propagate_at_launch = true
   }
 }
@@ -239,10 +239,8 @@ resource "aws_security_group" "worker" {
   vpc_id      = "${var.vpc_id}"
 
   tags {
-    "Name" = "worker ${var.cluster_name} ${var.environment} sg"
-
-    // used by kubelet's aws provider to determine cluster
-    "KubernetesCluster" = "${var.cluster_name}"
+    "Name"              = "worker ${var.cluster_name}"
+    "KubernetesCluster" = "${var.cluster_name}"        // used by kubelet's aws provider to determine cluster
   }
 }
 

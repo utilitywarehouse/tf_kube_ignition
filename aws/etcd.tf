@@ -76,10 +76,9 @@ resource "aws_instance" "etcd" {
 
   # Instance tags
   tags {
-    "Name"        = "etcd ${var.cluster_name} ${var.environment} server ${count.index}"
-    "environment" = "${var.environment}"
-    "instance"    = "${count.index}"
-    "role"        = "${var.cluster_name}"
+    "Name"     = "etcd ${var.cluster_name} ${count.index}"
+    "instance" = "${count.index}"
+    "role"     = "${var.cluster_name}"
 
     # used by kubelet's aws provider to determine cluster
     "KubernetesCluster" = "${var.cluster_name}"
@@ -93,9 +92,8 @@ resource "aws_ebs_volume" "etcd-data" {
   type              = "gp2"
 
   tags {
-    "Name"        = "etcd ${var.cluster_name} ${var.environment} data vol ${count.index}"
-    "environment" = "${var.environment}"
-    "role"        = "${var.cluster_name}"
+    "Name" = "etcd ${var.cluster_name} data vol ${count.index}"
+    "role" = "${var.cluster_name}"
 
     # used by kubelet's aws provider to determine cluster
     "KubernetesCluster" = "${var.cluster_name}"
@@ -120,7 +118,7 @@ resource "aws_security_group" "etcd" {
   vpc_id      = "${var.vpc_id}"
 
   tags {
-    "Name" = "etcd ${var.cluster_name} ${var.environment} sg"
+    "Name" = "etcd ${var.cluster_name}"
 
     // used by kubelet's aws provider to determine cluster
     "KubernetesCluster" = "${var.cluster_name}"

@@ -29,8 +29,6 @@ variable "ssh_security_group_id" {
   description = "The ID of the Security Group to open port 22 to."
 }
 
-variable "environment" {}
-
 variable "ssl_s3_bucket_name" {
   description = "The name of the S3 bucket that will be used to hold SSL certificates and keys for the nodes."
 }
