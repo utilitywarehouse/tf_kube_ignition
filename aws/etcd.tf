@@ -44,20 +44,13 @@ resource "aws_iam_role_policy" "etcd" {
 EOS
 }
 
-// EC2 instance
-# module "etcd_address" {
-#   source = "./cidrhost"
-#
-#   count      = "${var.etcd_instance_count}"
-#   cidr_block = "${data.aws_subnet.private.*.cidr_block[count.index]}"
-#   host       = "${count.index}"
-# }
-
 resource "null_resource" "etcd_address" {
   count = "${var.etcd_instance_count}"
 
   triggers {
-    address = "${cidrhost(data.aws_subnet.private.*.cidr_block[count.index], 4 + (count.index / length(var.private_subnet_ids)))}"
+    subnet            = "${var.private_subnet_ids[count.index % length(var.private_subnet_ids)]}"
+    availability_zone = "${data.aws_subnet.private.*.availability_zone[count.index % length(var.private_subnet_ids)]}"
+    address           = "${cidrhost(data.aws_subnet.private.*.cidr_block[count.index % length(var.private_subnet_ids)], 4 + (count.index / length(var.private_subnet_ids)))}"
   }
 }
 
@@ -69,7 +62,7 @@ resource "aws_instance" "etcd" {
   iam_instance_profile   = "${aws_iam_instance_profile.etcd.name}"
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.etcd.id}"]
-  subnet_id              = "${var.private_subnet_ids[count.index]}"
+  subnet_id              = "${null_resource.etcd_address.*.triggers.subnet[count.index]}"
   private_ip             = "${null_resource.etcd_address.*.triggers.address[count.index]}"
 
   lifecycle {
@@ -95,7 +88,7 @@ resource "aws_instance" "etcd" {
 
 resource "aws_ebs_volume" "etcd-data" {
   count             = "${var.etcd_instance_count}"
-  availability_zone = "${data.aws_subnet.private.*.availability_zone[count.index]}"
+  availability_zone = "${null_resource.etcd_address.*.triggers.availability_zone[count.index]}"
   size              = 50
   type              = "gp2"
 
