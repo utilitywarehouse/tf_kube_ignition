@@ -84,6 +84,14 @@ data "ignition_systemd_unit" "etcd-disk-mounter" {
   content = "${data.template_file.etcd-disk-mounter.rendered}"
 }
 
+resource "null_resource" "etcd_member" {
+  count = "${length(var.etcd_addresses)}"
+
+  triggers {
+    index = "${count.index}"
+  }
+}
+
 data "template_file" "etcd-member-dropin" {
   count    = "${length(var.etcd_addresses)}"
   template = "${file("${path.module}/resources/etcd-member-dropin.conf")}"
@@ -92,7 +100,7 @@ data "template_file" "etcd-member-dropin" {
     etcd_image_url       = "${var.etcd_image_url}"
     etcd_image_tag       = "${var.etcd_image_tag}"
     index                = "${count.index}"
-    etcd_initial_cluster = "${join(",", formatlist("member%s=https://%s:2380", list("0", "1", "2"), var.etcd_addresses))}"
+    etcd_initial_cluster = "${join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))}"
     private_ipv4         = "${var.etcd_addresses[count.index]}"
   }
 }
