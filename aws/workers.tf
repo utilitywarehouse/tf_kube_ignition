@@ -197,7 +197,7 @@ resource "aws_autoscaling_policy" "scale-down-on-demand" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "spot-instances-terminated" {
-  alarm_name                = "spot-instances-terminated"
+  alarm_name                = "spot-instances-terminated-${var.cluster_name}"
   comparison_operator       = "LessThanThreshold"
   evaluation_periods        = "2"
   metric_name               = "GroupInServiceInstances"
@@ -215,7 +215,7 @@ resource "aws_cloudwatch_metric_alarm" "spot-instances-terminated" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "spot-instances-fulfilled" {
-  alarm_name                = "spot-instances-fulfilled"
+  alarm_name                = "spot-instances-fulfilled-${var.cluster_name}"
   comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = "2"
   metric_name               = "GroupInServiceInstances"
