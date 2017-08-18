@@ -22,16 +22,6 @@ data "ignition_file" "etcd-prom-machine-role" {
   }
 }
 
-data "ignition_file" "etcd-td-agent-conf" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/td-agent/td-agent.conf"
-
-  content {
-    content = "${file("${path.module}/resources/etcd-td-agent.conf")}"
-  }
-}
-
 data "template_file" "etcdctl-wrapper" {
   count    = "${length(var.etcd_addresses)}"
   template = "${file("${path.module}/resources/etcdctl-wrapper")}"
@@ -130,40 +120,28 @@ data "ignition_systemd_unit" "etcd-node-exporter" {
   content = "${data.template_file.etcd-node-exporter.rendered}"
 }
 
-data "template_file" "etcd-fluentd" {
-  template = "${file("${path.module}/resources/fluentd.service")}"
-
-  vars {
-    fluentd_image_url = "${var.fluentd_image_url}"
-    fluentd_image_tag = "${var.fluentd_image_tag}"
-    sumologic_url     = "${var.sumologic_url}"
-  }
-}
-
-data "ignition_systemd_unit" "etcd-fluentd" {
-  name = "fluentd.service"
-
-  content = "${data.template_file.etcd-fluentd.rendered}"
-}
-
 data "ignition_config" "etcd" {
   count = "${length(var.etcd_addresses)}"
 
-  files = [
-    "${data.ignition_file.s3-iam-get.id}",
-    "${data.ignition_file.etcd-prom-machine-role.id}",
-    "${data.ignition_file.etcd-td-agent-conf.id}",
-    "${element(data.ignition_file.etcdctl-wrapper.*.id, count.index)}",
-  ]
+  files = ["${concat(
+    list(
+        data.ignition_file.s3-iam-get.id,
+        data.ignition_file.etcd-prom-machine-role.id,
+        element(data.ignition_file.etcdctl-wrapper.*.id, count.index),
+    ),
+    var.etcd_additional_files,
+  )}"]
 
-  systemd = [
-    "${data.ignition_systemd_unit.update-engine.id}",
-    "${data.ignition_systemd_unit.locksmithd.id}",
-    "${data.ignition_systemd_unit.etcd-get-ssl.id}",
-    "${data.ignition_systemd_unit.etcd-disk-formatter.id}",
-    "${data.ignition_systemd_unit.etcd-disk-mounter.id}",
-    "${element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index)}",
-    "${data.ignition_systemd_unit.etcd-node-exporter.id}",
-    "${data.ignition_systemd_unit.etcd-fluentd.id}",
-  ]
+  systemd = ["${concat(
+    list(
+        data.ignition_systemd_unit.update-engine.id,
+        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.etcd-get-ssl.id,
+        data.ignition_systemd_unit.etcd-disk-formatter.id,
+        data.ignition_systemd_unit.etcd-disk-mounter.id,
+        element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
+        data.ignition_systemd_unit.etcd-node-exporter.id,
+    ),
+    var.etcd_additional_systemd_units,
+  )}"]
 }

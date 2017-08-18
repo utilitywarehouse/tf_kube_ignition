@@ -23,16 +23,6 @@ variable "node_exporter_image_tag" {
   default     = "v0.14.0"
 }
 
-variable "fluentd_image_url" {
-  description = "Where to get the fluentd image from."
-  default     = "utilitywarehouse/fluentd"
-}
-
-variable "fluentd_image_tag" {
-  description = "The version of the fluentd image to use."
-  default     = "2.0.3"
-}
-
 variable "hyperkube_image_url" {
   description = "Where to get the hyperkube image from."
   default     = "quay.io/coreos/hyperkube"
@@ -88,6 +78,38 @@ variable "pod_network" {
   default     = "10.2.0.0/16"
 }
 
-variable "sumologic_url" {
-  description = "The SumoLogic collector endpoint to ship logs to. Used by fluentd on etcd nodes."
+variable "etcd_additional_systemd_units" {
+  description = "Additional systemd units to include in the igntion config data for etcd nodes."
+  default     = []
+  type        = "list"
+}
+
+variable "etcd_additional_files" {
+  description = "Additional files to include in the igntion config data for etcd nodes."
+  default     = []
+  type        = "list"
+}
+
+variable "master_additional_systemd_units" {
+  description = "Additional systemd units to include in the igntion config data for master nodes."
+  default     = []
+  type        = "list"
+}
+
+variable "master_additional_files" {
+  description = "Additional files to include in the igntion config data for master nodes."
+  default     = []
+  type        = "list"
+}
+
+variable "worker_additional_systemd_units" {
+  description = "Additional systemd units to include in the igntion config data for worker nodes."
+  default     = []
+  type        = "list"
+}
+
+variable "worker_additional_files" {
+  description = "Additional files to include in the igntion config data for worker nodes."
+  default     = []
+  type        = "list"
 }
