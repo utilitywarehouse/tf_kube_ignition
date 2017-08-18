@@ -88,18 +88,24 @@ data "ignition_file" "worker-sysctl-vm" {
 }
 
 data "ignition_config" "worker" {
-  files = [
-    "${data.ignition_file.s3-iam-get.id}",
-    "${data.ignition_file.worker-prom-machine-role.id}",
-    "${data.ignition_file.worker-kubeconfig.id}",
-    "${data.ignition_file.worker-kube-proxy.id}",
-    "${data.ignition_file.worker-sysctl-vm.id}",
-  ]
+  files = ["${concat(
+    list(
+      data.ignition_file.s3-iam-get.id,
+      data.ignition_file.worker-prom-machine-role.id,
+      data.ignition_file.worker-kubeconfig.id,
+      data.ignition_file.worker-kube-proxy.id,
+      data.ignition_file.worker-sysctl-vm.id,
+    ),
+    var.worker_additional_files
+  )}"]
 
-  systemd = [
-    "${data.ignition_systemd_unit.update-engine.id}",
-    "${data.ignition_systemd_unit.locksmithd.id}",
-    "${data.ignition_systemd_unit.worker-get-ssl.id}",
-    "${data.ignition_systemd_unit.worker-kubelet.id}",
-  ]
+  systemd = ["${concat(
+    list(
+      data.ignition_systemd_unit.update-engine.id,
+      data.ignition_systemd_unit.locksmithd.id,
+      data.ignition_systemd_unit.worker-get-ssl.id,
+      data.ignition_systemd_unit.worker-kubelet.id,
+    ),
+    var.worker_additional_systemd_units
+  )}"]
 }

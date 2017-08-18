@@ -133,20 +133,26 @@ data "ignition_file" "master-prom-machine-role" {
 }
 
 data "ignition_config" "master" {
-  files = [
-    "${data.ignition_file.s3-iam-get.id}",
-    "${data.ignition_file.master-prom-machine-role.id}",
-    "${data.ignition_file.master-kubeconfig.id}",
-    "${data.ignition_file.master-kube-proxy.id}",
-    "${data.ignition_file.kube-apiserver.id}",
-    "${data.ignition_file.kube-scheduler.id}",
-    "${data.ignition_file.kube-controller-manager.id}",
-  ]
+  files = ["${concat(
+    list(
+        data.ignition_file.s3-iam-get.id,
+        data.ignition_file.master-prom-machine-role.id,
+        data.ignition_file.master-kubeconfig.id,
+        data.ignition_file.master-kube-proxy.id,
+        data.ignition_file.kube-apiserver.id,
+        data.ignition_file.kube-scheduler.id,
+        data.ignition_file.kube-controller-manager.id,
+    ),
+    var.master_additional_files,
+  )}"]
 
-  systemd = [
-    "${data.ignition_systemd_unit.update-engine.id}",
-    "${data.ignition_systemd_unit.locksmithd.id}",
-    "${data.ignition_systemd_unit.master-get-ssl.id}",
-    "${data.ignition_systemd_unit.master-kubelet.id}",
-  ]
+  systemd = ["${concat(
+    list(
+        data.ignition_systemd_unit.update-engine.id,
+        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.master-get-ssl.id,
+        data.ignition_systemd_unit.master-kubelet.id,
+    ),
+    var.master_additional_systemd_units,
+  )}"]
 }
