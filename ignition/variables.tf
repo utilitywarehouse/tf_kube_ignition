@@ -118,3 +118,17 @@ variable "worker_additional_files" {
   default     = []
   type        = "list"
 }
+
+variable "cfssl_ca_cn" {
+  description = "The Common Name for the CA certificate."
+}
+
+variable "cfssl_ca_expiry_hours" {
+  description = "The expiry time in hours for the CA certificate (defaults to 2 years)"
+  default     = "17520"
+}
+
+variable "cfssl_node_expiry_hours" {
+  description = "The expiry time in hours for the nodes certificats (defaults to a week)"
+  default     = "168"
+}
