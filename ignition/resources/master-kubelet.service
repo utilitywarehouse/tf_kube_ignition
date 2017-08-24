@@ -1,6 +1,6 @@
 [Unit]
-After=get-ssl.service
-Requires=get-ssl.service
+After=cfssl-new-cert.service
+Requires=cfssl-new-cert.service
 [Service]
 Environment=KUBELET_IMAGE_URL=${kubelet_image_url}
 Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}

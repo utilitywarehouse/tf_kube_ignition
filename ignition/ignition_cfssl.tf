@@ -1,25 +1,62 @@
-data "ignition_file" "cfssl" {
-  filesystem = "root"
-  path       = "/opt/bin/cfssl"
-  mode       = 0755
+// common items
+resource "random_id" "cfssl-auth-key-unused" {
+  byte_length = 16
+}
 
-  source {
-    source       = "https://pkg.cfssl.org/R1.2/cfssl_linux-amd64"
-    verification = "sha512-344d58d43aa3948c78eb7e7dafe493c3409f98c73f27cae041c24a7bd14aff07c702d8ab6cdfb15bd6cc55c18b2552f86c5f79a6778f0c277b5e9798d3a38e37"
+resource "random_id" "cfssl-auth-key-client" {
+  byte_length = 16
+}
+
+// used by clients
+data "template_file" "cfssl-client-config" {
+  template = "${file("${path.module}/resources/cfssl-client-config.json")}"
+
+  vars {
+    cfssl_server_endpoint = "${var.cfssl_server_address}"
+    cfssl_auth_key        = "${random_id.cfssl-auth-key-client.hex}"
   }
 }
 
-data "ignition_file" "cfssljson" {
+data "ignition_file" "cfssl-client-config" {
+  mode       = 0600
   filesystem = "root"
-  path       = "/opt/bin/cfssljson"
-  mode       = 0755
+  path       = "/etc/cfssl/config.json"
 
-  source {
-    source       = "https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64"
-    verification = "sha512-b80f19e61e16244422ad3d877e5a7df5c46b34181d264c9c529db8a8fc2999c6a6f7c1fb2dec63e08d311d6657c8fe05af3186b7ff369a866a47d140d393b49b"
+  content {
+    content = "${data.template_file.cfssl-client-config.rendered}"
   }
 }
 
+data "ignition_systemd_unit" "cfssl-new-cert" {
+  name = "cfssl-new-cert.service"
+
+  content = <<EOS
+[Unit]
+Description=Generate new certificate
+After=network-online.target
+Requires=network-online.target
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/cfssl-new-cert
+[Install]
+WantedBy=multi-user.target
+EOS
+}
+
+data "ignition_systemd_unit" "cfssl-new-cert-timer" {
+  name = "cfssl-new-cert.timer"
+
+  content = <<EOS
+[Unit]
+Description=Run cfssl-new-cert.service periodically
+[Timer]
+OnCalendar=${var.cfssl_node_renew_timer}
+[Install]
+WantedBy=timers.target
+EOS
+}
+
+// user by the server
 data "ignition_file" "cfssl-ca-csr" {
   mode       = 0644
   filesystem = "root"
@@ -42,21 +79,13 @@ data "ignition_file" "cfssl-init-ca" {
   }
 }
 
-resource "random_id" "auth-key-unused" {
-  byte_length = 16
-}
-
-resource "random_id" "auth-key-client" {
-  byte_length = 16
-}
-
 data "template_file" "cfssl-server-config" {
   template = "${file("${path.module}/resources/cfssl-server-config.json")}"
 
   vars {
     expiry_hours     = "${var.cfssl_node_expiry_hours}"
-    cfssl_unused_key = "${random_id.auth-key-unused.hex}"
-    cfssl_auth_key   = "${random_id.auth-key-client.hex}"
+    cfssl_unused_key = "${random_id.cfssl-auth-key-unused.hex}"
+    cfssl_auth_key   = "${random_id.cfssl-auth-key-client.hex}"
   }
 }
 

@@ -8,6 +8,10 @@ variable "enable_container_linux_locksmithd" {
   default     = false
 }
 
+variable "dns_domain" {
+  description = "The domain under which this cluster's DNS records are set (cluster-name.example.com)."
+}
+
 variable "etcd_image_url" {
   description = "Where to get the etcd image from."
   default     = "quay.io/coreos/etcd"
@@ -124,11 +128,20 @@ variable "cfssl_ca_cn" {
 }
 
 variable "cfssl_ca_expiry_hours" {
-  description = "The expiry time in hours for the CA certificate (defaults to 2 years)"
+  description = "The expiry time in hours for the CA certificate (defaults to 2 years)."
   default     = "17520"
 }
 
 variable "cfssl_node_expiry_hours" {
-  description = "The expiry time in hours for the nodes certificats (defaults to a week)"
+  description = "The expiry time in hours for the nodes certificats (defaults to a week)."
   default     = "168"
+}
+
+variable "cfssl_node_renew_timer" {
+  description = "The systemd timestamp that triggers node certificate renewal (default to every day at 05:45)."
+  default     = "*-*-* *:05:45"
+}
+
+variable "cfssl_server_address" {
+  description = "The IP address of the cfssl server."
 }
