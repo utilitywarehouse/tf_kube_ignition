@@ -54,6 +54,7 @@ resource "null_resource" "etcd_address" {
   }
 }
 
+// EC2 Instances
 resource "aws_instance" "etcd" {
   count                  = "${var.etcd_instance_count}"
   ami                    = "${var.containerlinux_ami_id}"

@@ -2,6 +2,10 @@ output "etcd_ip_list" {
   value = ["${null_resource.etcd_address.*.triggers.address}"]
 }
 
+output "cfssl_ip" {
+  value = "${null_resource.cfssl_address.triggers.address}"
+}
+
 output "master_address" {
   value = "${aws_route53_record.master-elb.name}"
 }

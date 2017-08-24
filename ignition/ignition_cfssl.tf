@@ -75,7 +75,7 @@ data "ignition_systemd_unit" "cfssl" {
   content = "${file("${path.module}/resources/cfssl.service")}"
 }
 
-data "ignition_config" "cfssl-server" {
+data "ignition_config" "cfssl" {
   files = [
     "${data.ignition_file.cfssl.id}",
     "${data.ignition_file.cfssljson.id}",

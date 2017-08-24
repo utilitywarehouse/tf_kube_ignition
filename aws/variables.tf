@@ -45,6 +45,11 @@ variable "route53_inaddr_arpa_zone_id" {
   description = "The ID of the Route53 Zone to add pointer records to."
 }
 
+// cfssl server
+variable "cfssl_user_data" {
+  description = "The user data to provide to the cfssl server."
+}
+
 // etcd nodes
 variable "etcd_instance_count" {
   default     = "3"
