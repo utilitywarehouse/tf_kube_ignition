@@ -7,12 +7,12 @@ data "ignition_filesystem" "root" {
 
 data "ignition_systemd_unit" "update-engine" {
   name = "update-engine.service"
-  mask = "${!var.enable_container_linux_updates}"
+  mask = "${!var.enable_container_linux_update-engine}"
 }
 
 data "ignition_systemd_unit" "locksmithd" {
   name = "locksmithd.service"
-  mask = "${!var.enable_container_linux_updates}"
+  mask = "${!var.enable_container_linux_locksmithd}"
 }
 
 data "ignition_file" "s3-iam-get" {
