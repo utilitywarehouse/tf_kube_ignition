@@ -56,7 +56,7 @@ WantedBy=timers.target
 EOS
 }
 
-// user by the server
+// used by the server
 data "ignition_file" "cfssl-ca-csr" {
   mode       = 0644
   filesystem = "root"
@@ -104,6 +104,34 @@ data "ignition_systemd_unit" "cfssl" {
   content = "${file("${path.module}/resources/cfssl.service")}"
 }
 
+data "ignition_file" "cfssl-sk-csr" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/cfssl/sk-csr.json"
+
+  content {
+    content = <<EOS
+{ "key": { "algo": "ecdsa", "size": 256 } }
+EOS
+  }
+}
+
+data "ignition_systemd_unit" "cfssl-gen-signing-key" {
+  name = "cfssl-gen-signing-key.service"
+
+  content = <<EOS
+[Unit]
+Description=generate kubernetes signing key
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/etc/cfssl
+ExecStart=/bin/sh -c '[ ! -f sk-key.pem ] && /opt/bin/cfssl genkey sk-csr.json | cfssljson -bare sk && rm sk.csr'
+[Install]
+WantedBy=multi-user.target
+EOS
+}
+
 data "ignition_config" "cfssl" {
   files = [
     "${data.ignition_file.cfssl.id}",
@@ -111,9 +139,11 @@ data "ignition_config" "cfssl" {
     "${data.ignition_file.cfssl-server-config.id}",
     "${data.ignition_file.cfssl-ca-csr.id}",
     "${data.ignition_file.cfssl-init-ca.id}",
+    "${data.ignition_file.cfssl-sk-csr.id}",
   ]
 
   systemd = [
     "${data.ignition_systemd_unit.cfssl.id}",
+    "${data.ignition_systemd_unit.cfssl-gen-signing-key.id}",
   ]
 }
