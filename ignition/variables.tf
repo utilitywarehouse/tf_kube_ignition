@@ -1,6 +1,11 @@
-variable "enable_container_linux_updates" {
+variable "enable_container_linux_update-engine" {
   description = "Whether to enable automatic updates for Container Linux."
   default     = true
+}
+
+variable "enable_container_linux_locksmithd" {
+  description = "Whether to enable automatic updates for Container Linux."
+  default     = false
 }
 
 variable "etcd_image_url" {
