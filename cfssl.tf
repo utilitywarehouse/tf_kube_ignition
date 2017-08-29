@@ -7,6 +7,10 @@ resource "random_id" "cfssl-auth-key-client" {
   byte_length = 16
 }
 
+resource "random_id" "cfssl-auth-key-apiserver" {
+  byte_length = 16
+}
+
 // used by clients
 data "template_file" "cfssl-client-config" {
   template = "${file("${path.module}/resources/cfssl-client-config.json")}"
@@ -116,8 +120,8 @@ EOS
   }
 }
 
-data "ignition_systemd_unit" "cfssl-gen-signing-key" {
-  name = "cfssl-gen-signing-key.service"
+data "ignition_systemd_unit" "cfss-sk-gen" {
+  name = "cfss-sk-gen.service"
 
   content = <<EOS
 [Unit]
@@ -132,6 +136,41 @@ WantedBy=multi-user.target
 EOS
 }
 
+data "ignition_file" "cfssl-nginx-conf" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/cfssl/sk-nginx.conf"
+
+  content {
+    content = "${file("${path.module}/resources/cfssl-nginx.conf")}"
+  }
+}
+
+data "ignition_file" "cfssl-nginx-auth" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/cfssl/sk-nginx.htpasswd"
+
+  content {
+    content = "apiserver:${bcrypt(random_id.cfssl-auth-key-apiserver.hex, 11)}"
+  }
+}
+
+data "template_file" "cfssl-nginx" {
+  template = "${file("${path.module}/resources/cfssl-nginx.service")}"
+
+  vars {
+    nginx_image_url = "nginx"
+    nginx_image_tag = "1.13-alpine"
+  }
+}
+
+data "ignition_systemd_unit" "cfssl-nginx" {
+  name = "cfssl-nginx.service"
+
+  content = "${data.template_file.cfssl-nginx.rendered}"
+}
+
 data "ignition_config" "cfssl" {
   files = [
     "${data.ignition_file.cfssl.id}",
@@ -140,10 +179,13 @@ data "ignition_config" "cfssl" {
     "${data.ignition_file.cfssl-ca-csr.id}",
     "${data.ignition_file.cfssl-init-ca.id}",
     "${data.ignition_file.cfssl-sk-csr.id}",
+    "${data.ignition_file.cfssl-nginx-conf.id}",
+    "${data.ignition_file.cfssl-nginx-auth.id}",
   ]
 
   systemd = [
     "${data.ignition_systemd_unit.cfssl.id}",
-    "${data.ignition_systemd_unit.cfssl-gen-signing-key.id}",
+    "${data.ignition_systemd_unit.cfss-sk-gen.id}",
+    "${data.ignition_systemd_unit.cfssl-nginx.id}",
   ]
 }

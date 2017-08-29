@@ -30,6 +30,21 @@ data "ignition_file" "master-cfssl-new-cert" {
   }
 }
 
+data "template_file" "master-cfssl-sk-get" {
+  template = "${file("${path.module}/resources/cfssl-sk-get.service")}"
+
+  vars {
+    path                 = "/etc/kubernetes/ssl"
+    cfssl_server_address = "${var.cfssl_server_address}"
+    auth                 = "${base64encode("apiserver:${random_id.cfssl-auth-key-apiserver.hex}")}"
+  }
+}
+
+data "ignition_systemd_unit" "master-cfssl-sk-get" {
+  name    = "cfssl-sk-get.service"
+  content = "${data.template_file.master-cfssl-sk-get.rendered}"
+}
+
 data "template_file" "master-kubelet" {
   template = "${file("${path.module}/resources/master-kubelet.service")}"
 
@@ -173,6 +188,7 @@ data "ignition_config" "master" {
         data.ignition_systemd_unit.locksmithd.id,
         data.ignition_systemd_unit.cfssl-new-cert.id,
         data.ignition_systemd_unit.cfssl-new-cert-timer.id,
+        data.ignition_systemd_unit.master-cfssl-sk-get.id,
         data.ignition_systemd_unit.master-kubelet.id,
     ),
     var.master_additional_systemd_units,

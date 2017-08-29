@@ -14,7 +14,7 @@ spec:
     - controller-manager
     - --master=http://127.0.0.1:8080
     - --leader-elect=true
-    - --service-account-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
+    - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
     ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
     - --configure-cloud-routes=false

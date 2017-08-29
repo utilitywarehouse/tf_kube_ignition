@@ -22,7 +22,7 @@ spec:
     - --tls-cert-file=/etc/kubernetes/ssl/k8s-apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
-    - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
+    - --service-account-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --service-account-lookup=true
     - --runtime-config=extensions/v1beta1=true,extensions/v1beta1/deployments=true,extensions/v1beta1/daemonsets=true,extensions/v1beta1/networkpolicies=true,extensions/v1beta1/thirdpartyresources=true,rbac.authorization.k8s.io/v1beta1=true,batch/v2alpha1=true
     ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
