@@ -1,14 +1,32 @@
-# kubernetes terraform modules
+# tf_kube_ignition
 
-This repository is a collection of terraform modules that can be used to create kubernetes clusters.
+This terraform module generates ignition configuration for Container Linux to help with the bootstrapping of kubernetes nodes.
 
-## modules
+## Input Variables
 
-### ignition
+The input variables are documented in their description and it's best to refer to [variables.tf](variables.tf).
 
-Provides Container Linux Ignition config.
+## Ouputs
 
+- `master` - the rendered ignition config for master nodes
+- `worker` - the rendered ignition config for worker nodes
+- `etcd` - the rendered ignition config for etcd nodes
 
-### aws
+## Usage
 
-Creates a kubernetes cluster inside an AWS VPC.
+Below is an example of how you might use this terraform module:
+
+```hcl
+module "ignition" {
+  source = "github.com/utilitywarehouse/tf_kube_ignition"
+
+  cloud_provider                       = "aws"
+  ssl_s3_bucket                        = "example-kube-ssl"
+  cluster_dns                          = "10.3.0.10"
+  master_address                       = "master.kube.example.com"
+  etcd_addresses                       = ["10.10.0.6", "10.10.0.7", "10.10.0.8"]
+  oidc_issuer_url                      = "https://accounts.google.com"
+  oidc_client_id                       = "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
+  etcd_additional_files                = ["${data.ignition_file.etcd-custom-file.id}"]
+}
+```
