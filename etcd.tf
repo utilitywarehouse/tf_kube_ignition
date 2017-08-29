@@ -1,15 +1,28 @@
-data "template_file" "etcd-get-ssl" {
-  template = "${file("${path.module}/resources/get-ssl.service")}"
+data "template_file" "etcd-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    ssl_tar_url      = "s3://${var.ssl_s3_bucket}/certs/k8s-etcd.tar"
-    destination_path = "/etc/etcd/ssl/"
+    user    = "etcd"
+    group   = "etcd"
+    role    = "k8s-etcd"
+    profile = "client-server"
+    path    = "/etc/etcd/ssl"
+
+    hosts = "${join(",", list(
+      "etcd.${var.dns_domain}",
+      "*.etcd.${var.dns_domain}",
+    ))}"
   }
 }
 
-data "ignition_systemd_unit" "etcd-get-ssl" {
-  name    = "get-ssl.service"
-  content = "${data.template_file.etcd-get-ssl.rendered}"
+data "ignition_file" "etcd-cfssl-new-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-cert"
+
+  content {
+    content = "${data.template_file.etcd-cfssl-new-cert.rendered}"
+  }
 }
 
 data "ignition_file" "etcd-prom-machine-role" {
@@ -125,7 +138,10 @@ data "ignition_config" "etcd" {
 
   files = ["${concat(
     list(
-        data.ignition_file.s3-iam-get.id,
+        data.ignition_file.cfssl.id,
+        data.ignition_file.cfssljson.id,
+        data.ignition_file.cfssl-client-config.id,
+        data.ignition_file.etcd-cfssl-new-cert.id,
         data.ignition_file.etcd-prom-machine-role.id,
         element(data.ignition_file.etcdctl-wrapper.*.id, count.index),
     ),
@@ -136,7 +152,8 @@ data "ignition_config" "etcd" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
-        data.ignition_systemd_unit.etcd-get-ssl.id,
+        data.ignition_systemd_unit.cfssl-new-cert.id,
+        data.ignition_systemd_unit.cfssl-new-cert-timer.id,
         data.ignition_systemd_unit.etcd-disk-formatter.id,
         data.ignition_systemd_unit.etcd-disk-mounter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),

@@ -23,10 +23,13 @@ module "ignition" {
   cloud_provider                       = "aws"
   ssl_s3_bucket                        = "example-kube-ssl"
   cluster_dns                          = "10.3.0.10"
+  dns_domain                           = "kube.example.com"
   master_address                       = "master.kube.example.com"
   etcd_addresses                       = ["10.10.0.6", "10.10.0.7", "10.10.0.8"]
   oidc_issuer_url                      = "https://accounts.google.com"
   oidc_client_id                       = "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
   etcd_additional_files                = ["${data.ignition_file.etcd-custom-file.id}"]
+  cfssl_server_address                 = "10.10.0.5"
+  cfssl_ca_cn                          = "Example Kube CA"
 }
 ```

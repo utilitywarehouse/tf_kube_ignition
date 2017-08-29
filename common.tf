@@ -1,5 +1,4 @@
 // common configuration items
-
 data "ignition_filesystem" "root" {
   name = "root"
   path = "/sysroot"
@@ -15,13 +14,24 @@ data "ignition_systemd_unit" "locksmithd" {
   mask = "${!var.enable_container_linux_locksmithd}"
 }
 
-data "ignition_file" "s3-iam-get" {
-  mode       = 0755
+data "ignition_file" "cfssl" {
   filesystem = "root"
-  path       = "/opt/bin/s3-iam-get"
+  path       = "/opt/bin/cfssl"
+  mode       = 0755
 
   source {
-    source       = "https://raw.githubusercontent.com/kz8s/s3-iam-get/master/s3-iam-get"
-    verification = "sha512-e77a8c593fc4b401ea93ecf9a91a8a4b20b57e8c6323156396c7dabec8c95e0cf1677f9e884b76f7730a7ebf4d68534e721cbdfd96a1a169d695cf3e8fbc9735"
+    source       = "https://pkg.cfssl.org/R1.2/cfssl_linux-amd64"
+    verification = "sha512-344d58d43aa3948c78eb7e7dafe493c3409f98c73f27cae041c24a7bd14aff07c702d8ab6cdfb15bd6cc55c18b2552f86c5f79a6778f0c277b5e9798d3a38e37"
+  }
+}
+
+data "ignition_file" "cfssljson" {
+  filesystem = "root"
+  path       = "/opt/bin/cfssljson"
+  mode       = 0755
+
+  source {
+    source       = "https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64"
+    verification = "sha512-b80f19e61e16244422ad3d877e5a7df5c46b34181d264c9c529db8a8fc2999c6a6f7c1fb2dec63e08d311d6657c8fe05af3186b7ff369a866a47d140d393b49b"
   }
 }
