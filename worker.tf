@@ -41,6 +41,33 @@ data "ignition_systemd_unit" "worker-kubelet" {
   content = "${data.template_file.worker-kubelet.rendered}"
 }
 
+data "ignition_systemd_unit" "worker-kubelet-restart" {
+  name = "kubelet-restart.service"
+
+  content = <<EOS
+[Unit]
+Description=Restart kubelet.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl try-restart kubelet.service
+EOS
+}
+
+data "ignition_systemd_unit" "worker-kubelet-restart-timer" {
+  name = "kubelet-restart.timer"
+
+  content = <<EOS
+[Unit]
+Description=Run kubelet-restart.service periodically
+[Timer]
+OnCalendar=${var.cfssl_node_renew_timer}
+AccuracySec=1s
+RandomizedDelaySec=60min
+[Install]
+WantedBy=timers.target
+EOS
+}
+
 data "template_file" "worker-kube-proxy" {
   template = "${file("${path.module}/resources/worker-kube-proxy.yaml")}"
 
@@ -118,9 +145,9 @@ data "ignition_config" "worker" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
-        data.ignition_systemd_unit.cfssl-new-cert.id,
-        data.ignition_systemd_unit.cfssl-new-cert-timer.id,
         data.ignition_systemd_unit.worker-kubelet.id,
+        data.ignition_systemd_unit.worker-kubelet-restart.id,
+        data.ignition_systemd_unit.worker-kubelet-restart-timer.id,
     ),
     var.worker_additional_systemd_units
   )}"]

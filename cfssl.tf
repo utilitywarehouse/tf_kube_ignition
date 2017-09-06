@@ -31,35 +31,6 @@ data "ignition_file" "cfssl-client-config" {
   }
 }
 
-data "ignition_systemd_unit" "cfssl-new-cert" {
-  name = "cfssl-new-cert.service"
-
-  content = <<EOS
-[Unit]
-Description=Generate new certificate
-After=network-online.target
-Requires=network-online.target
-[Service]
-Type=oneshot
-ExecStart=/opt/bin/cfssl-new-cert
-[Install]
-WantedBy=multi-user.target
-EOS
-}
-
-data "ignition_systemd_unit" "cfssl-new-cert-timer" {
-  name = "cfssl-new-cert.timer"
-
-  content = <<EOS
-[Unit]
-Description=Run cfssl-new-cert.service periodically
-[Timer]
-OnCalendar=${var.cfssl_node_renew_timer}
-[Install]
-WantedBy=timers.target
-EOS
-}
-
 // used by the server
 data "ignition_file" "cfssl-ca-csr" {
   mode       = 0644

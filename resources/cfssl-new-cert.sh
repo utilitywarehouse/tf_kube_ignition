@@ -1,7 +1,9 @@
 #!/bin/sh
 
-mkdir -p ${path} || exit 1
-cd ${path} || exit 1
+set -o errexit
+
+mkdir -p ${path}
+cd ${path}
 
 _ip="$(ip addr show dev eth0 | grep 'inet ' | awk '{ print $2; }' | cut -d/ -f1)"
 _hostname="$(hostname)"

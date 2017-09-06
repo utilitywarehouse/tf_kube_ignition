@@ -31,18 +31,22 @@ data "ignition_file" "master-cfssl-new-cert" {
 }
 
 data "template_file" "master-cfssl-sk-get" {
-  template = "${file("${path.module}/resources/cfssl-sk-get.service")}"
+  template = "${file("${path.module}/resources/cfssl-sk-get.sh")}"
 
   vars {
-    path                 = "/etc/kubernetes/ssl"
-    cfssl_server_address = "${var.cfssl_server_address}"
-    auth                 = "${base64encode("apiserver:${random_id.cfssl-auth-key-apiserver.hex}")}"
+    path = "/etc/kubernetes/ssl"
+    auth = "${base64encode("apiserver:${random_id.cfssl-auth-key-apiserver.hex}")}"
   }
 }
 
-data "ignition_systemd_unit" "master-cfssl-sk-get" {
-  name    = "cfssl-sk-get.service"
-  content = "${data.template_file.master-cfssl-sk-get.rendered}"
+data "ignition_file" "master-cfssl-sk-get" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-sk-get"
+
+  content {
+    content = "${data.template_file.master-cfssl-sk-get.rendered}"
+  }
 }
 
 data "template_file" "master-kubelet" {
@@ -54,6 +58,33 @@ data "template_file" "master-kubelet" {
     cloud_provider    = "${var.cloud_provider}"
     cluster_dns       = "${var.cluster_dns}"
   }
+}
+
+data "ignition_systemd_unit" "master-kubelet-restart" {
+  name = "kubelet-restart.service"
+
+  content = <<EOS
+[Unit]
+Description=Restart kubelet.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl try-restart kubelet.service
+EOS
+}
+
+data "ignition_systemd_unit" "master-kubelet-restart-timer" {
+  name = "kubelet-restart.timer"
+
+  content = <<EOS
+[Unit]
+Description=Run kubelet-restart.service periodically
+[Timer]
+OnCalendar=${var.cfssl_node_renew_timer}
+AccuracySec=1s
+RandomizedDelaySec=60min
+[Install]
+WantedBy=timers.target
+EOS
 }
 
 data "ignition_systemd_unit" "master-kubelet" {
@@ -172,6 +203,7 @@ data "ignition_config" "master" {
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
         data.ignition_file.master-cfssl-new-cert.id,
+        data.ignition_file.master-cfssl-sk-get.id,
         data.ignition_file.master-prom-machine-role.id,
         data.ignition_file.master-kubeconfig.id,
         data.ignition_file.master-kube-proxy.id,
@@ -186,10 +218,9 @@ data "ignition_config" "master" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
-        data.ignition_systemd_unit.cfssl-new-cert.id,
-        data.ignition_systemd_unit.cfssl-new-cert-timer.id,
-        data.ignition_systemd_unit.master-cfssl-sk-get.id,
         data.ignition_systemd_unit.master-kubelet.id,
+        data.ignition_systemd_unit.master-kubelet-restart.id,
+        data.ignition_systemd_unit.master-kubelet-restart-timer.id,
     ),
     var.master_additional_systemd_units,
   )}"]

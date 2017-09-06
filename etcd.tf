@@ -118,6 +118,33 @@ data "ignition_systemd_unit" "etcd-member-dropin" {
   }
 }
 
+data "ignition_systemd_unit" "etcd-member-restart" {
+  name = "etcd-member-restart.service"
+
+  content = <<EOS
+[Unit]
+Description=Restart etcd-member.service
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl try-restart etcd-member.service
+EOS
+}
+
+data "ignition_systemd_unit" "etcd-member-restart-timer" {
+  name = "etcd-member-restart.timer"
+
+  content = <<EOS
+[Unit]
+Description=Run etcd-member-restart.service periodically
+[Timer]
+OnCalendar=${var.cfssl_node_renew_timer}
+AccuracySec=1s
+RandomizedDelaySec=60min
+[Install]
+WantedBy=timers.target
+EOS
+}
+
 data "template_file" "etcd-node-exporter" {
   template = "${file("${path.module}/resources/node-exporter.service")}"
 
@@ -152,11 +179,11 @@ data "ignition_config" "etcd" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
-        data.ignition_systemd_unit.cfssl-new-cert.id,
-        data.ignition_systemd_unit.cfssl-new-cert-timer.id,
         data.ignition_systemd_unit.etcd-disk-formatter.id,
         data.ignition_systemd_unit.etcd-disk-mounter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
+        data.ignition_systemd_unit.etcd-member-restart.id,
+        data.ignition_systemd_unit.etcd-member-restart-timer.id,
         data.ignition_systemd_unit.etcd-node-exporter.id,
     ),
     var.etcd_additional_systemd_units,
