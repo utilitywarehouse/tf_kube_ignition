@@ -1,5 +1,7 @@
 [Unit]
 Description=cfssl service
+After=etc-cfssl.mount
+Requires=etc-cfssl.munt
 [Service]
 WorkingDirectory=/etc/cfssl
 ExecStartPre=/opt/bin/cfssl-init-ca

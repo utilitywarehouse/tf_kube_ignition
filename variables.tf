@@ -139,7 +139,7 @@ variable "cfssl_node_expiry_hours" {
 
 variable "cfssl_node_renew_timer" {
   description = "The systemd timestamp that triggers node certificate renewal (default to every day at 05:45)."
-  default     = "*-*-* *:05:45"
+  default     = "*-*-* 05:45:00"
 }
 
 variable "cfssl_server_address" {

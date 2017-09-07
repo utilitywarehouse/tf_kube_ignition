@@ -32,6 +32,34 @@ data "ignition_file" "cfssl-client-config" {
 }
 
 // used by the server
+data "template_file" "cfssl-disk-formatter" {
+  template = "${file("${path.module}/resources/disk-formatter.service")}"
+
+  vars {
+    device = "xvdf"
+    user   = "root"
+  }
+}
+
+data "ignition_systemd_unit" "cfssl-disk-formatter" {
+  name    = "disk-formatter-xvdf.service"
+  content = "${data.template_file.cfssl-disk-formatter.rendered}"
+}
+
+data "template_file" "cfssl-disk-mounter" {
+  template = "${file("${path.module}/resources/disk-mounter.service")}"
+
+  vars {
+    device     = "xvdf"
+    mountpoint = "/etc/cfssl" // influences the unit name below
+  }
+}
+
+data "ignition_systemd_unit" "cfssl-disk-mounter" {
+  name    = "etc-cfssl.mount"
+  content = "${data.template_file.cfssl-disk-mounter.rendered}"
+}
+
 data "ignition_file" "cfssl-ca-csr" {
   mode       = 0644
   filesystem = "root"
@@ -97,6 +125,8 @@ data "ignition_systemd_unit" "cfss-sk-gen" {
   content = <<EOS
 [Unit]
 Description=generate kubernetes signing key
+After=etc-cfssl.mount
+Requires=etc-cfssl.munt
 [Service]
 Type=oneshot
 RemainAfterExit=yes
@@ -155,6 +185,8 @@ data "ignition_config" "cfssl" {
   ]
 
   systemd = [
+    "${data.ignition_systemd_unit.cfssl-disk-formatter.id}",
+    "${data.ignition_systemd_unit.cfssl-disk-mounter.id}",
     "${data.ignition_systemd_unit.cfssl.id}",
     "${data.ignition_systemd_unit.cfss-sk-gen.id}",
     "${data.ignition_systemd_unit.cfssl-nginx.id}",
