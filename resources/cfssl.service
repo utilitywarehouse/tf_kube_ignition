@@ -1,0 +1,18 @@
+[Unit]
+Description=cfssl service
+After=var-lib-cfssl.mount
+Requires=var-lib-cfssl.mount
+[Service]
+WorkingDirectory=/var/lib/cfssl
+ExecStartPre=/bin/sh -c 'if [ ! -f sk-key.pem ]; then /opt/bin/cfssl genkey /etc/cfssl/sk-csr.json | /opt/bin/cfssljson -bare sk && rm sk.csr; fi'
+ExecStartPre=/opt/bin/cfssl-init-ca
+ExecStart=/opt/bin/cfssl serve \
+    -address=0.0.0.0 \
+    -port=8888 \
+    -config=/etc/cfssl/config.json \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem
+Restart=on-failure
+RestartSec=10
+[Install]
+WantedBy=multi-user.target

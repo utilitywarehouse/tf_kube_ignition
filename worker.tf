@@ -1,15 +1,27 @@
-data "template_file" "worker-get-ssl" {
-  template = "${file("${path.module}/resources/get-ssl.service")}"
+data "template_file" "worker-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    ssl_tar_url      = "s3://${var.ssl_s3_bucket}/certs/k8s-worker.tar"
-    destination_path = "/etc/kubernetes/ssl/"
+    user    = "root"
+    group   = "root"
+    role    = "k8s-worker"
+    profile = "client"
+    path    = "/etc/kubernetes/ssl"
+
+    hosts = "${join(",", list(
+      "*.worker.${var.dns_domain}",
+    ))}"
   }
 }
 
-data "ignition_systemd_unit" "worker-get-ssl" {
-  name    = "get-ssl.service"
-  content = "${data.template_file.worker-get-ssl.rendered}"
+data "ignition_file" "worker-cfssl-new-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-cert"
+
+  content {
+    content = "${data.template_file.worker-cfssl-new-cert.rendered}"
+  }
 }
 
 data "template_file" "worker-kubelet" {
@@ -90,22 +102,25 @@ data "ignition_file" "worker-sysctl-vm" {
 data "ignition_config" "worker" {
   files = ["${concat(
     list(
-      data.ignition_file.s3-iam-get.id,
-      data.ignition_file.worker-prom-machine-role.id,
-      data.ignition_file.worker-kubeconfig.id,
-      data.ignition_file.worker-kube-proxy.id,
-      data.ignition_file.worker-sysctl-vm.id,
+        data.ignition_file.cfssl.id,
+        data.ignition_file.cfssljson.id,
+        data.ignition_file.cfssl-client-config.id,
+        data.ignition_file.worker-cfssl-new-cert.id,
+        data.ignition_file.worker-prom-machine-role.id,
+        data.ignition_file.worker-kubeconfig.id,
+        data.ignition_file.worker-kube-proxy.id,
+        data.ignition_file.worker-sysctl-vm.id,
     ),
     var.worker_additional_files
   )}"]
 
   systemd = ["${concat(
     list(
-      data.ignition_systemd_unit.update-engine.id,
-      data.ignition_systemd_unit.locksmithd.id,
-      data.ignition_systemd_unit.worker-get-ssl.id,
-      data.ignition_systemd_unit.worker-kubelet.id,
+        data.ignition_systemd_unit.update-engine.id,
+        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.worker-kubelet.id,
     ),
+    module.kubelet-restarter.systemd_units,
     var.worker_additional_systemd_units
   )}"]
 }

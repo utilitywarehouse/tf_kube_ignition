@@ -1,8 +1,0 @@
-[Unit]
-Description=Mount device ${device} volume to ${mountpoint}
-Requires=disk-formatter-${device}.service
-After=disk-formatter-${device}.service
-[Mount]
-What=/dev/${device}
-Where=${mountpoint}
-Type=ext4

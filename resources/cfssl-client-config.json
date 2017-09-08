@@ -1,0 +1,19 @@
+{
+    "signing": {
+        "default": {
+            "auth_remote": {
+                "remote": "server",
+                "auth_key": "client"
+            }
+        }
+    },
+    "auth_keys": {
+        "client": {
+            "type": "standard",
+            "key": "${cfssl_auth_key}"
+        }
+    },
+    "remotes": {
+        "server": "${cfssl_server_endpoint}:8888"
+    }
+}

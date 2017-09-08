@@ -1,3 +1,7 @@
+output "cfssl" {
+  value = "${data.ignition_config.cfssl.rendered}"
+}
+
 output "master" {
   value = "${data.ignition_config.master.rendered}"
 }

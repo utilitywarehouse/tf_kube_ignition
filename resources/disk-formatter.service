@@ -1,8 +1,0 @@
-[Unit]
-Description=Format device ${device}, if it has no filesystem
-After=dev-${device}.device
-Requires=dev-${device}.device
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-ExecStart=/bin/sh -c "fsck -a /dev/${device} || (mkfs.ext4 /dev/${device} && mount /dev/${device} /mnt && chown -R ${user}:${user} /mnt && umount /mnt)"

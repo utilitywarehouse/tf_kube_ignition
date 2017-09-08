@@ -1,6 +1,5 @@
 [Unit]
-After=get-ssl.service
-Requires=get-ssl.service
+Description=kubelet-on-rkt service
 [Service]
 Environment=KUBELET_IMAGE_URL=${kubelet_image_url}
 Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}
@@ -21,6 +20,10 @@ ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
+ExecStartPre=/opt/bin/cfssl-sk-get
+ExecStartPre=/opt/bin/cfssl-new-cert
+ExecStartPre=-/bin/sh -c "docker stop $(docker ps --no-trunc | grep '/hyperkube controller-manager' | awk '{ print $1; '})"
+ExecStartPre=-/bin/sh -c "docker stop $(docker ps --no-trunc | grep '/hyperkube apiserver' | awk '{ print $1; '})"
 ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --require-kubeconfig=true \

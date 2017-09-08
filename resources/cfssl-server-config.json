@@ -1,0 +1,39 @@
+{
+    "signing": {
+        "default": {
+            "auth_key": "unused",
+            "expiry": "${expiry_hours}h"
+        },
+        "profiles": {
+            "client": {
+                "expiry": "${expiry_hours}h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "client auth"
+                ],
+                "auth_key": "client"
+            },
+            "client-server": {
+                "expiry": "${expiry_hours}h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth",
+                    "client auth"
+                ],
+                "auth_key": "client"
+            }
+        }
+    },
+    "auth_keys": {
+        "client": {
+            "type": "standard",
+            "key": "${cfssl_auth_key}"
+        },
+        "unused": {
+            "type": "standard",
+            "key": "${cfssl_unused_key}"
+        }
+    }
+}

@@ -1,15 +1,28 @@
-data "template_file" "etcd-get-ssl" {
-  template = "${file("${path.module}/resources/get-ssl.service")}"
+data "template_file" "etcd-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    ssl_tar_url      = "s3://${var.ssl_s3_bucket}/certs/k8s-etcd.tar"
-    destination_path = "/etc/etcd/ssl/"
+    user    = "etcd"
+    group   = "etcd"
+    role    = "k8s-etcd"
+    profile = "client-server"
+    path    = "/etc/etcd/ssl"
+
+    hosts = "${join(",", list(
+      "etcd.${var.dns_domain}",
+      "*.etcd.${var.dns_domain}",
+    ))}"
   }
 }
 
-data "ignition_systemd_unit" "etcd-get-ssl" {
-  name    = "get-ssl.service"
-  content = "${data.template_file.etcd-get-ssl.rendered}"
+data "ignition_file" "etcd-cfssl-new-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-cert"
+
+  content {
+    content = "${data.template_file.etcd-cfssl-new-cert.rendered}"
+  }
 }
 
 data "ignition_file" "etcd-prom-machine-role" {
@@ -46,32 +59,13 @@ data "ignition_file" "etcdctl-wrapper" {
   }
 }
 
-data "template_file" "etcd-disk-formatter" {
-  template = "${file("${path.module}/resources/disk-formatter.service")}"
+module "etcd-disk-mounter" {
+  source = "./systemd_disk_mounter"
 
-  vars {
-    device = "xvdf"
-    user   = "etcd"
-  }
-}
-
-data "ignition_systemd_unit" "etcd-disk-formatter" {
-  name    = "disk-formatter-xvdf.service"
-  content = "${data.template_file.etcd-disk-formatter.rendered}"
-}
-
-data "template_file" "etcd-disk-mounter" {
-  template = "${file("${path.module}/resources/disk-mounter.service")}"
-
-  vars {
-    device     = "xvdf"
-    mountpoint = "/var/lib/etcd" // influences the unit name below
-  }
-}
-
-data "ignition_systemd_unit" "etcd-disk-mounter" {
-  name    = "var-lib-etcd.mount"
-  content = "${data.template_file.etcd-disk-mounter.rendered}"
+  device     = "xvdf"
+  user       = "etcd"
+  group      = "etcd"
+  mountpoint = "/var/lib/etcd"
 }
 
 resource "null_resource" "etcd_member" {
@@ -105,6 +99,13 @@ data "ignition_systemd_unit" "etcd-member-dropin" {
   }
 }
 
+module "etcd-member-restarter" {
+  source = "./systemd_service_restarter"
+
+  service_name = "etcd-member"
+  on_calendar  = "${var.cfssl_node_renew_timer}"
+}
+
 data "template_file" "etcd-node-exporter" {
   template = "${file("${path.module}/resources/node-exporter.service")}"
 
@@ -125,7 +126,10 @@ data "ignition_config" "etcd" {
 
   files = ["${concat(
     list(
-        data.ignition_file.s3-iam-get.id,
+        data.ignition_file.cfssl.id,
+        data.ignition_file.cfssljson.id,
+        data.ignition_file.cfssl-client-config.id,
+        data.ignition_file.etcd-cfssl-new-cert.id,
         data.ignition_file.etcd-prom-machine-role.id,
         element(data.ignition_file.etcdctl-wrapper.*.id, count.index),
     ),
@@ -136,12 +140,11 @@ data "ignition_config" "etcd" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
-        data.ignition_systemd_unit.etcd-get-ssl.id,
-        data.ignition_systemd_unit.etcd-disk-formatter.id,
-        data.ignition_systemd_unit.etcd-disk-mounter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         data.ignition_systemd_unit.etcd-node-exporter.id,
     ),
+    module.etcd-disk-mounter.systemd_units,
+    module.etcd-member-restarter.systemd_units,
     var.etcd_additional_systemd_units,
   )}"]
 }
