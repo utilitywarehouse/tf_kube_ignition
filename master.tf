@@ -60,33 +60,6 @@ data "template_file" "master-kubelet" {
   }
 }
 
-data "ignition_systemd_unit" "master-kubelet-restart" {
-  name = "kubelet-restart.service"
-
-  content = <<EOS
-[Unit]
-Description=Restart kubelet.service
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/systemctl try-restart kubelet.service
-EOS
-}
-
-data "ignition_systemd_unit" "master-kubelet-restart-timer" {
-  name = "kubelet-restart.timer"
-
-  content = <<EOS
-[Unit]
-Description=Run kubelet-restart.service periodically
-[Timer]
-OnCalendar=${var.cfssl_node_renew_timer}
-AccuracySec=1s
-RandomizedDelaySec=60min
-[Install]
-WantedBy=timers.target
-EOS
-}
-
 data "ignition_systemd_unit" "master-kubelet" {
   name    = "kubelet.service"
   content = "${data.template_file.master-kubelet.rendered}"
@@ -219,9 +192,8 @@ data "ignition_config" "master" {
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
         data.ignition_systemd_unit.master-kubelet.id,
-        data.ignition_systemd_unit.master-kubelet-restart.id,
-        data.ignition_systemd_unit.master-kubelet-restart-timer.id,
     ),
+    module.kubelet-restarter.systemd_units,
     var.master_additional_systemd_units,
   )}"]
 }

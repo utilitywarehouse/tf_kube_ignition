@@ -59,32 +59,13 @@ data "ignition_file" "etcdctl-wrapper" {
   }
 }
 
-data "template_file" "etcd-disk-formatter" {
-  template = "${file("${path.module}/resources/disk-formatter.service")}"
+module "etcd-disk-mounter" {
+  source = "./systemd_disk_mounter"
 
-  vars {
-    device = "xvdf"
-    user   = "etcd"
-  }
-}
-
-data "ignition_systemd_unit" "etcd-disk-formatter" {
-  name    = "disk-formatter-xvdf.service"
-  content = "${data.template_file.etcd-disk-formatter.rendered}"
-}
-
-data "template_file" "etcd-disk-mounter" {
-  template = "${file("${path.module}/resources/disk-mounter.service")}"
-
-  vars {
-    device     = "xvdf"
-    mountpoint = "/var/lib/etcd" // influences the unit name below
-  }
-}
-
-data "ignition_systemd_unit" "etcd-disk-mounter" {
-  name    = "var-lib-etcd.mount"
-  content = "${data.template_file.etcd-disk-mounter.rendered}"
+  device     = "xvdf"
+  user       = "etcd"
+  group      = "etcd"
+  mountpoint = "/var/lib/etcd"
 }
 
 resource "null_resource" "etcd_member" {
@@ -118,31 +99,11 @@ data "ignition_systemd_unit" "etcd-member-dropin" {
   }
 }
 
-data "ignition_systemd_unit" "etcd-member-restart" {
-  name = "etcd-member-restart.service"
+module "etcd-member-restarter" {
+  source = "./systemd_service_restarter"
 
-  content = <<EOS
-[Unit]
-Description=Restart etcd-member.service
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/systemctl try-restart etcd-member.service
-EOS
-}
-
-data "ignition_systemd_unit" "etcd-member-restart-timer" {
-  name = "etcd-member-restart.timer"
-
-  content = <<EOS
-[Unit]
-Description=Run etcd-member-restart.service periodically
-[Timer]
-OnCalendar=${var.cfssl_node_renew_timer}
-AccuracySec=1s
-RandomizedDelaySec=60min
-[Install]
-WantedBy=timers.target
-EOS
+  service_name = "etcd-member"
+  on_calendar  = "${var.cfssl_node_renew_timer}"
 }
 
 data "template_file" "etcd-node-exporter" {
@@ -179,13 +140,11 @@ data "ignition_config" "etcd" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
-        data.ignition_systemd_unit.etcd-disk-formatter.id,
-        data.ignition_systemd_unit.etcd-disk-mounter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
-        data.ignition_systemd_unit.etcd-member-restart.id,
-        data.ignition_systemd_unit.etcd-member-restart-timer.id,
         data.ignition_systemd_unit.etcd-node-exporter.id,
     ),
+    module.etcd-disk-mounter.systemd_units,
+    module.etcd-member-restarter.systemd_units,
     var.etcd_additional_systemd_units,
   )}"]
 }

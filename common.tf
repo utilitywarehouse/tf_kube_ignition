@@ -35,3 +35,10 @@ data "ignition_file" "cfssljson" {
     verification = "sha512-b80f19e61e16244422ad3d877e5a7df5c46b34181d264c9c529db8a8fc2999c6a6f7c1fb2dec63e08d311d6657c8fe05af3186b7ff369a866a47d140d393b49b"
   }
 }
+
+module "kubelet-restarter" {
+  source = "./systemd_service_restarter"
+
+  service_name = "kubelet"
+  on_calendar  = "${var.cfssl_node_renew_timer}"
+}
