@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_args="ca-csr.json"
+_args="/etc/cfssl/ca-csr.json"
 
 if [ ! -f "${_args}" ]; then
     echo 'ca-csr.json not found'
@@ -13,7 +13,7 @@ if [ -f ca.pem ] && [ -f ca-key.pem ]; then
             -renewca \
             -ca=ca.pem \
             -ca-key=ca-key.pem \
-            ca-csr.json | /opt/bin/cfssljson -bare ca -
+            ${_args} | /opt/bin/cfssljson -bare ca -
     exit 0
 fi
 

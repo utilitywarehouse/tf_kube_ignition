@@ -1,14 +1,15 @@
 [Unit]
 Description=cfssl service
-After=etc-cfssl.mount
-Requires=etc-cfssl.munt
+After=var-lib-cfssl.mount
+Requires=var-lib-cfssl.mount
 [Service]
-WorkingDirectory=/etc/cfssl
+WorkingDirectory=/var/lib/cfssl
+ExecStartPre=/bin/sh -c '[ ! -f sk-key.pem ] && /opt/bin/cfssl genkey /etc/cfssl/sk-csr.json | /opt/bin/cfssljson -bare sk && rm sk.csr'
 ExecStartPre=/opt/bin/cfssl-init-ca
 ExecStart=/opt/bin/cfssl serve \
     -address=0.0.0.0 \
     -port=8888 \
-    -config=config.json \
+    -config=/etc/cfssl/config.json \
     -ca=ca.pem \
     -ca-key=ca-key.pem
 Restart=on-failure

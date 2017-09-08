@@ -51,12 +51,12 @@ data "template_file" "cfssl-disk-mounter" {
 
   vars {
     device     = "xvdf"
-    mountpoint = "/etc/cfssl" // influences the unit name below
+    mountpoint = "/var/lib/cfssl" // influences the unit name below
   }
 }
 
 data "ignition_systemd_unit" "cfssl-disk-mounter" {
-  name    = "etc-cfssl.mount"
+  name    = "var-lib-cfssl.mount"
   content = "${data.template_file.cfssl-disk-mounter.rendered}"
 }
 
@@ -119,24 +119,6 @@ EOS
   }
 }
 
-data "ignition_systemd_unit" "cfss-sk-gen" {
-  name = "cfss-sk-gen.service"
-
-  content = <<EOS
-[Unit]
-Description=generate kubernetes signing key
-After=etc-cfssl.mount
-Requires=etc-cfssl.munt
-[Service]
-Type=oneshot
-RemainAfterExit=yes
-WorkingDirectory=/etc/cfssl
-ExecStart=/bin/sh -c '[ ! -f sk-key.pem ] && /opt/bin/cfssl genkey sk-csr.json | /opt/bin/cfssljson -bare sk && rm sk.csr'
-[Install]
-WantedBy=multi-user.target
-EOS
-}
-
 data "ignition_file" "cfssl-nginx-conf" {
   mode       = 0644
   filesystem = "root"
@@ -188,7 +170,6 @@ data "ignition_config" "cfssl" {
     "${data.ignition_systemd_unit.cfssl-disk-formatter.id}",
     "${data.ignition_systemd_unit.cfssl-disk-mounter.id}",
     "${data.ignition_systemd_unit.cfssl.id}",
-    "${data.ignition_systemd_unit.cfss-sk-gen.id}",
     "${data.ignition_systemd_unit.cfssl-nginx.id}",
   ]
 }
