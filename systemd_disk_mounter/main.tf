@@ -1,7 +1,17 @@
 variable "device" {}
 variable "mountpoint" {}
-variable "user" {}
-variable "group" {}
+
+variable "user" {
+  default = "root"
+}
+
+variable "group" {
+  default = "root"
+}
+
+variable "filesystem" {
+  default = "ext4"
+}
 
 data "ignition_systemd_unit" "disk-formatter" {
   name = "disk-formatter-${var.device}.service"
@@ -14,7 +24,7 @@ Requires=dev-${var.device}.device
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/sh -c "fsck -a /dev/${var.device} || (mkfs.ext4 /dev/${var.device} && mount /dev/${var.device} /mnt && chown -R ${var.user}:${var.group} /mnt && umount /mnt)"
+ExecStart=/bin/sh -c "fsck -a /dev/${var.device} || (mkfs.${var.filesystem} /dev/${var.device} && mount /dev/${var.device} /mnt && chown -R ${var.user}:${var.group} /mnt && umount /mnt)"
 EOS
 }
 
@@ -24,12 +34,12 @@ data "ignition_systemd_unit" "disk-mounter" {
   content = <<EOS
 [Unit]
 Description=Mount device ${var.device} volume to ${var.mountpoint}
-Requires=disk-formatter-${var.device}.service
-After=disk-formatter-${var.device}.service
+Requires=${data.ignition_systemd_unit.disk-formatter.name}
+After=${data.ignition_systemd_unit.disk-formatter.name}
 [Mount]
 What=/dev/${var.device}
 Where=${var.mountpoint}
-Type=ext4
+Type=${var.filesystem}
 EOS
 }
 
