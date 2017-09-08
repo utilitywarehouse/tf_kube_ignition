@@ -11,6 +11,7 @@ The input variables are documented in their description and it's best to refer t
 - `master` - the rendered ignition config for master nodes
 - `worker` - the rendered ignition config for worker nodes
 - `etcd` - the rendered ignition config for etcd nodes
+- `cfssl` - the rendered ignition config for cfssl server
 
 ## Usage
 
