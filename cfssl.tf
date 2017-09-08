@@ -115,8 +115,10 @@ data "ignition_file" "cfssl-nginx-auth" {
   filesystem = "root"
   path       = "/etc/cfssl/sk-nginx.htpasswd"
 
+  // it's okay to use PLAIN below since the only thing that this password
+  // safeguards is the signing key which is present on the server anyway
   content {
-    content = "apiserver:${bcrypt(random_id.cfssl-auth-key-apiserver.hex, 11)}"
+    content = "apiserver:{PLAIN}${random_id.cfssl-auth-key-apiserver.hex}"
   }
 }
 
