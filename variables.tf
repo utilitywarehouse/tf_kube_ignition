@@ -42,10 +42,6 @@ variable "hyperkube_image_tag" {
   default     = "v1.7.6_coreos.0"
 }
 
-variable "ssl_s3_bucket" {
-  description = "The S3 bucket where SSL tars are kept for nodes."
-}
-
 variable "cluster_dns" {
   description = "Comma-separated list of DNS server IP address. Used by kubelet."
 }
