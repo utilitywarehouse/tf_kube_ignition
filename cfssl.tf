@@ -137,6 +137,13 @@ data "ignition_systemd_unit" "cfssl-nginx" {
   content = "${data.template_file.cfssl-nginx.rendered}"
 }
 
+module "cfssl-restarter" {
+  source = "./systemd_service_restarter"
+
+  service_name = "cfssl"
+  on_calendar  = "*-*-* 00:00:00"
+}
+
 data "ignition_config" "cfssl" {
   files = [
     "${data.ignition_file.cfssl.id}",
@@ -154,6 +161,7 @@ data "ignition_config" "cfssl" {
         "${data.ignition_systemd_unit.cfssl.id}",
         "${data.ignition_systemd_unit.cfssl-nginx.id}",
     ),
+    module.cfssl-restarter.systemd_units,
     module.cfssl-disk-mounter.systemd_units,
   )}"]
 }
