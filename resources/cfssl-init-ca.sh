@@ -8,7 +8,7 @@ if [ ! -f "${_args}" ]; then
 fi
 
 if [ -f ca.pem ] && [ -f ca-key.pem ]; then
-    [ "$(/opt/bin/cfssl certinfo -cert=ca.pem | jq -r '.not_after')" \< "$(date +%Y-%m-%dT%H:%M:%IZ)" ] \
+    (( "$(date +%s)" >= "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/ca.pem | jq -r '.not_after')" +%s)" - 7 * 24 * 3600 )) \
         &&  /opt/bin/cfssl gencert\
             -renewca \
             -ca=ca.pem \
