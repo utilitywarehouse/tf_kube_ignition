@@ -7,16 +7,10 @@ if [ ! -f "${_args}" ]; then
     exit 1
 fi
 
-if [ -f ca.pem ] && [ -f ca-key.pem ]; then
-    (( "$(date +%s)" >= "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/ca.pem | jq -r '.not_after')" +%s)" - 7 * 24 * 3600 )) \
-        &&  /opt/bin/cfssl gencert\
-            -renewca \
-            -ca=ca.pem \
-            -ca-key=ca-key.pem \
-            ${_args} | /opt/bin/cfssljson -bare ca -
-    exit 0
-fi
-
 [ -f ca-key.pem ] && _args="-ca-key=ca-key.pem ${_args}"
+
+[ -f ca-key.pem ] && [ -f ca.pem ] \
+    && (( "$(date +%s)" < "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/ca.pem | jq -r '.not_after')" +%s)" - 7 * 24 * 3600 )) \
+    && exit 0
 
 /opt/bin/cfssl gencert -initca ${_args} | /opt/bin/cfssljson -bare ca -
