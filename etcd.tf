@@ -121,6 +121,22 @@ data "ignition_systemd_unit" "etcd-node-exporter" {
   content = "${data.template_file.etcd-node-exporter.rendered}"
 }
 
+data "template_file" "etcd-metrics-proxy" {
+  count    = "${length(var.etcd_addresses)}"
+  template = "${file("${path.module}/resources/etcd-metrics-proxy.service")}"
+
+  vars {
+    etcd_ip = "${var.etcd_addresses[count.index]}"
+  }
+}
+
+data "ignition_systemd_unit" "etcd-metrics-proxy" {
+  count = "${length(var.etcd_addresses)}"
+  name  = "etcd-metrics-proxy.service"
+
+  content = "${element(data.template_file.etcd-metrics-proxy.*.rendered, count.index)}"
+}
+
 data "ignition_config" "etcd" {
   count = "${length(var.etcd_addresses)}"
 
@@ -142,6 +158,7 @@ data "ignition_config" "etcd" {
         data.ignition_systemd_unit.locksmithd.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         data.ignition_systemd_unit.etcd-node-exporter.id,
+        element(data.ignition_systemd_unit.etcd-metrics-proxy.*.id, count.index),
     ),
     module.etcd-disk-mounter.systemd_units,
     module.etcd-member-restarter.systemd_units,

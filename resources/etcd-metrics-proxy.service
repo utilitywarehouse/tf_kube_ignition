@@ -1,0 +1,23 @@
+[Unit]
+Description=etcd-metrics-proxy
+Requires=docker.socket
+After=docker.socket
+[Service]
+ExecStartPre=-/bin/sh -c 'docker kill "$(docker ps -q --filter=name=%p_)"'
+ExecStartPre=-/bin/sh -c 'docker rm "$(docker ps -q --filter=name=%p_)"'
+ExecStart=/bin/sh -c "\
+    /usr/bin/docker run --rm \
+      --name %p_$(uuidgen) \
+      -p 2381:2381 \
+      -v /etc/etcd/ssl:/etc/etcd/ssl \
+      quay.io/roboll/etcd-metrics-proxy:v0.6.0 \
+      -etcd-ca /etc/etcd/ssl/ca.pem \
+      -etcd-cert /etc/etcd/ssl/k8s-etcd.pem \
+      -etcd-key /etc/etcd/ssl/k8s-etcd-key.pem \
+      -upstream-host ${etcd_ip} \
+      -upstream-server-name ${etcd_ip}"
+ExecStop=-/bin/sh -c 'docker stop -t 3 "$(docker ps -q --filter=name=%p_)"'
+Restart=on-failure
+RestartSec=60
+[Install]
+WantedBy=multi-user.target
