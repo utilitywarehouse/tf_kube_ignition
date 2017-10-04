@@ -121,6 +121,34 @@ data "ignition_systemd_unit" "etcd-node-exporter" {
   content = "${data.template_file.etcd-node-exporter.rendered}"
 }
 
+data "template_file" "etcd-metrics-proxy" {
+  count    = "${length(var.etcd_addresses)}"
+  template = "${file("${path.module}/resources/etcd-metrics-proxy.service")}"
+
+  vars {
+    etcd_ip = "${var.etcd_addresses[count.index]}"
+  }
+}
+
+#
+# This is a simple go app that exposes the metrics endpoint of etcd on a
+# non-authenticated port, to avoid having to pass certificates & keys to
+# prometheus. There's a change on etcd that achieves the same without
+# the need for an additional service but it's scheduled for version 3.3.
+# Until then, we will use this helper service.
+#
+# NOTE: This service essentially has full access on the data stored in etcd.
+# The docker image is built using automated builds in quay.io out from an open
+# GitHub repository. If you have reservations, you can always fork the
+# repository and build your own images (like we've done).
+#
+data "ignition_systemd_unit" "etcd-metrics-proxy" {
+  count = "${length(var.etcd_addresses)}"
+  name  = "etcd-metrics-proxy.service"
+
+  content = "${element(data.template_file.etcd-metrics-proxy.*.rendered, count.index)}"
+}
+
 data "ignition_config" "etcd" {
   count = "${length(var.etcd_addresses)}"
 
@@ -142,6 +170,7 @@ data "ignition_config" "etcd" {
         data.ignition_systemd_unit.locksmithd.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         data.ignition_systemd_unit.etcd-node-exporter.id,
+        element(data.ignition_systemd_unit.etcd-metrics-proxy.*.id, count.index),
     ),
     module.etcd-disk-mounter.systemd_units,
     module.etcd-member-restarter.systemd_units,
