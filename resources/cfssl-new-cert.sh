@@ -11,8 +11,8 @@ _hostname="$(hostname)"
 /opt/bin/cfssl gencert \
   -config=/etc/cfssl/config.json \
   -profile=${profile} \
-  -hostname="$${_ip},$${_hostname},${hosts}" - << EOF | /opt/bin/cfssljson -bare "${role}"
-{"CN":"${role}","key":{"algo":"ecdsa","size":384}}
+  -hostname="$${_ip},$${_hostname}${extra_names != "" ? ",${extra_names}" : "" }" - << EOF | /opt/bin/cfssljson -bare node
+{"CN":"${cn}",${org != "" ? "\"names\":[{\"O\":\"${org}\"}]," : ""}"key":{"algo":"ecdsa","size":384}}
 EOF
 
 /opt/bin/cfssl info -config=/etc/cfssl/config.json | /opt/bin/cfssljson -bare ca

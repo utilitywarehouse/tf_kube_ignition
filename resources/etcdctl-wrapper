@@ -5,7 +5,7 @@ docker run --rm \
     --entrypoint /usr/local/bin/etcdctl \
     ${etcd_image_url}:${etcd_image_tag} \
     --ca-file /etc/etcd/ssl/ca.pem \
-    --cert-file /etc/etcd/ssl/k8s-etcd.pem \
-    --key-file /etc/etcd/ssl/k8s-etcd-key.pem \
+    --cert-file /etc/etcd/ssl/node.pem \
+    --key-file /etc/etcd/ssl/node-key.pem \
     --endpoint https://${private_ipv4}:2379 \
     "$@"
