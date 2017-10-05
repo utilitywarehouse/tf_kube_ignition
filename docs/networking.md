@@ -14,7 +14,7 @@ This document aims to capture the networking requirements of the cluster.
 
 
 1. `cfssl` API
-1. HTTP server which servers the kubernetes signing key
+1. HTTP server which serves the kubernetes signing key
 1. `etcd` client port
 1. unauthenticated `etcd` metrics
 1. prometheus `node_exporter` metrics
