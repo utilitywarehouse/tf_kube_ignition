@@ -4,6 +4,9 @@ This document aims to capture the networking requirements of the cluster.
 
 ### ingress
 
+- `*` means all traffic is allowed
+- `-` means no traffic is allowed
+
 | | | | | | |
 | - | - | - | - | - | - |
 |         | cfssl | etcd | masters | workers | external |
@@ -20,6 +23,6 @@ This document aims to capture the networking requirements of the cluster.
 1. prometheus `node_exporter` metrics
 1. kubernetes `apiserver`
 
-For accessing kubernetes ingresses, you will have to open the appropriate ports, which depend on your setup.
+To access kubernetes ingresses, you will have to open the appropriate ports on the workers, which will depend on your setup.
 
 It's also recommended to open port 22 on all nodes for SSH access.
