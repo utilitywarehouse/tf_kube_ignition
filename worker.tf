@@ -116,6 +116,7 @@ data "ignition_config" "worker" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.worker-kubelet.id,
     ),
     module.kubelet-restarter.systemd_units,

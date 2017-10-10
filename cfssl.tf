@@ -158,8 +158,12 @@ data "ignition_config" "cfssl" {
 
   systemd = ["${concat(
     list(
-        "${data.ignition_systemd_unit.cfssl.id}",
-        "${data.ignition_systemd_unit.cfssl-nginx.id}",
+        data.ignition_systemd_unit.update-engine.id,
+        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.docker-opts-dropin.id,
+        data.ignition_systemd_unit.node-exporter.id,
+        data.ignition_systemd_unit.cfssl.id,
+        data.ignition_systemd_unit.cfssl-nginx.id,
     ),
     module.cfssl-restarter.systemd_units,
     module.cfssl-disk-mounter.systemd_units,

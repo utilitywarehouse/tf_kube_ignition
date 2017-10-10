@@ -192,6 +192,7 @@ data "ignition_config" "master" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.master-kubelet.id,
     ),
     module.kubelet-restarter.systemd_units,
