@@ -2,15 +2,13 @@ data "template_file" "worker-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    user    = "root"
-    group   = "root"
-    role    = "k8s-worker"
-    profile = "client"
-    path    = "/etc/kubernetes/ssl"
-
-    hosts = "${join(",", list(
-      "*.worker.${var.dns_domain}",
-    ))}"
+    user        = "root"
+    group       = "root"
+    profile     = "client"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org         = "system:nodes"
+    extra_names = ""
   }
 }
 

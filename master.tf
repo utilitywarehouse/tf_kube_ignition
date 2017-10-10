@@ -4,11 +4,12 @@ data "template_file" "master-cfssl-new-cert" {
   vars {
     user    = "root"
     group   = "root"
-    role    = "k8s-apiserver"
     profile = "client-server"
     path    = "/etc/kubernetes/ssl"
+    cn      = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org     = "system:nodes"
 
-    hosts = "${join(",", list(
+    extra_names = "${join(",", list(
       "10.3.0.1",
       "kubernetes",
       "kubernetes.default",

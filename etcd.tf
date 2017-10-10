@@ -1,27 +1,29 @@
 data "template_file" "etcd-cfssl-new-cert" {
+  count    = "${length(var.etcd_addresses)}"
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
     user    = "etcd"
     group   = "etcd"
-    role    = "k8s-etcd"
     profile = "client-server"
     path    = "/etc/etcd/ssl"
+    cn      = "${count.index}.etcd.${var.dns_domain}"
+    org     = ""
 
-    hosts = "${join(",", list(
+    extra_names = "${join(",", list(
       "etcd.${var.dns_domain}",
-      "*.etcd.${var.dns_domain}",
     ))}"
   }
 }
 
 data "ignition_file" "etcd-cfssl-new-cert" {
+  count      = "${length(var.etcd_addresses)}"
   mode       = 0755
   filesystem = "root"
   path       = "/opt/bin/cfssl-new-cert"
 
   content {
-    content = "${data.template_file.etcd-cfssl-new-cert.rendered}"
+    content = "${element(data.template_file.etcd-cfssl-new-cert.*.rendered, count.index)}"
   }
 }
 
@@ -157,7 +159,7 @@ data "ignition_config" "etcd" {
         data.ignition_file.cfssl.id,
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
-        data.ignition_file.etcd-cfssl-new-cert.id,
+        element(data.ignition_file.etcd-cfssl-new-cert.*.id, count.index),
         data.ignition_file.etcd-prom-machine-role.id,
         element(data.ignition_file.etcdctl-wrapper.*.id, count.index),
     ),
