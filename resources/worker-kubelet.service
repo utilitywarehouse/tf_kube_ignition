@@ -32,7 +32,6 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --require-kubeconfig=true \
   --node-labels=role=${role} \
   --container-runtime=docker \
-  --network-plugin-dir=/etc/cni/net.d \
   --network-plugin=cni \
   --cni-bin-dir=/opt/cni/bin \
   --cni-conf-dir=/etc/cni/net.d \
