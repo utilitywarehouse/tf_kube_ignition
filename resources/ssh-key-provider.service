@@ -1,0 +1,16 @@
+[Unit]
+Description=ssh-key-provider
+[Service]
+ExecStart=/bin/bash -c "\
+  set -e \
+  while true; do \
+    authmap=$(curl -L -f -s {{uri}}) \
+    for group in {{groups}}; do \
+      echo ${authmap} | jq -r \".groups[] | select (.name == \\\"${group}\\\") | .keys[]\" > /home/core/.ssh/authorized_keys.d/skp-${group} \
+    done; \
+    update-ssh-keys \
+    sleep 60; \
+  done; \
+"
+[Install]
+WantedBy=multi-user.target
