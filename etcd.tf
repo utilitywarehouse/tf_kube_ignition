@@ -108,21 +108,6 @@ module "etcd-member-restarter" {
   on_calendar  = "${var.cfssl_node_renew_timer}"
 }
 
-data "template_file" "etcd-node-exporter" {
-  template = "${file("${path.module}/resources/node-exporter.service")}"
-
-  vars {
-    node_exporter_image_url = "${var.node_exporter_image_url}"
-    node_exporter_image_tag = "${var.node_exporter_image_tag}"
-  }
-}
-
-data "ignition_systemd_unit" "etcd-node-exporter" {
-  name = "node-exporter.service"
-
-  content = "${data.template_file.etcd-node-exporter.rendered}"
-}
-
 data "template_file" "etcd-metrics-proxy" {
   count    = "${length(var.etcd_addresses)}"
   template = "${file("${path.module}/resources/etcd-metrics-proxy.service")}"
@@ -170,8 +155,9 @@ data "ignition_config" "etcd" {
     list(
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.docker-opts-dropin.id,
+        data.ignition_systemd_unit.node-exporter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
-        data.ignition_systemd_unit.etcd-node-exporter.id,
         element(data.ignition_systemd_unit.etcd-metrics-proxy.*.id, count.index),
     ),
     module.etcd-disk-mounter.systemd_units,

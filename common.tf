@@ -42,3 +42,27 @@ module "kubelet-restarter" {
   service_name = "kubelet"
   on_calendar  = "${var.cfssl_node_renew_timer}"
 }
+
+data "ignition_systemd_unit" "docker-opts-dropin" {
+  name = "docker.service"
+
+  dropin {
+    name    = "10-custom-options.conf"
+    content = "${file("${path.module}/resources/docker-dropin.conf")}"
+  }
+}
+
+data "template_file" "node-exporter" {
+  template = "${file("${path.module}/resources/node-exporter.service")}"
+
+  vars {
+    node_exporter_image_url = "${var.node_exporter_image_url}"
+    node_exporter_image_tag = "${var.node_exporter_image_tag}"
+  }
+}
+
+data "ignition_systemd_unit" "node-exporter" {
+  name = "node-exporter.service"
+
+  content = "${data.template_file.node-exporter.rendered}"
+}
