@@ -145,16 +145,19 @@ module "cfssl-restarter" {
 }
 
 data "ignition_config" "cfssl" {
-  files = [
-    "${data.ignition_file.cfssl.id}",
-    "${data.ignition_file.cfssljson.id}",
-    "${data.ignition_file.cfssl-server-config.id}",
-    "${data.ignition_file.cfssl-ca-csr.id}",
-    "${data.ignition_file.cfssl-init-ca.id}",
-    "${data.ignition_file.cfssl-sk-csr.id}",
-    "${data.ignition_file.cfssl-nginx-conf.id}",
-    "${data.ignition_file.cfssl-nginx-auth.id}",
-  ]
+  files = ["${concat(
+    list(
+        data.ignition_file.cfssl.id,
+        data.ignition_file.cfssljson.id,
+        data.ignition_file.cfssl-server-config.id,
+        data.ignition_file.cfssl-ca-csr.id,
+        data.ignition_file.cfssl-init-ca.id,
+        data.ignition_file.cfssl-sk-csr.id,
+        data.ignition_file.cfssl-nginx-conf.id,
+        data.ignition_file.cfssl-nginx-auth.id,
+    ),
+    var.cfssl_additional_files,
+  )}"]
 
   systemd = ["${concat(
     list(
@@ -167,5 +170,6 @@ data "ignition_config" "cfssl" {
     ),
     module.cfssl-restarter.systemd_units,
     module.cfssl-disk-mounter.systemd_units,
+    var.cfssl_additional_systemd_units,
   )}"]
 }

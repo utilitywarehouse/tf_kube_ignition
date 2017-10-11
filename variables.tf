@@ -83,6 +83,18 @@ variable "pod_network" {
   default     = "10.2.0.0/16"
 }
 
+variable "cfssl_additional_systemd_units" {
+  description = "Additional systemd units to include in the igntion config data for the cfssl node."
+  default     = []
+  type        = "list"
+}
+
+variable "cfssl_additional_files" {
+  description = "Additional files to include in the igntion config data for the cfssl node."
+  default     = []
+  type        = "list"
+}
+
 variable "etcd_additional_systemd_units" {
   description = "Additional systemd units to include in the igntion config data for etcd nodes."
   default     = []
