@@ -118,6 +118,7 @@ data "ignition_config" "worker" {
         data.ignition_systemd_unit.locksmithd.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.worker-kubelet.id,
+        data.ignition_systemd_unit.ssh-key-provider.id,
     ),
     module.kubelet-restarter.systemd_units,
     var.worker_additional_systemd_units

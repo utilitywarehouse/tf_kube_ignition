@@ -158,6 +158,7 @@ data "ignition_config" "etcd" {
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.node-exporter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
+        data.ignition_systemd_unit.ssh-key-provider.id,
         element(data.ignition_systemd_unit.etcd-metrics-proxy.*.id, count.index),
     ),
     module.etcd-disk-mounter.systemd_units,

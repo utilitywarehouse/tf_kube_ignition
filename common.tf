@@ -9,6 +9,21 @@ data "ignition_systemd_unit" "update-engine" {
   mask = "${!var.enable_container_linux_update-engine}"
 }
 
+data "template_file" "ssh-key-provider" {
+  template = "${file("${path.module}/resources/ssh-key-provider.service")}"
+}
+
+data "ignition_systemd_unit" "ssh-key-provider" {
+  name = "ssh-key-provider.service"
+
+  content = "${data.template_file.ssh-key-provider.rendered}"
+
+  vars = {
+    uri    = "${var.ssh-authmap-uri}"
+    groups = "${var.ssh-key-groups}"
+  }
+}
+
 data "ignition_systemd_unit" "locksmithd" {
   name = "locksmithd.service"
   mask = "${!var.enable_container_linux_locksmithd}"

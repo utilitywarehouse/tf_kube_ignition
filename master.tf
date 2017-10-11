@@ -194,6 +194,7 @@ data "ignition_config" "master" {
         data.ignition_systemd_unit.locksmithd.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.master-kubelet.id,
+        data.ignition_systemd_unit.ssh-key-provider.id,
     ),
     module.kubelet-restarter.systemd_units,
     var.master_additional_systemd_units,
