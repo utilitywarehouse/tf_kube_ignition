@@ -27,7 +27,8 @@ data "ignition_file" "master-cfssl-new-cert" {
   path       = "/opt/bin/cfssl-new-cert"
 
   content {
-    content = "${data.template_file.master-cfssl-new-cert.rendered}"
+    content = "${base64decode(base64gzip(data.template_file.master-cfssl-new-cert.rendered))}"
+    mime    = "application/gzip"
   }
 }
 
@@ -46,7 +47,8 @@ data "ignition_file" "master-cfssl-sk-get" {
   path       = "/opt/bin/cfssl-sk-get"
 
   content {
-    content = "${data.template_file.master-cfssl-sk-get.rendered}"
+    content = "${base64decode(base64gzip(data.template_file.master-cfssl-sk-get.rendered))}"
+    mime    = "application/gzip"
   }
 }
 
@@ -81,7 +83,8 @@ data "ignition_file" "master-kube-proxy" {
   path       = "/etc/kubernetes/manifests/kube-proxy.yaml"
 
   content {
-    content = "${data.template_file.master-kube-proxy.rendered}"
+    content = "${base64decode(base64gzip(data.template_file.master-kube-proxy.rendered))}"
+    mime    = "application/gzip"
   }
 }
 
@@ -91,7 +94,8 @@ data "ignition_file" "master-kubeconfig" {
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
-    content = "${file("${path.module}/resources/master-kubeconfig")}"
+    content = "${base64decode(base64gzip(file("${path.module}/resources/master-kubeconfig")))}"
+    mime    = "application/gzip"
   }
 }
 
@@ -116,7 +120,8 @@ data "ignition_file" "kube-apiserver" {
   path       = "/etc/kubernetes/manifests/kube-apiserver.yaml"
 
   content {
-    content = "${data.template_file.kube-apiserver.rendered}"
+    content = "${base64decode(base64gzip(data.template_file.kube-apiserver.rendered))}"
+    mime    = "application/gzip"
   }
 }
 
@@ -137,7 +142,8 @@ data "ignition_file" "kube-controller-manager" {
   path       = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
 
   content {
-    content = "${data.template_file.kube-controller-manager.rendered}"
+    content = "${base64decode(base64gzip(data.template_file.kube-controller-manager.rendered))}"
+    mime    = "application/gzip"
   }
 }
 
@@ -156,7 +162,8 @@ data "ignition_file" "kube-scheduler" {
   path       = "/etc/kubernetes/manifests/kube-scheduler.yaml"
 
   content {
-    content = "${data.template_file.kube-scheduler.rendered}"
+    content = "${base64decode(base64gzip(data.template_file.kube-scheduler.rendered))}"
+    mime    = "application/gzip"
   }
 }
 
