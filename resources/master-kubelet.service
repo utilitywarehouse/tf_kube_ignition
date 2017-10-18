@@ -26,7 +26,6 @@ ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep '/hyperku
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep '/hyperkube apiserver' | awk '{ print $1; }')"
 ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
-  --require-kubeconfig=true \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --node-labels=role=master \
   --register-node=true \

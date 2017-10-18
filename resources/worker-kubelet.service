@@ -28,7 +28,6 @@ ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
-  --require-kubeconfig=true \
   --node-labels=role=${role} \
   --container-runtime=docker \
   --network-plugin=cni \
