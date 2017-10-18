@@ -66,25 +66,6 @@ data "ignition_systemd_unit" "master-kubelet" {
   content = "${data.template_file.master-kubelet.rendered}"
 }
 
-data "template_file" "master-kube-proxy" {
-  template = "${file("${path.module}/resources/master-kube-proxy.yaml")}"
-
-  vars {
-    hyperkube_image_url = "${var.hyperkube_image_url}"
-    hyperkube_image_tag = "${var.hyperkube_image_tag}"
-  }
-}
-
-data "ignition_file" "master-kube-proxy" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/kubernetes/manifests/kube-proxy.yaml"
-
-  content {
-    content = "${data.template_file.master-kube-proxy.rendered}"
-  }
-}
-
 data "ignition_file" "master-kubeconfig" {
   mode       = 0644
   filesystem = "root"
@@ -180,7 +161,6 @@ data "ignition_config" "master" {
         data.ignition_file.master-cfssl-sk-get.id,
         data.ignition_file.master-prom-machine-role.id,
         data.ignition_file.master-kubeconfig.id,
-        data.ignition_file.master-kube-proxy.id,
         data.ignition_file.kube-apiserver.id,
         data.ignition_file.kube-scheduler.id,
         data.ignition_file.kube-controller-manager.id,

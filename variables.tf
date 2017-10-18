@@ -47,7 +47,7 @@ variable "cluster_dns" {
 }
 
 variable "master_address" {
-  description = "The address of the kubernetes API server, typically of their load balancer. Used by kube-proxy."
+  description = "The address of the kubernetes API server, typically of their load balancer. Used by the worker kubelet."
 }
 
 variable "cloud_provider" {
