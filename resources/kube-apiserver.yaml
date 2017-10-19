@@ -25,7 +25,7 @@ spec:
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --service-account-lookup=true
-    - --runtime-config=${runtime_config}
+    ${runtime_config == "" ? "" : "- --runtime-config=${runtime_config}"}
     ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
     - --oidc-issuer-url=${oidc_issuer_url}
     - --oidc-username-claim=email

@@ -89,15 +89,14 @@ data "template_file" "kube-apiserver" {
     oidc_issuer_url       = "${var.oidc_issuer_url}"
     oidc_client_id        = "${var.oidc_client_id}"
 
-    runtime_config = "${join(",", list(
-      "extensions/v1beta1=true",
-      "extensions/v1beta1/deployments=true",
-      "extensions/v1beta1/daemonsets=true",
-      "extensions/v1beta1/networkpolicies=true",
-      "extensions/v1beta1/thirdpartyresources=true",
-      "rbac.authorization.k8s.io/v1=true",
-      "batch/v2alpha1=true",
-    ))}"
+    /*
+     * for the list of APIs & resources enabled by default, please see near the
+     * bottom of the file:
+     *   https://github.com/kubernetes/kubernetes/blob/<ref>/pkg/master/master.go
+     *
+     */
+
+    runtime_config = "${join(",", list())}"
   }
 }
 
