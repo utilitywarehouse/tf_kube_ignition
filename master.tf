@@ -88,6 +88,15 @@ data "template_file" "kube-apiserver" {
     cloud_provider        = "${var.cloud_provider}"
     oidc_issuer_url       = "${var.oidc_issuer_url}"
     oidc_client_id        = "${var.oidc_client_id}"
+
+    /*
+     * for the list of APIs & resources enabled by default, please see near the
+     * bottom of the file:
+     *   https://github.com/kubernetes/kubernetes/blob/<ref>/pkg/master/master.go
+     *
+     */
+
+    runtime_config = "${join(",", list())}"
   }
 }
 
