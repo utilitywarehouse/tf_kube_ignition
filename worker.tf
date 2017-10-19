@@ -39,26 +39,6 @@ data "ignition_systemd_unit" "worker-kubelet" {
   content = "${data.template_file.worker-kubelet.rendered}"
 }
 
-data "template_file" "worker-kube-proxy" {
-  template = "${file("${path.module}/resources/worker-kube-proxy.yaml")}"
-
-  vars {
-    hyperkube_image_url = "${var.hyperkube_image_url}"
-    hyperkube_image_tag = "${var.hyperkube_image_tag}"
-    master_address      = "${var.master_address}"
-  }
-}
-
-data "ignition_file" "worker-kube-proxy" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/kubernetes/manifests/kube-proxy.yaml"
-
-  content {
-    content = "${data.template_file.worker-kube-proxy.rendered}"
-  }
-}
-
 data "template_file" "worker-kubeconfig" {
   template = "${file("${path.module}/resources/worker-kubeconfig")}"
 
@@ -106,7 +86,6 @@ data "ignition_config" "worker" {
         data.ignition_file.worker-cfssl-new-cert.id,
         data.ignition_file.worker-prom-machine-role.id,
         data.ignition_file.worker-kubeconfig.id,
-        data.ignition_file.worker-kube-proxy.id,
         data.ignition_file.worker-sysctl-vm.id,
     ),
     var.worker_additional_files
