@@ -38,7 +38,8 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --pod-manifest-path=/etc/kubernetes/manifests \
   ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
   --cluster-dns=${cluster_dns} \
-  --cluster-domain=cluster.local
+  --cluster-domain=cluster.local \
+  --v=0
 ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
 RestartSec=10
