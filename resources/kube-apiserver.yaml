@@ -35,6 +35,8 @@ spec:
     - --authorization-mode=Node,RBAC
     - --apiserver-count=${master_instance_count}
     - --audit-log-path=/var/log/kube-api-server/audit
+    - --audit-log-maxsize=100
+    - --audit-log-maxbackup=20
     - --v=0
     livenessProbe:
       httpGet:
