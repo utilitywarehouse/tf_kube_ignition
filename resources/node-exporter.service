@@ -16,10 +16,10 @@ ExecStart=/bin/sh -c "\
       -v /etc/prom-text-collectors:/text-collectors \
       --net=host \
       ${node_exporter_image_url}:${node_exporter_image_tag} \
-        -collector.procfs /host/proc \
-        -collector.sysfs /host/sys \
-        -collector.filesystem.ignored-mount-points '^/(sys|proc|dev|host|etc)($|/)' \
-        -collector.textfile.directory=/text-collectors"
+        --collector.procfs /host/proc \
+        --collector.sysfs /host/sys \
+        --collector.filesystem.ignored-mount-points '^/(sys|proc|dev|host|etc)($|/)' \
+        --collector.textfile.directory=/text-collectors"
 ExecStop=-/bin/sh -c 'docker stop -t 3 "$(docker ps -q --filter=name=%p_)"'
 Restart=on-failure
 RestartSec=60
