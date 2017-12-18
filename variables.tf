@@ -19,7 +19,7 @@ variable "etcd_image_url" {
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.2.7"
+  default     = "v3.2.11"
 }
 
 variable "node_exporter_image_url" {
@@ -39,7 +39,7 @@ variable "hyperkube_image_url" {
 
 variable "hyperkube_image_tag" {
   description = "The version of the hyperkube image to use."
-  default     = "v1.8.1_coreos.0"
+  default     = "v1.9.0_coreos.0"
 }
 
 variable "cluster_dns" {
