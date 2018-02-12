@@ -1,7 +1,7 @@
 [Unit]
 Description=Serve the kube signing key with nginx
-Requires=docker.socket cfssl-sk-gen.service
-After=docker.socket cfssl-sk-gen.service
+Requires=docker.socket cfssl.service
+After=docker.socket cfssl.service
 [Service]
 ExecStartPre=-/bin/sh -c 'docker kill "$(docker ps -q --filter=name=%p_)"'
 ExecStartPre=-/bin/sh -c 'docker rm "$(docker ps -q --filter=name=%p_)"'
