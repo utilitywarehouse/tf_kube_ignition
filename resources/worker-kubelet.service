@@ -1,5 +1,6 @@
 [Unit]
 Description=kubelet-on-rkt service
+After=systemd-resolved.service
 [Service]
 Environment=KUBELET_IMAGE_URL=${kubelet_image_url}
 Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}
@@ -49,4 +50,3 @@ Restart=always
 RestartSec=10
 [Install]
 WantedBy=multi-user.target
-After=systemd-resolved.service
