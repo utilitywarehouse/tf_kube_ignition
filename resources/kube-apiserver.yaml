@@ -37,6 +37,7 @@ spec:
     - --audit-log-path=/var/log/kube-api-server/audit
     - --audit-log-maxsize=100
     - --audit-log-maxbackup=20
+    - --external-hostname=${master_address}
     - --v=0
     livenessProbe:
       httpGet:
