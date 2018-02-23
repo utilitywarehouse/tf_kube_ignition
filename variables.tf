@@ -3,9 +3,24 @@ variable "enable_container_linux_update-engine" {
   default     = true
 }
 
-variable "enable_container_linux_locksmithd" {
-  description = "Whether to enable automatic updates for Container Linux."
-  default     = false
+variable "enable_container_linux_locksmithd_cfssl" {
+  description = "Whether to enable automatic updates for Container Linux on cfssl nodes."
+  default     = true
+}
+
+variable "enable_container_linux_locksmithd_etcd" {
+  description = "Whether to enable automatic updates for Container Linux on etcd nodes."
+  default     = true
+}
+
+variable "enable_container_linux_locksmithd_master" {
+  description = "Whether to enable automatic updates for Container Linux on kube master nodes."
+  default     = true
+}
+
+variable "enable_container_linux_locksmithd_worker" {
+  description = "Whether to enable automatic updates for Container Linux on kube worker nodes."
+  default     = true
 }
 
 variable "dns_domain" {

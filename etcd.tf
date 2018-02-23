@@ -1,3 +1,8 @@
+data "ignition_systemd_unit" "locksmithd_etcd" {
+  name = "locksmithd.service"
+  mask = "${!var.enable_container_linux_locksmithd_etcd}"
+}
+
 data "template_file" "etcd-cfssl-new-cert" {
   count    = "${length(var.etcd_addresses)}"
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
@@ -154,7 +159,7 @@ data "ignition_config" "etcd" {
   systemd = ["${concat(
     list(
         data.ignition_systemd_unit.update-engine.id,
-        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.locksmithd_etcd.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.node-exporter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),

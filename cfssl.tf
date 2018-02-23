@@ -11,6 +11,11 @@ resource "random_id" "cfssl-auth-key-apiserver" {
   byte_length = 16
 }
 
+data "ignition_systemd_unit" "locksmithd_cfssl" {
+  name = "locksmithd.service"
+  mask = "${!var.enable_container_linux_locksmithd_cfssl}"
+}
+
 // used by clients
 data "template_file" "cfssl-client-config" {
   template = "${file("${path.module}/resources/cfssl-client-config.json")}"
@@ -162,7 +167,7 @@ data "ignition_config" "cfssl" {
   systemd = ["${concat(
     list(
         data.ignition_systemd_unit.update-engine.id,
-        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.locksmithd_cfssl.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.node-exporter.id,
         data.ignition_systemd_unit.cfssl.id,
