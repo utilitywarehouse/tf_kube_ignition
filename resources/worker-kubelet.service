@@ -44,6 +44,7 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --eviction-soft-grace-period=memory.available=1m,nodefs.available=1m \
   --eviction-max-pod-grace-period=30 \
   --eviction-hard=memory.available<1Gi,nodefs.available<2Gi \
+  --serialize-image-pulls=false \
   --v=0
 ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
