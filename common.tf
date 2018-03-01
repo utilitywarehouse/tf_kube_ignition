@@ -9,11 +9,6 @@ data "ignition_systemd_unit" "update-engine" {
   mask = "${!var.enable_container_linux_update-engine}"
 }
 
-data "ignition_systemd_unit" "locksmithd" {
-  name = "locksmithd.service"
-  mask = "${!var.enable_container_linux_locksmithd}"
-}
-
 data "ignition_file" "cfssl" {
   filesystem = "root"
   path       = "/opt/bin/cfssl"

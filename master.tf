@@ -1,3 +1,8 @@
+data "ignition_systemd_unit" "locksmithd_master" {
+  name = "locksmithd.service"
+  mask = "${!var.enable_container_linux_locksmithd_master}"
+}
+
 data "template_file" "master-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
@@ -181,7 +186,7 @@ data "ignition_config" "master" {
   systemd = ["${concat(
     list(
         data.ignition_systemd_unit.update-engine.id,
-        data.ignition_systemd_unit.locksmithd.id,
+        data.ignition_systemd_unit.locksmithd_master.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.master-kubelet.id,
     ),
