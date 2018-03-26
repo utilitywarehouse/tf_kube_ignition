@@ -168,3 +168,5 @@ variable "cfssl_node_renew_timer" {
 variable "cfssl_server_address" {
   description = "The IP address of the cfssl server."
 }
+
+variable "cfssl_data_volumeid" {}
