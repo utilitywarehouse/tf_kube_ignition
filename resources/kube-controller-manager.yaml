@@ -21,6 +21,7 @@ spec:
     - --configure-cloud-routes=false
     - --allocate-node-cidrs=true
     - --cluster-cidr=${pod_network}
+    - --node-monitor-grace-period=120s
     - --v=0
     livenessProbe:
       httpGet:

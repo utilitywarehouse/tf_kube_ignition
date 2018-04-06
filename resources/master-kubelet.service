@@ -21,6 +21,9 @@ ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
+# This is a partial workaround to this upstream Kubernetes issue:
+#  https://github.com/kubernetes/kubernetes/issues/41916#issuecomment-312428731
+ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 ExecStartPre=/opt/bin/cfssl-sk-get
 ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep '/hyperkube controller-manager' | awk '{ print $1; }')"
