@@ -66,13 +66,40 @@ data "ignition_file" "etcdctl-wrapper" {
   }
 }
 
-module "etcd-disk-mounter" {
-  source = "./systemd_disk_mounter"
+data "template_file" "disk-formatter" {
+  count    = "${length(var.etcd_data_volumeids)}"
+  template = "${file("${path.module}/resources/disk-formatter.service")}"
 
-  device     = "xvdf"
-  user       = "etcd"
-  group      = "etcd"
-  mountpoint = "/var/lib/etcd"
+  vars {
+    volumeid   = "${var.etcd_data_volumeids[count.index]}"
+    user       = "etcd"
+    group      = "etcd"
+    filesystem = "ext4"
+  }
+}
+
+data "ignition_systemd_unit" "disk-formatter" {
+  count   = "${length(var.etcd_data_volumeids)}"
+  name    = "disk-formatter.service"
+  content = "${element(data.template_file.disk-formatter.*.rendered, count.index)}"
+}
+
+data "template_file" "disk-mounter" {
+  count    = "${length(var.etcd_data_volumeids)}"
+  template = "${file("${path.module}/resources/disk-mounter.mount")}"
+
+  vars {
+    volumeid       = "${var.etcd_data_volumeids[count.index]}"
+    mountpoint     = "/var/lib/etcd"
+    filesystem     = "ext4"
+    disk-formatter = "disk-formatter.service"
+  }
+}
+
+data "ignition_systemd_unit" "var-lib-etcd-mounter" {
+  count   = "${length(var.etcd_data_volumeids)}"
+  name    = "var-lib-etcd.mount"
+  content = "${element(data.template_file.disk-mounter.*.rendered, count.index)}"
 }
 
 resource "null_resource" "etcd_member" {
@@ -135,8 +162,9 @@ data "ignition_config" "etcd" {
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.node-exporter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
+        element(data.ignition_systemd_unit.disk-formatter.*.id, count.index),
+        element(data.ignition_systemd_unit.disk-mounter.*.id, count.index),
     ),
-    module.etcd-disk-mounter.systemd_units,
     module.etcd-member-restarter.systemd_units,
     var.etcd_additional_systemd_units,
   )}"]
