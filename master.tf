@@ -76,13 +76,9 @@ data "ignition_file" "master-kubeconfig" {
   filesystem = "root"
   path       = "/var/lib/kubelet/kubeconfig"
 
-  source {
-    source = "https://raw.githubusercontent.com/utilitywarehouse/tf_kube_ignition/${var.branch}/resources/master-kubeconfig"
+  content {
+    content = "${file("${path.module}/resources/master-kubeconfig")}"
   }
-
-  #content {
-  #  content = "${file("${path.module}/resources/master-kubeconfig")}"
-  #}
 }
 
 data "template_file" "kube-apiserver" {
