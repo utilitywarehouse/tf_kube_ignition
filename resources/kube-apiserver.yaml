@@ -21,7 +21,8 @@ spec:
     - --allow-privileged=true
     - --service-cluster-ip-range=${service_network}
     - --secure-port=443
-    - --admission-control=NodeRestriction,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,ExpandPersistentVolumes
+    - --admission-control=NodeRestriction,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PersistentVolumeClaimResize
+    - --feature-gates=ExpandPersistentVolumes=true
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
