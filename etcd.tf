@@ -163,7 +163,7 @@ data "ignition_config" "etcd" {
         data.ignition_systemd_unit.node-exporter.id,
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         element(data.ignition_systemd_unit.disk-formatter.*.id, count.index),
-        element(data.ignition_systemd_unit.disk-mounter.*.id, count.index),
+        element(data.ignition_systemd_unit.var-lib-etcd-mounter.*.id, count.index),
     ),
     module.etcd-member-restarter.systemd_units,
     var.etcd_additional_systemd_units,
