@@ -1,7 +1,7 @@
 [Unit]
 Description=Format device with volume-id: ${volumeid}, if it has no filesystem
-After=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volumeid}
-Requires=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volumeid}
+After=dev-disk-by\x2did-nvme\x2dAmazon_Elastic_Block_Store_${volumeid}.device
+Requires=dev-disk-by\x2did-nvme\x2dAmazon_Elastic_Block_Store_${volumeid}.device
 [Service]
 Type=oneshot
 RemainAfterExit=yes
