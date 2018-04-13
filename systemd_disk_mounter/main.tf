@@ -1,4 +1,4 @@
-variable "device" {}
+variable "volumeid" {}
 variable "mountpoint" {}
 
 variable "user" {
@@ -14,17 +14,16 @@ variable "filesystem" {
 }
 
 data "ignition_systemd_unit" "disk-formatter" {
-  name = "disk-formatter-${var.device}.service"
+  name = "disk-formatter-${var.volumeid}.service"
 
   content = <<EOS
 [Unit]
-Description=Format device ${var.device}, if it has no filesystem
-After=dev-${var.device}.device
-Requires=dev-${var.device}.device
+Description=Format device with volume-id: ${var.volumeid}, if it has no filesystem
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/bin/sh -c "fsck -a /dev/${var.device} || (mkfs.${var.filesystem} /dev/${var.device} && mount /dev/${var.device} /mnt && chown -R ${var.user}:${var.group} /mnt && umount /mnt)"
+Environment=DEVICE=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${var.volumeid}
+ExecStart=/bin/sh -c "fsck -a $${DEVICE} || (mkfs.${var.filesystem} $${DEVICE} && mount $${DEVICE} /mnt && chown -R ${var.user}:${var.group} /mnt && umount /mnt)"
 EOS
 }
 
@@ -33,11 +32,11 @@ data "ignition_systemd_unit" "disk-mounter" {
 
   content = <<EOS
 [Unit]
-Description=Mount device ${var.device} volume to ${var.mountpoint}
+Description=Mount device ${var.volumeid} to ${var.mountpoint}
 Requires=${data.ignition_systemd_unit.disk-formatter.name}
 After=${data.ignition_systemd_unit.disk-formatter.name}
 [Mount]
-What=/dev/${var.device}
+What=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${var.volumeid}
 Where=${var.mountpoint}
 Type=${var.filesystem}
 EOS

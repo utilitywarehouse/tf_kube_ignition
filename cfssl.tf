@@ -38,7 +38,7 @@ data "ignition_file" "cfssl-client-config" {
 
 // used by the server
 module "cfssl-disk-mounter" {
-  source = "./systemd_disk_mounter_nvme"
+  source = "./systemd_disk_mounter"
 
   volumeid   = "${var.cfssl_data_volumeid}"
   user       = "root"

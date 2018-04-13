@@ -170,3 +170,7 @@ variable "cfssl_server_address" {
 }
 
 variable "cfssl_data_volumeid" {}
+
+variable "etcd_data_volumeids" {
+  type = "list"
+}
