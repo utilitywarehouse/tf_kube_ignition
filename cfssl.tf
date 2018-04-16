@@ -36,14 +36,36 @@ data "ignition_file" "cfssl-client-config" {
   }
 }
 
-// used by the server
-module "cfssl-disk-mounter" {
-  source = "./systemd_disk_mounter"
+data "template_file" "cfssl-disk-formatter" {
+  template = "${file("${path.module}/resources/disk-formatter.service")}"
 
-  volumeid   = "${var.cfssl_data_volumeid}"
-  user       = "root"
-  group      = "root"
-  mountpoint = "/var/lib/cfssl"
+  vars {
+    volumeid   = "${var.cfssl_data_volumeid}"
+    user       = "root"
+    group      = "root"
+    filesystem = "ext4"
+  }
+}
+
+data "ignition_systemd_unit" "cfssl-disk-formatter" {
+  name    = "cfssl-disk-formatter.service"
+  content = "${data.template_file.cfssl-disk-formatter.rendered}"
+}
+
+data "template_file" "cfssl-disk-mounter" {
+  template = "${file("${path.module}/resources/disk-mounter.mount")}"
+
+  vars {
+    volumeid       = "${var.cfssl_data_volumeid}"
+    mountpoint     = "/var/lib/cfssl"
+    filesystem     = "ext4"
+    disk-formatter = "cfssl-disk-formatter.service"
+  }
+}
+
+data "ignition_systemd_unit" "var-lib-cfssl-mounter" {
+  name    = "var-lib-cfssl.mount"
+  content = "${data.template_file.cfssl-disk-mounter.rendered}"
 }
 
 data "ignition_file" "cfssl-ca-csr" {
@@ -172,9 +194,10 @@ data "ignition_config" "cfssl" {
         data.ignition_systemd_unit.node-exporter.id,
         data.ignition_systemd_unit.cfssl.id,
         data.ignition_systemd_unit.cfssl-nginx.id,
+				data.ignition_systemd_unit.cfssl-disk-formatter.id,
+				data.ignition_systemd_unit.var-lib-cfssl-mounter.id,
     ),
     module.cfssl-restarter.systemd_units,
-    module.cfssl-disk-mounter.systemd_units,
     var.cfssl_additional_systemd_units,
   )}"]
 }
