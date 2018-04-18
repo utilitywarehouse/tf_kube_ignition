@@ -15,7 +15,6 @@ spec:
     - --master=http://127.0.0.1:8080
     - --leader-elect=true
     - --use-service-account-credentials
-    - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
     ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
     - --configure-cloud-routes=false
