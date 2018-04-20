@@ -146,13 +146,20 @@ data "template_file" "kube-scheduler" {
   }
 }
 
+resource "aws_s3_bucket_object" "userdata_kube-scheduler" {
+  bucket  = "${aws_s3_bucket.userdata.id}"
+  key     = "master/kube-scheduler.yaml"
+  acl     = "public-read"
+  content = "${data.template_file.kube-scheduler.rendered}"
+}
+
 data "ignition_file" "kube-scheduler" {
   mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-scheduler.yaml"
 
-  content {
-    content = "${data.template_file.kube-scheduler.rendered}"
+  source {
+    source = "https://s3-${aws_s3_bucket.userdata.region}.amazonaws.com/${aws_s3_bucket.userdata.id}/${aws_s3_bucket_object.userdata_kube-scheduler.id}"
   }
 }
 

@@ -174,3 +174,6 @@ variable "cfssl_data_volumeid" {}
 variable "etcd_data_volumeids" {
   type = "list"
 }
+
+variable "account" {}
+variable "role_name" {}
