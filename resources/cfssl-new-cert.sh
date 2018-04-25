@@ -5,7 +5,7 @@ set -o errexit
 mkdir -p ${path}
 cd ${path}
 
-_ip="$(ip addr show dev eth0 | grep 'inet ' | awk '{ print $2; }' | cut -d/ -f1)"
+_ip="$(${get_ip})"
 _hostname="$(hostname)"
 
 /opt/bin/cfssl gencert \

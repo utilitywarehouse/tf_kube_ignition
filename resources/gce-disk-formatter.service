@@ -1,0 +1,9 @@
+[Unit]
+Description=Format device with volume-id: ${volumeid}, if it has no filesystem
+After=dev-disk-by\x2did-google\x2d${volumeid}.device
+Requires=dev-disk-by\x2did-google\x2d${volumeid}.device
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+Environment=DEVICE=/dev/disk/by-id/google-${volumeid}
+ExecStart=/bin/sh -c "fsck -a $${DEVICE} || (mkfs.${filesystem} $${DEVICE} && mount $${DEVICE} /mnt && chown -R ${user}:${group} /mnt && umount /mnt)"
