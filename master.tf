@@ -156,6 +156,16 @@ data "ignition_file" "kube-scheduler" {
   }
 }
 
+data "ignition_file" "kube-scheduler-config" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/configs/kube-scheduler-config.yaml"
+
+  content {
+    content = "${file("${path.module}/resources/kube-scheduler-config.yaml")}"
+  }
+}
+
 data "ignition_file" "master-prom-machine-role" {
   mode       = 0644
   filesystem = "root"
@@ -178,6 +188,7 @@ data "ignition_config" "master" {
         data.ignition_file.master-kubeconfig.id,
         data.ignition_file.kube-apiserver.id,
         data.ignition_file.kube-scheduler.id,
+        data.ignition_file.kube-scheduler-config.id,
         data.ignition_file.kube-controller-manager.id,
     ),
     var.master_additional_files,
