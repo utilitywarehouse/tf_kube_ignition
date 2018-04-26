@@ -74,6 +74,16 @@ data "ignition_systemd_unit" "master-kubelet" {
 data "ignition_file" "master-kubeconfig" {
   mode       = 0644
   filesystem = "root"
+  path       = "/etc/kubernetes/config/master-kubeconfig"
+
+  content {
+    content = "${file("${path.module}/resources/master-kubeconfig")}"
+  }
+}
+
+data "ignition_file" "kubelet-kubeconfig" {
+  mode       = 0644
+  filesystem = "root"
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
@@ -159,7 +169,7 @@ data "ignition_file" "kube-scheduler" {
 data "ignition_file" "kube-scheduler-config" {
   mode       = 0644
   filesystem = "root"
-  path       = "/etc/kubernetes/configs/kube-scheduler-config.yaml"
+  path       = "/etc/kubernetes/config/kube-scheduler-config.yaml"
 
   content {
     content = "${file("${path.module}/resources/kube-scheduler-config.yaml")}"
@@ -186,6 +196,7 @@ data "ignition_config" "master" {
         data.ignition_file.master-cfssl-sk-get.id,
         data.ignition_file.master-prom-machine-role.id,
         data.ignition_file.master-kubeconfig.id,
+        data.ignition_file.kubelet-kubeconfig.id,
         data.ignition_file.kube-apiserver.id,
         data.ignition_file.kube-scheduler.id,
         data.ignition_file.kube-scheduler-config.id,
