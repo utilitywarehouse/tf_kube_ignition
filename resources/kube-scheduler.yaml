@@ -13,8 +13,7 @@ spec:
     command:
     - /hyperkube
     - scheduler
-    - --master=http://127.0.0.1:8080
-    - --leader-elect=true
+    - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
     - --v=0
     livenessProbe:
       httpGet:
@@ -23,3 +22,11 @@ spec:
         port: 10251
       initialDelaySeconds: 15
       timeoutSeconds: 15
+    volumeMounts:
+    - mountPath: /etc/kubernetes/config
+      name: kubernetes-configurations
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /etc/kubernetes/config
+    name: kubernetes-configurations

@@ -1,0 +1,6 @@
+kind: KubeSchedulerConfiguration
+apiVersion: componentconfig/v1alpha1
+clientConnection:
+  kubeconfig: /etc/kubernetes/config/master-kubeconfig
+leaderElection:
+  leaderElect: true
