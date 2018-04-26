@@ -1,6 +1,6 @@
 # tf_kube_ignition
 
-This terraform module generates ignition configuration for Container Linux to help with the bootstrapping of kubernetes nodes. It requires at least Kubernetes v1.9
+This terraform module generates ignition configuration for Container Linux to help with the bootstrapping of kubernetes nodes. It requires at least Kubernetes v1.9.
 
 ## Input Variables
 
