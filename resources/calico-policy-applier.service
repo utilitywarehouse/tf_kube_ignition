@@ -1,0 +1,11 @@
+[Unit]
+Description=Apply Calico policies
+After=docker.socket
+Requires=docker.socket
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/bin/bash -c "until [[ $(curl -sSL localhost:8080/healthz | grep ok) ]]; do sleep 8; done"
+ExecStart=/bin/bash -c "/opt/bin/calicoctl create -f /etc/kubernetes/calico-manifests/allow-kubectl-proxy-gnp.yaml || echo 'Soft fail to create'"
+[Install]
+WantedBy=multi-user.target
