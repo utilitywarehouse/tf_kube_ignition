@@ -13,6 +13,7 @@ data "template_file" "worker-cfssl-new-cert" {
     path        = "/etc/kubernetes/ssl"
     cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
     org         = "system:nodes"
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
     extra_names = ""
   }
 }

@@ -13,9 +13,10 @@ data "template_file" "master-cfssl-new-cert" {
     path    = "/etc/kubernetes/ssl"
     cn      = "system:node:$(${var.node_name_command[var.cloud_provider]})"
     org     = "system:nodes"
+    get_ip  = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
-      "10.3.0.1",
+      "${var.kubernetes_master_default_svc[var.cloud_provider]}",
       "kubernetes",
       "kubernetes.default",
       "kubernetes.default.svc",

@@ -37,7 +37,12 @@ data "ignition_file" "cfssl-client-config" {
 }
 
 data "template_file" "cfssl-disk-formatter" {
-  template = "${file("${path.module}/resources/disk-formatter.service")}"
+  template = "${ var.cloud_provider == "aws" ? 
+	                 file("${path.module}/resources/aws-disk-formatter.service") 
+								:var.cloud_provider == "gce" ?
+								   file("${path.module}/resources/gce-disk-formatter.service")
+								:""
+							}"
 
   vars {
     volumeid   = "${var.cfssl_data_volumeid}"
@@ -53,7 +58,12 @@ data "ignition_systemd_unit" "cfssl-disk-formatter" {
 }
 
 data "template_file" "cfssl-disk-mounter" {
-  template = "${file("${path.module}/resources/disk-mounter.mount")}"
+  template = "${ var.cloud_provider == "aws" ?  
+									file("${path.module}/resources/aws-disk-mounter.mount")
+								:var.cloud_provider == "gce" ?
+									file("${path.module}/resources/gce-disk-mounter.mount")
+								:""
+							}"
 
   vars {
     volumeid       = "${var.cfssl_data_volumeid}"

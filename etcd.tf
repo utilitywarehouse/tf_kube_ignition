@@ -14,6 +14,7 @@ data "template_file" "etcd-cfssl-new-cert" {
     path    = "/etc/etcd/ssl"
     cn      = "${count.index}.etcd.${var.dns_domain}"
     org     = ""
+    get_ip  = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
       "etcd.${var.dns_domain}",
@@ -67,8 +68,14 @@ data "ignition_file" "etcdctl-wrapper" {
 }
 
 data "template_file" "disk-formatter" {
-  count    = "${length(var.etcd_data_volumeids)}"
-  template = "${file("${path.module}/resources/disk-formatter.service")}"
+  count = "${length(var.etcd_data_volumeids)}"
+
+  template = "${ var.cloud_provider == "aws" ? 
+	                 file("${path.module}/resources/aws-disk-formatter.service") 
+								:var.cloud_provider == "gce" ?
+								   file("${path.module}/resources/gce-disk-formatter.service")
+								:""
+							}"
 
   vars {
     volumeid   = "${var.etcd_data_volumeids[count.index]}"
@@ -85,8 +92,14 @@ data "ignition_systemd_unit" "disk-formatter" {
 }
 
 data "template_file" "disk-mounter" {
-  count    = "${length(var.etcd_data_volumeids)}"
-  template = "${file("${path.module}/resources/disk-mounter.mount")}"
+  count = "${length(var.etcd_data_volumeids)}"
+
+  template = "${ var.cloud_provider == "aws" ?  
+									file("${path.module}/resources/aws-disk-mounter.mount")
+								:var.cloud_provider == "gce" ?
+									file("${path.module}/resources/gce-disk-mounter.mount")
+								:""
+							}"
 
   vars {
     volumeid       = "${var.etcd_data_volumeids[count.index]}"
