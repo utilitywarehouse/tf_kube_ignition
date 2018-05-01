@@ -68,7 +68,7 @@ data "ignition_file" "etcdctl-wrapper" {
 }
 
 data "template_file" "disk-formatter" {
-  count = "${length(var.etcd_data_volumeids)}"
+  count = "${length(var.etcd_addresses)}"
 
   template = "${ var.cloud_provider == "aws" ? 
 	                 file("${path.module}/resources/aws-disk-formatter.service") 
@@ -86,13 +86,13 @@ data "template_file" "disk-formatter" {
 }
 
 data "ignition_systemd_unit" "disk-formatter" {
-  count   = "${length(var.etcd_data_volumeids)}"
+  count   = "${length(var.etcd_addresses)}"
   name    = "disk-formatter.service"
   content = "${element(data.template_file.disk-formatter.*.rendered, count.index)}"
 }
 
 data "template_file" "disk-mounter" {
-  count = "${length(var.etcd_data_volumeids)}"
+  count = "${length(var.etcd_addresses)}"
 
   template = "${ var.cloud_provider == "aws" ?  
 									file("${path.module}/resources/aws-disk-mounter.mount")
@@ -110,7 +110,7 @@ data "template_file" "disk-mounter" {
 }
 
 data "ignition_systemd_unit" "var-lib-etcd-mounter" {
-  count   = "${length(var.etcd_data_volumeids)}"
+  count   = "${length(var.etcd_addresses)}"
   name    = "var-lib-etcd.mount"
   content = "${element(data.template_file.disk-mounter.*.rendered, count.index)}"
 }
