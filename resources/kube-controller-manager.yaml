@@ -18,6 +18,7 @@ spec:
     - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
     ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
+    ${cloud_config == "" ? "" : "- --cloud-config=${cloud_config}"}
     - --configure-cloud-routes=false
     - --allocate-node-cidrs=true
     - --cluster-cidr=${pod_network}
@@ -37,6 +38,9 @@ spec:
     - mountPath: /etc/ssl/certs
       name: ssl-certs-host
       readOnly: true
+    - mountPath: /etc/kubernetes/config/cloud_provider
+      name: cloud-config
+      readOnly: true
   hostNetwork: true
   volumes:
   - hostPath:
@@ -45,3 +49,6 @@ spec:
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host
+  - hostPath:
+      path: /etc/kubernetes/config/cloud_provider
+    name: cloud-config
