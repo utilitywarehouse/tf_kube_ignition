@@ -1,9 +1,8 @@
 [Unit]
 Description=Format device with volume-id: ${volumeid}, if it has no filesystem
-After=dev-disk-by\x2did-nvme\x2dAmazon_Elastic_Block_Store_${volumeid}.device
-Requires=dev-disk-by\x2did-nvme\x2dAmazon_Elastic_Block_Store_${volumeid}.device
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 Environment=DEVICE=/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volumeid}
+ExecStartPre=/bin/sh -c "until [ -e $${DEVICE} ]; do sleep 8; done"
 ExecStart=/bin/sh -c "fsck -a $${DEVICE} || (mkfs.${filesystem} $${DEVICE} && mount $${DEVICE} /mnt && chown -R ${user}:${group} /mnt && umount /mnt)"
