@@ -134,6 +134,7 @@ data "template_file" "kube-controller-manager" {
     hyperkube_image_url = "${var.hyperkube_image_url}"
     hyperkube_image_tag = "${var.hyperkube_image_tag}"
     cloud_provider      = "${var.cloud_provider}"
+    cloud_config        = "${var.cloud_config[var.cloud_provider]}"
     pod_network         = "${var.pod_network}"
   }
 }
@@ -145,6 +146,19 @@ data "ignition_file" "kube-controller-manager" {
 
   content {
     content = "${data.template_file.kube-controller-manager.rendered}"
+  }
+}
+
+data "ignition_file" "gce-kube-controller-conf" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/cloud_provider/gce.conf"
+
+  content {
+    content = <<EOS
+[Global]
+multizone = true
+EOS
   }
 }
 
@@ -221,6 +235,13 @@ data "ignition_systemd_unit" "calico-policy-applier" {
   content = "${file("${path.module}/resources/calico-policy-applier.service")}"
 }
 
+locals {
+  provider_ignition_files = {
+    aws = []
+    gce = "${list(data.ignition_file.gce-kube-controller-conf.id)}"
+  }
+}
+
 data "ignition_config" "master" {
   files = ["${concat(
     list(
@@ -240,6 +261,7 @@ data "ignition_config" "master" {
         data.ignition_file.allow-kubectl-proxy-gnp.id,
     ),
     var.master_additional_files,
+    local.provider_ignition_files[var.cloud_provider],
   )}"]
 
   systemd = ["${concat(
