@@ -1,9 +1,0 @@
-#!/bin/bash
-
-docker run --rm \
- --pid=host \
- --net=host \
- -e DATASTORE_TYPE=kubernetes \
- -e K8S_API_ENDPOINT=http://localhost:8080 \
- -v /etc/kubernetes/calico-manifests:/etc/kubernetes/calico-manifests \
- calico/ctl:release-v3.1 $@
