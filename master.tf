@@ -201,47 +201,6 @@ data "ignition_file" "master-prom-machine-role" {
   }
 }
 
-data "template_file" "allow-kubectl-proxy-gnp" {
-  template = "${file("${path.module}/resources/allow-kubectl-proxy-gnp.yaml")}"
-
-  vars {
-    # for pod_network of 10.2.0.0/16 return 10.2
-    pod_network_prefix = "${join(".",slice(split(".", var.pod_network), 0, 2))}"
-  }
-}
-
-data "ignition_file" "allow-kubectl-proxy-gnp" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/kubernetes/calico-manifests/allow-kubectl-proxy-gnp.yaml"
-
-  content {
-    content = "${data.template_file.allow-kubectl-proxy-gnp.rendered}"
-  }
-}
-
-data "ignition_file" "calicoctl" {
-  mode       = 0755
-  filesystem = "root"
-  path       = "/opt/bin/calicoctl"
-
-  content {
-    content = "${file("${path.module}/resources/calicoctl")}"
-  }
-}
-
-data "ignition_systemd_unit" "calico-policy-applier" {
-  name    = "calico-policy-applier.service"
-  content = "${file("${path.module}/resources/calico-policy-applier.service")}"
-}
-
-locals {
-  provider_ignition_files = {
-    aws = []
-    gce = "${list(data.ignition_file.gce-kube-controller-conf.id)}"
-  }
-}
-
 data "ignition_config" "master" {
   files = ["${concat(
     list(
@@ -257,8 +216,6 @@ data "ignition_config" "master" {
         data.ignition_file.kube-scheduler.id,
         data.ignition_file.kube-scheduler-config.id,
         data.ignition_file.kube-controller-manager.id,
-        data.ignition_file.calicoctl.id,
-        data.ignition_file.allow-kubectl-proxy-gnp.id,
     ),
     var.master_additional_files,
     local.provider_ignition_files[var.cloud_provider],
@@ -270,7 +227,6 @@ data "ignition_config" "master" {
         data.ignition_systemd_unit.locksmithd_master.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
         data.ignition_systemd_unit.master-kubelet.id,
-        data.ignition_systemd_unit.calico-policy-applier.id,
     ),
     module.kubelet-restarter.systemd_units,
     var.master_additional_systemd_units,
