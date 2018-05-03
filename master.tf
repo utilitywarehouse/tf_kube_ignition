@@ -201,6 +201,13 @@ data "ignition_file" "master-prom-machine-role" {
   }
 }
 
+locals {
+  provider_ignition_files = {
+    aws = []
+    gce = "${list(data.ignition_file.gce-kube-controller-conf.id)}"
+  }
+}
+
 data "ignition_config" "master" {
   files = ["${concat(
     list(
