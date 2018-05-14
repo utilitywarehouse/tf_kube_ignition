@@ -36,16 +36,6 @@ data "ignition_file" "cfssl-client-config" {
   }
 }
 
-data "ignition_file" "format-and-mount" {
-  mode       = 0755
-  filesystem = "root"
-  path       = "/opt/bin/format-and-mount.sh"
-
-  content {
-    content = "${file("${path.module}/resources/format-and-mount.sh")}"
-  }
-}
-
 data "template_file" "cfssl-disk-mounter" {
   template = "${file("${path.module}/resources/disk-mounter.service")}"
 
