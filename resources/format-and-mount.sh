@@ -21,8 +21,8 @@ until mountpoint -q ${mountpoint}; do
       fsck -a ${device} || (
         mkfs.${filesystem} ${device} \
         && mount ${device} /mnt \
-	&& chown -R ${user}:${group} /mnt \
-	&& umount /mnt
+        && chown -R ${user}:${group} /mnt \
+        && umount /mnt
       )
       mkdir -p ${mountpoint}
       mount -t ${filesystem} ${device} ${mountpoint}

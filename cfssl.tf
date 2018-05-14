@@ -181,7 +181,7 @@ data "ignition_config" "cfssl" {
         data.ignition_systemd_unit.node-exporter.id,
         data.ignition_systemd_unit.cfssl.id,
         data.ignition_systemd_unit.cfssl-nginx.id,
-				data.ignition_systemd_unit.cfssl-disk-mounter.id,
+        data.ignition_systemd_unit.cfssl-disk-mounter.id,
     ),
     module.cfssl-restarter.systemd_units,
     var.cfssl_additional_systemd_units,
