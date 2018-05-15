@@ -10,7 +10,7 @@ readonly mountpoint="$5"
 # AWS nvme (m5): /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volume_id}
 # AWS non-nvme (t2): /dev/${volume_id}
 # GCP: /dev/disk/by-id/google-${volume_id}
-locations="
+readonly locations="
   /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volume_id}
   /dev/${volume_id}
   /dev/disk/by-id/google-${volume_id}
