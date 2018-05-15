@@ -1,17 +1,20 @@
 #!/bin/bash
 
-volume_id="$1"
-filesystem="$2"
-user="$3"
-group="$4"
-mountpoint="$5"
+readonly volume_id="$1"
+readonly filesystem="$2"
+readonly user="$3"
+readonly group="$4"
+readonly mountpoint="$5"
 
+# Location used by providers:
+# AWS nvme (m5): /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volume_id}
+# AWS non-nvme (t2): /dev/${volume_id}
+# GCP: /dev/disk/by-id/google-${volume_id}
 locations="
   /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${volume_id}
   /dev/${volume_id}
   /dev/disk/by-id/google-${volume_id}
 "
-
 until mountpoint -q ${mountpoint}; do
   sleep 8
   for device in ${locations}; do

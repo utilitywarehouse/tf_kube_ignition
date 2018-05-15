@@ -72,7 +72,7 @@ data "template_file" "etcd-disk-mounter" {
   template = "${file("${path.module}/resources/disk-mounter.service")}"
 
   vars {
-    script_path = "/opt/bin/format-and-mount.sh"
+    script_path = "/opt/bin/format-and-mount"
     volume_id   = "${var.etcd_data_volumeids[count.index]}"
     filesystem  = "ext4"
     user        = "etcd"

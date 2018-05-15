@@ -40,7 +40,7 @@ data "template_file" "cfssl-disk-mounter" {
   template = "${file("${path.module}/resources/disk-mounter.service")}"
 
   vars {
-    script_path = "/opt/bin/format-and-mount.sh"
+    script_path = "/opt/bin/format-and-mount"
     volume_id   = "${var.cfssl_data_volumeid}"
     filesystem  = "ext4"
     user        = "root"

@@ -65,9 +65,9 @@ data "ignition_systemd_unit" "node-exporter" {
 data "ignition_file" "format-and-mount" {
   mode       = 0755
   filesystem = "root"
-  path       = "/opt/bin/format-and-mount.sh"
+  path       = "/opt/bin/format-and-mount"
 
   content {
-    content = "${file("${path.module}/resources/format-and-mount.sh")}"
+    content = "${file("${path.module}/resources/format-and-mount")}"
   }
 }
