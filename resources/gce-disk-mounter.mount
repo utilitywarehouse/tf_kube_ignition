@@ -1,8 +1,0 @@
-[Unit]
-Description=Mount device ${volumeid} to ${mountpoint}
-Requires=${disk-formatter}
-After=${disk-formatter}
-[Mount]
-What=/dev/disk/by-id/google-${volumeid}
-Where=${mountpoint}
-Type=${filesystem}

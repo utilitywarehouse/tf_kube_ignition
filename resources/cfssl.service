@@ -1,7 +1,7 @@
 [Unit]
 Description=cfssl service
-After=var-lib-cfssl.mount
-Requires=var-lib-cfssl.mount
+After=disk-mounter.service
+Requires=disk-mounter.service
 [Service]
 WorkingDirectory=/var/lib/cfssl
 ExecStartPre=/bin/sh -c 'if [ ! -f sk-key.pem ]; then /opt/bin/cfssl genkey /etc/cfssl/sk-csr.json | /opt/bin/cfssljson -bare sk && rm sk.csr; fi'
