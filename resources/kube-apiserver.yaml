@@ -35,6 +35,7 @@ spec:
     - --oidc-client-id=${oidc_client_id}
     - --authorization-mode=Node,RBAC
     - --apiserver-count=${master_instance_count}
+    - --feature-gates=AdvancedAuditing=false
     - --audit-log-path=/var/log/kube-api-server/audit
     - --audit-log-maxsize=100
     - --audit-log-maxbackup=20
