@@ -6,25 +6,22 @@ Environment=KUBELET_IMAGE_URL=${kubelet_image_url}
 Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}
 Environment="RKT_RUN_ARGS=\
   --uuid-file-save=/var/run/kubelet-pod.uuid \
-  --volume var-log,kind=host,source=/var/log \
-  --mount volume=var-log,target=/var/log \
-  --volume cni-bin,kind=host,source=/opt/cni/bin \
-  --mount volume=cni-bin,target=/opt/cni/bin \
-  --volume var-lib-cni,kind=host,source=/var/lib/cni \
-  --mount volume=var-lib-cni,target=/var/lib/cni \
-  --volume etc-cni-netd,kind=host,source=/etc/cni/net.d \
-  --mount volume=etc-cni-netd,target=/etc/cni/net.d \
-  --volume dns,kind=host,source=/etc/resolv.conf \
-  --mount volume=dns,target=/etc/resolv.conf \
-  --volume modprobe,kind=host,source=/usr/sbin/modprobe \
-  --mount volume=modprobe,target=/usr/sbin/modprobe \
-  --volume lib-modules,kind=host,source=/lib/modules \
-  --mount volume=lib-modules,target=/lib/modules"
+  --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log \
+  --volume cni-bin,kind=host,source=/opt/cni/bin --mount volume=cni-bin,target=/opt/cni/bin \
+  --volume var-lib-cni,kind=host,source=/var/lib/cni --mount volume=var-lib-cni,target=/var/lib/cni \
+  --volume etc-cni-netd,kind=host,source=/etc/cni/net.d --mount volume=etc-cni-netd,target=/etc/cni/net.d \
+  --volume dns,kind=host,source=/etc/resolv.conf --mount volume=dns,target=/etc/resolv.conf \
+  --volume var-run-calico,kind=host,source=/var/run/calico --mount volume=var-run-calico,target=/var/run/calico \
+  --volume var-lib-calico,kind=host,source=/var/lib/calico --mount volume=var-lib-calico,target=/var/lib/calico \
+  --volume modprobe,kind=host,source=/usr/sbin/modprobe --mount volume=modprobe,target=/usr/sbin/modprobe \
+  --volume lib-modules,kind=host,source=/lib/modules --mount volume=lib-modules,target=/lib/modules"
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
+ExecStartPre=/usr/bin/mkdir -p /var/run/calico
+ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 # This is a partial workaround to this upstream Kubernetes issue:
 #  https://github.com/kubernetes/kubernetes/issues/41916#issuecomment-312428731
 ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
