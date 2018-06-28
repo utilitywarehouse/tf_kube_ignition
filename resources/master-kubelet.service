@@ -1,17 +1,23 @@
 [Unit]
-Description=Kubelet docker container
-Requires=docker.service network-online.target
-After=docker.service network-online.target
-
+Description=kubelet-on-rkt service
+After=systemd-resolved.service
 [Service]
+Environment=KUBELET_IMAGE_URL=${kubelet_image_url}
+Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}
+Environment="RKT_RUN_ARGS=\
+  --uuid-file-save=/var/run/kubelet-pod.uuid \
+  --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log \
+  --volume cni-bin,kind=host,source=/opt/cni/bin --mount volume=cni-bin,target=/opt/cni/bin \
+  --volume var-lib-cni,kind=host,source=/var/lib/cni --mount volume=var-lib-cni,target=/var/lib/cni \
+  --volume etc-cni-netd,kind=host,source=/etc/cni/net.d --mount volume=etc-cni-netd,target=/etc/cni/net.d \
+  --volume dns,kind=host,source=/etc/resolv.conf --mount volume=dns,target=/etc/resolv.conf \
+  --volume var-run-calico,kind=host,source=/var/run/calico --mount volume=var-run-calico,target=/var/run/calico \
+  --volume var-lib-calico,kind=host,source=/var/lib/calico --mount volume=var-lib-calico,target=/var/lib/calico"
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
 ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
-ExecStartPre=/usr/bin/mkdir -p /var/lib/docker
-ExecStartPre=/usr/bin/mkdir -p /var/lib/kubelet
-ExecStartPre=/usr/bin/mkdir -p /run/kubelet
 ExecStartPre=/usr/bin/mkdir -p /var/run/calico
 ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 # This is a partial workaround to this upstream Kubernetes issue:
@@ -19,46 +25,26 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 ExecStartPre=/opt/bin/cfssl-sk-get
 ExecStartPre=/opt/bin/cfssl-new-cert
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"
-ExecStart=/usr/bin/docker run \
-  --net=host \
-  --pid=host \
-  --privileged \
-  -v /etc/cni/net.d:/etc/cni/net.d \
-  -v /var/lib/cni:/var/lib/cni \
-  -v /opt/cni/bin:/opt/cni/bin \
-  -v /etc/kubernetes:/etc/kubernetes \
-  -v /etc/machine-id:/etc/machine-id:ro \
-  -v /etc/os-release:/etc/os-release:ro \
-  -v /etc/ssl/certs:/etc/ssl/certs:ro \
-  -v /usr/share/ca-certificates:/usr/share/ca-certificates:ro \
-  -v /lib/modules:/lib/modules:ro \
-  -v /run:/run \
-  -v /var/lib/docker:/var/lib/docker \
-  -v /var/lib/kubelet:/var/lib/kubelet \
-  -v /var/log:/var/log \
-  -v /var/lib/calico:/var/lib/calico \
-  -v /var/run/calico:/var/run/calico \
-  ${kubelet_image_url}:${kubelet_image_tag} \
-    kubelet \
-    --kubeconfig=/var/lib/kubelet/kubeconfig \
-    --node-labels=role=master \
-    --register-node=true \
-    --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-    --container-runtime=docker \
-    --network-plugin=cni \
-    --cni-bin-dir=/opt/cni/bin \
-    --cni-conf-dir=/etc/cni/net.d \
-    --allow-privileged=true \
-    --pod-manifest-path=/etc/kubernetes/manifests \
-    ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
-    --cluster-dns=${cluster_dns} \
-    --cluster-domain=cluster.local \
-    --v=0
+ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep '/hyperkube controller-manager' | awk '{ print $1; }')"
+ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep '/hyperkube apiserver' | awk '{ print $1; }')"
+ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
+ExecStart=/usr/lib/coreos/kubelet-wrapper \
+  --kubeconfig=/var/lib/kubelet/kubeconfig \
+  --node-labels=role=master \
+  --register-node=true \
+  --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
+  --container-runtime=docker \
+  --network-plugin=cni \
+  --cni-bin-dir=/opt/cni/bin \
+  --cni-conf-dir=/etc/cni/net.d \
+  --allow-privileged=true \
+  --pod-manifest-path=/etc/kubernetes/manifests \
+  ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
+  --cluster-dns=${cluster_dns} \
+  --cluster-domain=cluster.local \
+  --v=0
+ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
 RestartSec=10
-KillMode=process
-
 [Install]
 WantedBy=multi-user.target
