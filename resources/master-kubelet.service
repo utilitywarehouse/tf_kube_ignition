@@ -2,9 +2,10 @@
 Description=kubelet-on-rkt service
 After=systemd-resolved.service
 [Service]
-Environment=KUBELET_IMAGE_URL=${kubelet_image_url}
+Environment=KUBELET_IMAGE_URL=docker://${kubelet_image_url}
 Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}
 Environment="RKT_RUN_ARGS=\
+  --insecure-options=image \
   --uuid-file-save=/var/run/kubelet-pod.uuid \
   --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log \
   --volume cni-bin,kind=host,source=/opt/cni/bin --mount volume=cni-bin,target=/opt/cni/bin \
