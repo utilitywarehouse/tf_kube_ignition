@@ -49,12 +49,12 @@ variable "node_exporter_image_tag" {
 
 variable "hyperkube_image_url" {
   description = "Where to get the hyperkube image from."
-  default     = "quay.io/coreos/hyperkube"
+  default     = "gcr.io/google-containers/hyperkube-amd64"
 }
 
 variable "hyperkube_image_tag" {
   description = "The version of the hyperkube image to use."
-  default     = "v1.10.0_coreos.0"
+  default     = "v1.10.4"
 }
 
 variable "cluster_dns" {

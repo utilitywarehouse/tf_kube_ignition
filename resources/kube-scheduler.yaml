@@ -11,8 +11,7 @@ spec:
   - name: kube-scheduler
     image: ${hyperkube_image_url}:${hyperkube_image_tag}
     command:
-    - /hyperkube
-    - scheduler
+    - kube-scheduler
     - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
     - --v=0
     livenessProbe:
