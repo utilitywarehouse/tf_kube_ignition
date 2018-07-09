@@ -1,0 +1,7 @@
+{
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "CN": "proxyClientCA"
+}

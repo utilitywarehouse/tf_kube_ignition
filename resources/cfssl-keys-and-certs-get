@@ -1,0 +1,41 @@
+#!/bin/sh
+
+set -o errexit
+
+key() {
+  local key=$$1
+  /usr/bin/curl -Ls -o $${key} \
+      -H 'Authorization: Basic ${auth}' \
+      http://$(jq -r '.remotes.server | split(":")[0]' /etc/cfssl/config.json):8889/$${key}
+  set +e
+  /usr/bin/openssl ec -in ${path}/$${key} -noout
+  if [ $? -ne 0 ]; then
+    echo "Failed to get $${key} from cfssl server";
+    exit 1;
+  fi
+  set -e
+  /usr/bin/chmod 0600 $${key}
+}
+
+cert () {
+  local cert=$$1
+  /usr/bin/curl -Ls -o $${cert} \
+      -H 'Authorization: Basic ${auth}' \
+      http://$(jq -r '.remotes.server | split(":")[0]' /etc/cfssl/config.json):8889/$${cert}
+  set +e
+  /opt/bin/cfssl certinfo -cert $${cert}
+  if [ $? -ne 0 ]; then
+    echo "Failed to get $${cert} from cfssl server";
+    exit 1;
+  fi
+  set -e
+  /usr/bin/chmod 0600 $${cert}
+}
+
+mkdir -p ${path}
+cd ${path}
+
+key signing-key.pem
+cert proxy-ca.pem
+cert proxy.pem
+key proxy-key.pem

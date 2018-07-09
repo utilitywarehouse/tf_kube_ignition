@@ -76,6 +76,36 @@ data "ignition_file" "cfssl-init-ca" {
   }
 }
 
+data "ignition_file" "cfssl-init-proxy-pki" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-init-proxy-pki"
+
+  content {
+    content = "${file("${path.module}/resources/cfssl-init-proxy-pki")}"
+  }
+}
+
+data "ignition_file" "cfssl-proxy-ca-csr-json" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/cfssl/proxy-ca-csr.json"
+
+  content {
+    content = "${file("${path.module}/resources/cfssl-proxy-ca-csr.json")}"
+  }
+}
+
+data "ignition_file" "cfssl-proxy-csr-json" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/cfssl/proxy-csr.json"
+
+  content {
+    content = "${file("${path.module}/resources/cfssl-proxy-csr.json")}"
+  }
+}
+
 data "template_file" "cfssl-server-config" {
   template = "${file("${path.module}/resources/cfssl-server-config.json")}"
 
@@ -166,6 +196,9 @@ data "ignition_config" "cfssl" {
         data.ignition_file.cfssl-ca-csr.id,
         data.ignition_file.cfssl-init-ca.id,
         data.ignition_file.cfssl-sk-csr.id,
+        data.ignition_file.cfssl-init-proxy-pki.id,
+        data.ignition_file.cfssl-proxy-ca-csr-json.id,
+        data.ignition_file.cfssl-proxy-csr-json.id,
         data.ignition_file.cfssl-nginx-conf.id,
         data.ignition_file.cfssl-nginx-auth.id,
         data.ignition_file.format-and-mount.id,

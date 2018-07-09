@@ -37,8 +37,8 @@ data "ignition_file" "master-cfssl-new-cert" {
   }
 }
 
-data "template_file" "master-cfssl-sk-get" {
-  template = "${file("${path.module}/resources/cfssl-sk-get.sh")}"
+data "template_file" "master-cfssl-keys-and-certs-get" {
+  template = "${file("${path.module}/resources/cfssl-keys-and-certs-get")}"
 
   vars {
     path = "/etc/kubernetes/ssl"
@@ -46,13 +46,13 @@ data "template_file" "master-cfssl-sk-get" {
   }
 }
 
-data "ignition_file" "master-cfssl-sk-get" {
+data "ignition_file" "master-cfssl-keys-and-certs-get" {
   mode       = 0755
   filesystem = "root"
-  path       = "/opt/bin/cfssl-sk-get"
+  path       = "/opt/bin/cfssl-keys-and-certs-get"
 
   content {
-    content = "${data.template_file.master-cfssl-sk-get.rendered}"
+    content = "${data.template_file.master-cfssl-keys-and-certs-get.rendered}"
   }
 }
 
@@ -215,7 +215,7 @@ data "ignition_config" "master" {
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
         data.ignition_file.master-cfssl-new-cert.id,
-        data.ignition_file.master-cfssl-sk-get.id,
+        data.ignition_file.master-cfssl-keys-and-certs-get.id,
         data.ignition_file.master-prom-machine-role.id,
         data.ignition_file.master-kubeconfig.id,
         data.ignition_file.kubelet-kubeconfig.id,
