@@ -24,7 +24,7 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 # This is a partial workaround to this upstream Kubernetes issue:
 #  https://github.com/kubernetes/kubernetes/issues/41916#issuecomment-312428731
 ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
-ExecStartPre=/opt/bin/cfssl-sk-get
+ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
 ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"

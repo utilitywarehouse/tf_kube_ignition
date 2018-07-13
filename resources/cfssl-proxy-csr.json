@@ -1,0 +1,12 @@
+{
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "CN": "aggregator",
+    "names": [
+        {
+            "O":  "system:masters"
+        }
+    ]
+}

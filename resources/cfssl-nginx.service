@@ -9,6 +9,9 @@ ExecStart=/bin/sh -c "\
     /usr/bin/docker run --rm \
       --name %p_$(uuidgen) \
       -v /var/lib/cfssl/sk-key.pem:/data/sk-key.pem \
+      -v /var/lib/cfssl/proxy-ca.pem:/data/proxy-ca.pem \
+      -v /var/lib/cfssl/proxy.pem:/data/proxy.pem \
+      -v /var/lib/cfssl/proxy-key.pem:/data/proxy-key.pem \
       -v /etc/cfssl/sk-nginx.conf:/etc/nginx/nginx.conf \
       -v /etc/cfssl/sk-nginx.htpasswd:/etc/nginx/nginx.htpasswd \
       -p 8889:8889 \
