@@ -27,7 +27,7 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 #  https://github.com/kubernetes/kubernetes/issues/41916#issuecomment-312428731
 ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 ExecStartPre=/opt/bin/cfssl-new-cert
-ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
+ExecStartPre=-/usr/bin/rkt gc --grace-period=0s
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --node-labels=role=${role} \
@@ -50,5 +50,6 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
 ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
 RestartSec=10
+TimeoutStartSec=3m
 [Install]
 WantedBy=multi-user.target

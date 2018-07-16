@@ -28,7 +28,7 @@ ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
 ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"
-ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
+ExecStartPre=-/usr/bin/rkt gc --grace-period=0s
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --node-labels=role=master \
@@ -47,5 +47,6 @@ ExecStart=/usr/lib/coreos/kubelet-wrapper \
 ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
 Restart=always
 RestartSec=10
+TimeoutStartSec=3m
 [Install]
 WantedBy=multi-user.target
