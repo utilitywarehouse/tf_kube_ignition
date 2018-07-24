@@ -31,7 +31,7 @@ ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-api
 ExecStartPre=-/usr/bin/rkt gc --grace-period=0s
 ExecStart=/usr/lib/coreos/kubelet-wrapper \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
-  --node-labels=role=master \
+  --node-labels=role=master,node-role.kubernetes.io/master="" \
   --register-node=true \
   --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
   --container-runtime=docker \
