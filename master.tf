@@ -134,7 +134,7 @@ data "template_file" "kube-controller-manager" {
     hyperkube_image_url = "${var.hyperkube_image_url}"
     hyperkube_image_tag = "${var.hyperkube_image_tag}"
     cloud_provider      = "${var.cloud_provider}"
-    cloud_config        = "${var.cloud_config[var.cloud_provider]}"
+    cloud_config        = "${var.kube_controller_cloud_config}"
     pod_network         = "${var.pod_network}"
   }
 }
@@ -149,16 +149,13 @@ data "ignition_file" "kube-controller-manager" {
   }
 }
 
-data "ignition_file" "gce-kube-controller-conf" {
+data "ignition_file" "kube-controller-conf" {
   mode       = 0644
   filesystem = "root"
-  path       = "/etc/kubernetes/config/cloud_provider/gce.conf"
+  path       = "/etc/kubernetes/config/cloud_provider/cloud.conf"
 
   content {
-    content = <<EOS
-[Global]
-multizone = true
-EOS
+    content = "${var.kube_controller_cloud_config}"
   }
 }
 
@@ -202,10 +199,7 @@ data "ignition_file" "master-prom-machine-role" {
 }
 
 locals {
-  provider_ignition_files = {
-    aws = []
-    gce = "${list(data.ignition_file.gce-kube-controller-conf.id)}"
-  }
+  kube_controller_additional_config = "${var.kube_controller_cloud_config == "" ? "" : data.ignition_file.kube-controller-conf.id}"
 }
 
 data "ignition_config" "master" {
@@ -225,7 +219,7 @@ data "ignition_config" "master" {
         data.ignition_file.kube-controller-manager.id,
     ),
     var.master_additional_files,
-    local.provider_ignition_files[var.cloud_provider],
+    list(local.kube_controller_additional_config,)
   )}"]
 
   systemd = ["${concat(

@@ -17,7 +17,7 @@ spec:
     - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem
     ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
-    ${cloud_config == "" ? "" : "- --cloud-config=${cloud_config}"}
+    ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
     - --configure-cloud-routes=false
     - --allocate-node-cidrs=true
     - --cluster-cidr=${pod_network}

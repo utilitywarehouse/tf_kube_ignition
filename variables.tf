@@ -70,6 +70,11 @@ variable "cloud_provider" {
   default     = ""
 }
 
+variable "kube_controller_cloud_config" {
+  description = "Cloud config to be passed to kube-controller manager (expected as raw text). Nothing will be passed on empty variable"
+  default     = ""
+}
+
 variable "master_instance_count" {
   description = "The number of master instances in the kubernetes cluster. Used by the API server."
   default     = 3
