@@ -1,19 +1,8 @@
 [Unit]
-Description=kubelet-on-rkt service
-After=systemd-resolved.service
+Description=Kubernetes Kubelet
+Requires=docker.service
+After=docker.service
 [Service]
-Environment=KUBELET_IMAGE_URL=docker://${kubelet_image_url}
-Environment=KUBELET_IMAGE_TAG=${kubelet_image_tag}
-Environment="RKT_RUN_ARGS=\
-  --insecure-options=image \
-  --uuid-file-save=/var/run/kubelet-pod.uuid \
-  --volume var-log,kind=host,source=/var/log --mount volume=var-log,target=/var/log \
-  --volume cni-bin,kind=host,source=/opt/cni/bin --mount volume=cni-bin,target=/opt/cni/bin \
-  --volume var-lib-cni,kind=host,source=/var/lib/cni --mount volume=var-lib-cni,target=/var/lib/cni \
-  --volume etc-cni-netd,kind=host,source=/etc/cni/net.d --mount volume=etc-cni-netd,target=/etc/cni/net.d \
-  --volume dns,kind=host,source=/etc/resolv.conf --mount volume=dns,target=/etc/resolv.conf \
-  --volume var-run-calico,kind=host,source=/var/run/calico --mount volume=var-run-calico,target=/var/run/calico \
-  --volume var-lib-calico,kind=host,source=/var/lib/calico --mount volume=var-lib-calico,target=/var/lib/calico"
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
@@ -28,25 +17,45 @@ ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
 ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"
-ExecStartPre=-/usr/bin/rkt gc --grace-period=0s
-ExecStart=/usr/lib/coreos/kubelet-wrapper \
-  --kubeconfig=/var/lib/kubelet/kubeconfig \
-  --node-labels=role=master,node-role.kubernetes.io/master="" \
-  --register-node=true \
-  --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-  --container-runtime=docker \
-  --network-plugin=cni \
-  --cni-bin-dir=/opt/cni/bin \
-  --cni-conf-dir=/etc/cni/net.d \
-  --allow-privileged=true \
-  --pod-manifest-path=/etc/kubernetes/manifests \
-  ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
-  --cluster-dns=${cluster_dns} \
-  --cluster-domain=cluster.local \
-  --v=0
-ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
+ExecStart=/usr/bin/docker \
+  run \
+    --rm \
+    --net host \
+    --pid host \
+    --privileged \
+    --volume /dev:/dev:rw \
+    --volume /sys:/sys:ro \
+    --volume /var/run:/var/run:rw \
+    --volume /var/lib/cni/:/var/lib/cni:rw \
+    --volume /var/lib/docker/:/var/lib/docker:rw \
+    --volume /var/lib/kubelet/:/var/lib/kubelet:shared \
+    --volume /var/log:/var/log:shared \
+    --volume /etc/kubernetes:/etc/kubernetes:ro \
+    --volume /etc/cni/net.d:/etc/cni/net.d:rw \
+    --volume /etc/resolv.conf:/etc/resolv.conf:ro \
+    --volume /opt/cni/bin:/opt/cni/bin:rw \
+    --volume /var/run/calico:/var/run/calico:rw \
+    --volume /var/lib/calico:/var/lib/calico:rw \
+    --entrypoint /usr/local/bin/kubelet \
+  "${kubelet_image_url}:${kubelet_image_tag}" \
+    --kubeconfig=/var/lib/kubelet/kubeconfig \
+    --node-labels=role=master,node-role.kubernetes.io/master="" \
+    --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
+    --container-runtime=docker \
+    --network-plugin=cni \
+    --cni-bin-dir=/opt/cni/bin \
+    --cni-conf-dir=/etc/cni/net.d \
+    --allow-privileged \
+    --pod-manifest-path=/etc/kubernetes/manifests \
+    --minimum-container-ttl-duration=6m0s \
+    --cluster-dns=${cluster_dns} \
+    --cluster_domain=cluster.local \
+    ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
+    --serialize-image-pulls=false \
+    --lock-file=/var/run/lock/kubelet.lock \
+    --exit-on-lock-contention \
+    --v=0
 Restart=always
 RestartSec=10
-TimeoutStartSec=3m
 [Install]
 WantedBy=multi-user.target
