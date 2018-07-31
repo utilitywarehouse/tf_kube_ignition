@@ -27,13 +27,3 @@ variable "kubernetes_master_default_svc" {
     "gce" = "10.5.0.1"
   }
 }
-
-variable "cloud_config" {
-  type = "map"
-
-  default = {
-    ""    = ""
-    "aws" = ""
-    "gce" = "/etc/kubernetes/config/cloud_provider/gce.conf"
-  }
-}
