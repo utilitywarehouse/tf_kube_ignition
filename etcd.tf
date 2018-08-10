@@ -118,6 +118,12 @@ data "ignition_systemd_unit" "etcd-member-dropin" {
   }
 }
 
+module "etcd-cert-fetcher" {
+  source = "./cert-fetcher"
+
+  on_calendar = "${var.cfssl_node_renew_timer}"
+}
+
 data "ignition_config" "etcd" {
   count = "${length(var.etcd_addresses)}"
 
@@ -143,6 +149,7 @@ data "ignition_config" "etcd" {
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         element(data.ignition_systemd_unit.etcd-disk-mounter.*.id, count.index),
     ),
+		module.etcd-cert-fetcher.systemd_units,
     var.etcd_additional_systemd_units,
   )}"]
 }
