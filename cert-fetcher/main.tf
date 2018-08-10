@@ -1,5 +1,4 @@
 variable "on_calendar" {}
-variable "service_name" {}
 
 data "ignition_systemd_unit" "cert-fetch-service" {
   name = "cert-fetch.service"
