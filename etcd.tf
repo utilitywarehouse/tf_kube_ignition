@@ -149,7 +149,7 @@ data "ignition_config" "etcd" {
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         element(data.ignition_systemd_unit.etcd-disk-mounter.*.id, count.index),
     ),
-		module.etcd-cert-fetcher.systemd_units,
+    module.etcd-cert-fetcher.systemd_units,
     var.etcd_additional_systemd_units,
   )}"]
 }
