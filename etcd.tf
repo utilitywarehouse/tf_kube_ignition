@@ -118,11 +118,10 @@ data "ignition_systemd_unit" "etcd-member-dropin" {
   }
 }
 
-module "etcd-member-restarter" {
-  source = "./systemd_service_restarter"
+module "etcd-cert-fetcher" {
+  source = "./cert-fetcher"
 
-  service_name = "etcd-member"
-  on_calendar  = "${var.cfssl_node_renew_timer}"
+  on_calendar = "${var.cfssl_node_renew_timer}"
 }
 
 data "ignition_config" "etcd" {
@@ -150,7 +149,7 @@ data "ignition_config" "etcd" {
         element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
         element(data.ignition_systemd_unit.etcd-disk-mounter.*.id, count.index),
     ),
-    module.etcd-member-restarter.systemd_units,
+    module.etcd-cert-fetcher.systemd_units,
     var.etcd_additional_systemd_units,
   )}"]
 }
