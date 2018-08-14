@@ -55,6 +55,7 @@ ExecStart=/usr/bin/docker \
     --eviction-max-pod-grace-period=30 \
     --eviction-hard=memory.available<1Gi,nodefs.available<2Gi \
     --serialize-image-pulls=false \
+    --image-pull-progress-deadline=60m \
     --lock-file=/var/run/lock/kubelet.lock \
     --exit-on-lock-contention \
     --v=0
