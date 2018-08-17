@@ -112,8 +112,9 @@ data "template_file" "kube-apiserver" {
      *   https://github.com/kubernetes/kubernetes/blob/<ref>/pkg/master/master.go
      *
      */
-
-    runtime_config = "${join(",", list())}"
+    runtime_config = "${join(",", list(
+      "settings.k8s.io/v1alpha1=true",
+    ))}"
   }
 }
 
