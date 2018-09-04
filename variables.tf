@@ -179,3 +179,8 @@ variable "cfssl_data_volumeid" {}
 variable "etcd_data_volumeids" {
   type = "list"
 }
+
+variable "feature_gates" {
+  description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
+  default     = ""
+}

@@ -42,6 +42,7 @@ ExecStart=/usr/bin/docker \
     --kubeconfig=/var/lib/kubelet/kubeconfig \
     --node-labels=role=master,node-role.kubernetes.io/master="" \
     --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
+    ${feature_gates == "" ? "" : "--feature-gates=${feature_gates}"} \
     --container-runtime=docker \
     --network-plugin=cni \
     --cni-bin-dir=/opt/cni/bin \

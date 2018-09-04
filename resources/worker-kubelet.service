@@ -40,6 +40,7 @@ ExecStart=/usr/bin/docker \
   "${kubelet_image_url}:${kubelet_image_tag}" \
     --kubeconfig=/var/lib/kubelet/kubeconfig \
     --node-labels=role=${role} \
+    ${feature_gates == "" ? "" : "--feature-gates=${feature_gates}"} \
     --container-runtime=docker \
     --network-plugin=cni \
     --cni-bin-dir=/opt/cni/bin \
