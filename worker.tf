@@ -37,6 +37,7 @@ data "template_file" "worker-kubelet" {
     cluster_dns       = "${var.cluster_dns}"
     cloud_provider    = "${var.cloud_provider}"
     role              = "worker"
+    feature_gates     = "${var.feature_gates}"
   }
 }
 

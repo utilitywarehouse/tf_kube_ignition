@@ -20,7 +20,7 @@ spec:
     - --service-cluster-ip-range=${service_network}
     - --secure-port=443
     - --enable-admission-plugins=NodeRestriction,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PersistentVolumeClaimResize
-    - --feature-gates=ExpandPersistentVolumes=true
+    ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
@@ -33,7 +33,6 @@ spec:
     - --oidc-client-id=${oidc_client_id}
     - --authorization-mode=Node,RBAC
     - --apiserver-count=${master_instance_count}
-    - --feature-gates=AdvancedAuditing=false
     - --audit-log-path=/var/log/kube-api-server/audit
     - --audit-log-maxsize=100
     - --audit-log-maxbackup=20

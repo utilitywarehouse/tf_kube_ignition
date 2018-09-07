@@ -13,6 +13,7 @@ spec:
     command:
     - kube-scheduler
     - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
+    ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
     - --v=0
     livenessProbe:
       httpGet:

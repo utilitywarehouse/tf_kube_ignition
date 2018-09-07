@@ -22,6 +22,7 @@ spec:
     - --allocate-node-cidrs=true
     - --cluster-cidr=${pod_network}
     - --node-monitor-grace-period=120s
+    ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
     - --v=0
     livenessProbe:
       httpGet:
