@@ -34,16 +34,33 @@ data "template_file" "worker-kubelet" {
   vars {
     kubelet_image_url = "${var.hyperkube_image_url}"
     kubelet_image_tag = "${var.hyperkube_image_tag}"
-    cluster_dns       = "${var.cluster_dns}"
     cloud_provider    = "${var.cloud_provider}"
     role              = "worker"
-    feature_gates     = "${var.feature_gates}"
   }
 }
 
 data "ignition_systemd_unit" "worker-kubelet" {
   name    = "kubelet.service"
   content = "${data.template_file.worker-kubelet.rendered}"
+}
+
+data "template_file" "worker-kubelet-conf" {
+  template = "${file("${path.module}/resources/worker-kubelet-conf.yaml")}"
+
+  vars {
+    cluster_dns   = "${var.cluster_dns}"
+    feature_gates = "${local.feature_gates_yaml_fragment}"
+  }
+}
+
+data "ignition_file" "worker-kubelet-conf" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/worker-kubelet-conf.yaml"
+
+  content {
+    content = "${data.template_file.worker-kubelet-conf.rendered}"
+  }
 }
 
 data "template_file" "worker-kubeconfig" {
@@ -94,6 +111,7 @@ data "ignition_config" "worker" {
         data.ignition_file.worker-prom-machine-role.id,
         data.ignition_file.worker-kubeconfig.id,
         data.ignition_file.worker-sysctl-vm.id,
+        data.ignition_file.master-kubelet-conf.id,
     ),
     var.worker_additional_files
   )}"]

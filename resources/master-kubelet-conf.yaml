@@ -1,0 +1,8 @@
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+clusterDNS:
+  - "${cluster_dns}"
+clusterDomain: "cluster.local"
+${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
+serializeImagePulls: false
+staticPodPath: "/etc/kubernetes/manifests"

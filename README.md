@@ -25,7 +25,6 @@ module "ignition" {
   enable_container_linux_update-engine     = true
   enable_container_linux_locksmithd_master = false
   enable_container_linux_locksmithd_worker = false
-  feature_gates                            = "ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false"
   dns_domain                               = "${var.role_name}.${var.account}.${var.vpc_dns_zone_name}"
   cluster_dns                              = "10.3.0.10"
   master_instance_count                    = "3"
