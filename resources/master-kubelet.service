@@ -39,21 +39,16 @@ ExecStart=/usr/bin/docker \
     --volume /var/lib/calico:/var/lib/calico:rw \
     --entrypoint /usr/local/bin/kubelet \
   "${kubelet_image_url}:${kubelet_image_tag}" \
+    --allow-privileged \
+    --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
     --kubeconfig=/var/lib/kubelet/kubeconfig \
     --node-labels=role=master,node-role.kubernetes.io/master="" \
     --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-    ${feature_gates == "" ? "" : "--feature-gates=${feature_gates}"} \
     --container-runtime=docker \
     --network-plugin=cni \
     --cni-bin-dir=/opt/cni/bin \
     --cni-conf-dir=/etc/cni/net.d \
-    --allow-privileged \
-    --pod-manifest-path=/etc/kubernetes/manifests \
-    --minimum-container-ttl-duration=6m0s \
-    --cluster-dns=${cluster_dns} \
-    --cluster_domain=cluster.local \
     ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
-    --serialize-image-pulls=false \
     --lock-file=/var/run/lock/kubelet.lock \
     --exit-on-lock-contention \
     --v=0

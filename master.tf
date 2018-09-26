@@ -63,14 +63,31 @@ data "template_file" "master-kubelet" {
     kubelet_image_url = "${var.hyperkube_image_url}"
     kubelet_image_tag = "${var.hyperkube_image_tag}"
     cloud_provider    = "${var.cloud_provider}"
-    cluster_dns       = "${var.cluster_dns}"
-    feature_gates     = "${var.feature_gates}"
   }
 }
 
 data "ignition_systemd_unit" "master-kubelet" {
   name    = "kubelet.service"
   content = "${data.template_file.master-kubelet.rendered}"
+}
+
+data "template_file" "master-kubelet-conf" {
+  template = "${file("${path.module}/resources/master-kubelet-conf.yaml")}"
+
+  vars {
+    cluster_dns   = "${var.cluster_dns}"
+    feature_gates = "${local.feature_gates_yaml_fragment}"
+  }
+}
+
+data "ignition_file" "master-kubelet-conf" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/master-kubelet-conf.yaml"
+
+  content {
+    content = "${data.template_file.master-kubelet-conf.rendered}"
+  }
 }
 
 data "ignition_file" "master-kubeconfig" {
@@ -106,7 +123,7 @@ data "template_file" "kube-apiserver" {
     cloud_provider        = "${var.cloud_provider}"
     oidc_issuer_url       = "${var.oidc_issuer_url}"
     oidc_client_id        = "${var.oidc_client_id}"
-    feature_gates         = "${var.feature_gates}"
+    feature_gates         = "${local.feature_gates_csv}"
 
     /*
      * for the list of APIs & resources enabled by default, please see near the
@@ -138,7 +155,7 @@ data "template_file" "kube-controller-manager" {
     cloud_provider      = "${var.cloud_provider}"
     cloud_config        = "${var.kube_controller_cloud_config}"
     pod_network         = "${var.pod_network}"
-    feature_gates       = "${var.feature_gates}"
+    feature_gates       = "${local.feature_gates_csv}"
   }
 }
 
@@ -168,7 +185,7 @@ data "template_file" "kube-scheduler" {
   vars {
     hyperkube_image_url = "${var.hyperkube_image_url}"
     hyperkube_image_tag = "${var.hyperkube_image_tag}"
-    feature_gates       = "${var.feature_gates}"
+    feature_gates       = "${local.feature_gates_csv}"
   }
 }
 
@@ -221,6 +238,7 @@ data "ignition_config" "master" {
         data.ignition_file.kube-scheduler.id,
         data.ignition_file.kube-scheduler-config.id,
         data.ignition_file.kube-controller-manager.id,
+        data.ignition_file.master-kubelet-conf.id,
     ),
     var.master_additional_files,
     list(local.kube_controller_additional_config,)

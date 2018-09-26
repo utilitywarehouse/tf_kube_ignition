@@ -182,5 +182,28 @@ variable "etcd_data_volumeids" {
 
 variable "feature_gates" {
   description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
-  default     = ""
+  type        = "map"
+
+  default = {
+    "AdvancedAuditing"         = "false"
+    "ExpandPersistentVolumes"  = "true"
+    "PodShareProcessNamespace" = "true"
+  }
+}
+
+locals {
+  # Comma separated list for cli flas use, example output:
+  # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
+  feature_gates_csv = "${join(",", formatlist("%s=%s", keys(var.feature_gates), values(var.feature_gates)))}"
+
+  # yaml fragment for config file use, example output:
+  # ```
+  #   AdvancedAuditing: false
+  #   ExpandPersistentVolumes: true
+  #   PodShareProcessNamespace: true
+  # ```
+  #
+  # note the two white space at the start of the line, this corresponds to the
+  # formatting in worker-kubelet-conf.yaml and master-kubelet-conf.yaml
+  feature_gates_yaml_fragment = "${join("\n  ", formatlist("%s: %s", keys(var.feature_gates), values(var.feature_gates)))}"
 }
