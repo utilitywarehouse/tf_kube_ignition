@@ -12,7 +12,7 @@ data "template_file" "master-cfssl-new-cert" {
     profile = "client-server"
     path    = "/etc/kubernetes/ssl"
     cn      = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org     = "system:nodes"
+    org     = "system:masters"
     get_ip  = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
