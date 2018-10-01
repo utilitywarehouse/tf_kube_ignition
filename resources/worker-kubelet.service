@@ -43,7 +43,7 @@ ExecStart=/usr/bin/docker \
     ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
     --cni-bin-dir=/opt/cni/bin \
     --cni-conf-dir=/etc/cni/net.d \
-    --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
+    --config=/etc/kubernetes/config/worker-kubelet-conf.yaml \
     --container-runtime=docker \
     --exit-on-lock-contention \
     --kubeconfig=/var/lib/kubelet/kubeconfig \
