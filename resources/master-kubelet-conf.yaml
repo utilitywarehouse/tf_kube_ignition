@@ -4,5 +4,6 @@ clusterDNS:
   - "${cluster_dns}"
 clusterDomain: "cluster.local"
 ${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
+readOnlyPort: 10255
 serializeImagePulls: false
 staticPodPath: "/etc/kubernetes/manifests"
