@@ -203,7 +203,7 @@ locals {
   #   PodShareProcessNamespace: true
   # ```
   #
-  # note the two white space at the start of the line, this corresponds to the
+  # note the two white space chars at the start of the line, this corresponds to the
   # formatting in worker-kubelet-conf.yaml and master-kubelet-conf.yaml
   feature_gates_yaml_fragment = "${join("\n  ", formatlist("%s: %s", keys(var.feature_gates), values(var.feature_gates)))}"
 }
