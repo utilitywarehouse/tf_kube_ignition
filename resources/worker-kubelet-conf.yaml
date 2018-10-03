@@ -5,6 +5,8 @@ authentication:
     enabled: true
   webhook:
     enabled: false
+  x509:
+    clientCAFile: "/etc/kubernetes/ssl/ca.pem"
 authorization:
   mode: AlwaysAllow
 clusterDNS:
