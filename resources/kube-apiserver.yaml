@@ -44,6 +44,8 @@ spec:
     - --requestheader-username-headers=X-Remote-User
     - --proxy-client-cert-file=/etc/kubernetes/ssl/proxy.pem
     - --proxy-client-key-file=/etc/kubernetes/ssl/proxy-key.pem
+    - --kubelet-client-certificate=/etc/kubernetes/ssl/node.pem
+    - --kubelet-client-key=/etc/kubernetes/ssl/node-key.pem
     - --v=0
     livenessProbe:
       httpGet:

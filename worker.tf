@@ -111,7 +111,7 @@ data "ignition_config" "worker" {
         data.ignition_file.worker-prom-machine-role.id,
         data.ignition_file.worker-kubeconfig.id,
         data.ignition_file.worker-sysctl-vm.id,
-        data.ignition_file.master-kubelet-conf.id,
+        data.ignition_file.worker-kubelet-conf.id,
     ),
     var.worker_additional_files
   )}"]
