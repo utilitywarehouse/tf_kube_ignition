@@ -39,8 +39,6 @@ ExecStart=/usr/bin/docker \
     --entrypoint /usr/local/bin/kubelet \
   "${kubelet_image_url}:${kubelet_image_tag}" \
     --allow-privileged \
-    --anonymous-auth \
-    --authorization-mode="AlwaysAllow" \
     --client-ca-file=/etc/kubernetes/ssl/ca.pem \
     ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
     --cni-bin-dir=/opt/cni/bin \
