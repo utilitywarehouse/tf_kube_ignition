@@ -146,6 +146,20 @@ data "ignition_file" "kube-apiserver" {
   }
 }
 
+data "template_file" "audit-policy" {
+  template = "${file("${path.module}/resources/audit-policy.yaml")}"
+}
+
+data "ignition_file" "audit-policy" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/audit-policy.yaml"
+
+  content {
+    content = "${data.template_file.audit-policy.rendered}"
+  }
+}
+
 data "template_file" "kube-controller-manager" {
   template = "${file("${path.module}/resources/kube-controller-manager.yaml")}"
 
@@ -226,6 +240,7 @@ locals {
 data "ignition_config" "master" {
   files = ["${concat(
     list(
+        data.ignition_file.audit-policy.id,
         data.ignition_file.cfssl.id,
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,

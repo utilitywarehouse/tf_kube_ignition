@@ -33,6 +33,7 @@ spec:
     - --oidc-client-id=${oidc_client_id}
     - --authorization-mode=Node,RBAC
     - --apiserver-count=${master_instance_count}
+    - --audit-policy-file=/etc/kubernetes/config/audit-policy.yaml
     - --audit-log-path=/var/log/kube-api-server/audit
     - --audit-log-maxsize=100
     - --audit-log-maxbackup=20
@@ -65,6 +66,9 @@ spec:
     - mountPath: /etc/kubernetes/ssl
       name: ssl-certs-kubernetes
       readOnly: true
+    - mountPath: /etc/kubernetes/config
+      name: kubernetes-configurations
+      readOnly: true
     - mountPath: /etc/ssl/certs
       name: ssl-certs-host
       readOnly: true
@@ -74,6 +78,9 @@ spec:
   - hostPath:
       path: /etc/kubernetes/ssl
     name: ssl-certs-kubernetes
+  - hostPath:
+      path: /etc/kubernetes/config
+    name: kubernetes-configurations
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host

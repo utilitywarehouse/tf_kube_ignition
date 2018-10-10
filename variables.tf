@@ -185,7 +185,6 @@ variable "feature_gates" {
   type        = "map"
 
   default = {
-    "AdvancedAuditing"         = "false"
     "ExpandPersistentVolumes"  = "true"
     "PodShareProcessNamespace" = "true"
   }
