@@ -34,7 +34,7 @@ variable "etcd_image_url" {
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.3.8"
+  default     = "v3.3.10"
 }
 
 variable "node_exporter_image_url" {
