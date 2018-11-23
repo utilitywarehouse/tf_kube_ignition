@@ -14,19 +14,35 @@ output "etcd" {
   value = ["${data.ignition_config.etcd.*.rendered}"]
 }
 
-// Also output ignition config ids for stuff like on-prem that need to manipulate those
-output "cfssl_ignition_id" {
-  value = "${data.ignition_config.cfssl.id}"
+// Also output ignition config systemd and files for stuff like on-prem that need to manipulate those
+output "cfssl_ignition_systemd" {
+  value = "${data.ignition_config.cfssl.systemd}"
 }
 
-output "master_ignition_id" {
-  value = "${data.ignition_config.master.id}"
+output "cfssl_ignition_files" {
+  value = "${data.ignition_config.cfssl.files}"
 }
 
-output "worker_ignition_id" {
-  value = "${data.ignition_config.worker.id}"
+output "master_ignition_systemd" {
+  value = "${data.ignition_config.master.systemd}"
 }
 
-output "etcd_ignition_id" {
-  value = ["${data.ignition_config.etcd.*.id}"]
+output "master_ignition_files" {
+  value = "${data.ignition_config.master.files}"
+}
+
+output "worker_ignition_systemd" {
+  value = "${data.ignition_config.worker.systemd}"
+}
+
+output "worker_ignition_files" {
+  value = "${data.ignition_config.worker.files}"
+}
+
+output "etcd_ignition_systemd" {
+  value = ["${data.ignition_config.etcd.*.systemd}"]
+}
+
+output "etcd_ignition_files" {
+  value = ["${data.ignition_config.etcd.*.files}"]
 }
