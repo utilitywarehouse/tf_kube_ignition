@@ -22,7 +22,7 @@ variable "kubernetes_master_default_svc" {
   type = "map"
 
   default = {
-    ""    = "10.3.0.1"
+    ""    = "${cidrhost(var.service_network, 1)}"
     "aws" = "10.3.0.1"
     "gce" = "10.5.0.1"
   }
