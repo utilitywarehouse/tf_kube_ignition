@@ -18,12 +18,6 @@ variable "get_ip_command" {
   }
 }
 
-variable "kubernetes_master_default_svc" {
-  type = "map"
-
-  default = {
-    ""    = "${cidrhost(var.service_network, 1)}"
-    "aws" = "10.3.0.1"
-    "gce" = "10.5.0.1"
-  }
+locals {
+  kubernetes_master_default_svc = "${cidrhost(var.service_network, 1)}"
 }
