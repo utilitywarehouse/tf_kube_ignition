@@ -18,6 +18,7 @@ variable "get_ip_command" {
   }
 }
 
+// master address is the first in the service subnet
 locals {
-  kubernetes_master_default_svc = "${cidrhost(var.service_network, 1)}"
+  kubernetes_master_svc = "${cidrhost(var.service_network, 1)}"
 }

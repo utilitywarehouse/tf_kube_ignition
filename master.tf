@@ -16,7 +16,7 @@ data "template_file" "master-cfssl-new-cert" {
     get_ip  = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
-      "${local.kubernetes_master_default_svc}",
+      "${local.kubernetes_master_svc}",
       "kubernetes",
       "kubernetes.default",
       "kubernetes.default.svc",
