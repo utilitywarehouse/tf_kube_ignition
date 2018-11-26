@@ -9,8 +9,6 @@ Description=Fetch new certificates from cfssl server
 [Service]
 Type=oneshot
 ExecStart=/opt/bin/cfssl-new-cert
-Restart=on-failure
-RestartSec=10
 [Install]
 WantedBy=multi-user.target
 EOS
