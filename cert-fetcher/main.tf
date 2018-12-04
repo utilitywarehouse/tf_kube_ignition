@@ -6,6 +6,7 @@ data "ignition_systemd_unit" "cert-fetch-service" {
   content = <<EOS
 [Unit]
 Description=Fetch new certificates from cfssl server
+After=network-online.target
 [Service]
 Type=oneshot
 ExecStart=/bin/sh -c 'while ! /opt/bin/cfssl-new-cert; do echo "cfssl not ready, sleeping 5 seconds";sleep 5; done'
