@@ -54,7 +54,7 @@ variable "hyperkube_image_url" {
 
 variable "hyperkube_image_tag" {
   description = "The version of the hyperkube image to use."
-  default     = "v1.11.5"
+  default     = "v1.12.3"
 }
 
 variable "cluster_dns" {
@@ -186,7 +186,6 @@ variable "feature_gates" {
 
   default = {
     "ExpandPersistentVolumes"  = "true"
-    "PodShareProcessNamespace" = "true"
   }
 }
 
