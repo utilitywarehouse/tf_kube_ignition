@@ -184,9 +184,14 @@ variable "feature_gates" {
   description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
   type        = "map"
 
-  default = {
-    "ExpandPersistentVolumes"  = "true"
-  }
+  # yaml fragment for config file use, example default feature gates:
+  # ```
+  # default = {
+  #   "ExpandPersistentVolumes"   = "true"
+  #   "PodShareProcessNamespace"  = "true"
+  # }
+  # ```
+  default = {}
 }
 
 locals {
