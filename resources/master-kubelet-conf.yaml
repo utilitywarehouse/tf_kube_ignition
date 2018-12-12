@@ -2,7 +2,7 @@ kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 authentication:
   anonymous:
-    enabled: true
+    enabled: false
   webhook:
     enabled: false
   x509:
@@ -13,6 +13,5 @@ clusterDNS:
   - "${cluster_dns}"
 clusterDomain: "cluster.local"
 ${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
-readOnlyPort: 10255
 serializeImagePulls: false
 staticPodPath: "/etc/kubernetes/manifests"
