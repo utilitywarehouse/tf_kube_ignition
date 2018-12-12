@@ -54,7 +54,7 @@ variable "hyperkube_image_url" {
 
 variable "hyperkube_image_tag" {
   description = "The version of the hyperkube image to use."
-  default     = "v1.11.5"
+  default     = "v1.12.3"
 }
 
 variable "cluster_dns" {
@@ -184,10 +184,14 @@ variable "feature_gates" {
   description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
   type        = "map"
 
-  default = {
-    "ExpandPersistentVolumes"  = "true"
-    "PodShareProcessNamespace" = "true"
-  }
+  # yaml fragment for config file use, example default feature gates:
+  # ```
+  # default = {
+  #   "ExpandPersistentVolumes"   = "true"
+  #   "PodShareProcessNamespace"  = "true"
+  # }
+  # ```
+  default = {}
 }
 
 locals {
