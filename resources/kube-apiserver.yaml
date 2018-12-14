@@ -19,7 +19,7 @@ spec:
     - --allow-privileged=true
     - --service-cluster-ip-range=${service_network}
     - --secure-port=443
-    - --enable-admission-plugins=NodeRestriction,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PersistentVolumeClaimResize
+    - --enable-admission-plugins=${admission_plugins}
     ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
     - --tls-cert-file=/etc/kubernetes/ssl/node.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem

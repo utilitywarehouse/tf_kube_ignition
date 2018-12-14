@@ -124,6 +124,7 @@ data "template_file" "kube-apiserver" {
     oidc_issuer_url       = "${var.oidc_issuer_url}"
     oidc_client_id        = "${var.oidc_client_id}"
     feature_gates         = "${local.feature_gates_csv}"
+    admission_plugins     = "${var.admission_plugins}"
 
     /*
      * for the list of APIs & resources enabled by default, please see near the

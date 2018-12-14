@@ -194,6 +194,11 @@ variable "feature_gates" {
   default = {}
 }
 
+variable "admission_plugins" {
+  description = "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/"
+  default     = "NodeRestriction,PodSecurityPolicy"
+}
+
 locals {
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
