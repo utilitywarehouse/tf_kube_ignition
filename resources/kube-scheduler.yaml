@@ -26,7 +26,13 @@ spec:
     - mountPath: /etc/kubernetes/config
       name: kubernetes-configurations
       readOnly: true
+    - mountPath: /etc/kubernetes/ssl
+      name: kubernetes-ssl
+      readOnly: true
   volumes:
   - hostPath:
       path: /etc/kubernetes/config
     name: kubernetes-configurations
+  - hostPath:
+      path: /etc/kubernetes/ssl
+    name: kubernetes-ssl

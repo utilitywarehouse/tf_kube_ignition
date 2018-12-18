@@ -1,6 +1,6 @@
 kind: KubeSchedulerConfiguration
 apiVersion: kubescheduler.config.k8s.io/v1alpha1
 clientConnection:
-  kubeconfig: /etc/kubernetes/config/master-kubeconfig
+  kubeconfig: /etc/kubernetes/config/scheduler.conf
 leaderElection:
   leaderElect: true

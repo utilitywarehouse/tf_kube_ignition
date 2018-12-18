@@ -11,7 +11,7 @@ spec:
     image: ${hyperkube_image_url}:${hyperkube_image_tag}
     command:
     - kube-controller-manager
-    - --master=http://127.0.0.1:8080
+    - --kubeconfig=/etc/kubernetes/config/controller-manager.conf
     - --leader-elect=true
     - --use-service-account-credentials
     - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
@@ -38,8 +38,8 @@ spec:
     - mountPath: /etc/ssl/certs
       name: ssl-certs-host
       readOnly: true
-    - mountPath: /etc/kubernetes/config/cloud_provider
-      name: cloud-config
+    - mountPath: /etc/kubernetes/config
+      name: config
       readOnly: true
   hostNetwork: true
   volumes:
@@ -50,5 +50,5 @@ spec:
       path: /usr/share/ca-certificates
     name: ssl-certs-host
   - hostPath:
-      path: /etc/kubernetes/config/cloud_provider
-    name: cloud-config
+      path: /etc/kubernetes/config
+    name: config
