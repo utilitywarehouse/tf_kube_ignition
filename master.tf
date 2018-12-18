@@ -3,17 +3,46 @@ data "ignition_systemd_unit" "locksmithd_master" {
   mask = "${!var.enable_container_linux_locksmithd_master}"
 }
 
-data "template_file" "master-cfssl-new-cert" {
+// Node certificate for kubelet to use
+data "template_file" "master-node-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    user    = "root"
-    group   = "root"
-    profile = "client-server"
-    path    = "/etc/kubernetes/ssl"
-    cn      = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org     = "system:masters"
-    get_ip  = "${var.get_ip_command[var.cloud_provider]}"
+    cert_name   = "node"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org         = "system:nodes"
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-node-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-node-cert"
+
+  content {
+    content = "${data.template_file.master-node-cfssl-new-cert.rendered}"
+  }
+}
+
+// Serving certificate for the API server
+data "template_file" "master-apiserver-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name = "apiserver"
+    user      = "root"
+    group     = "root"
+    profile   = "client-server"
+    path      = "/etc/kubernetes/ssl"
+    cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org       = ""
+    get_ip    = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
       "${var.kubernetes_master_default_svc[var.cloud_provider]}",
@@ -27,13 +56,40 @@ data "template_file" "master-cfssl-new-cert" {
   }
 }
 
-data "ignition_file" "master-cfssl-new-cert" {
+data "ignition_file" "master-cfssl-new-apiserver-cert" {
   mode       = 0755
   filesystem = "root"
-  path       = "/opt/bin/cfssl-new-cert"
+  path       = "/opt/bin/cfssl-new-apiserver-cert"
 
   content {
-    content = "${data.template_file.master-cfssl-new-cert.rendered}"
+    content = "${data.template_file.master-apiserver-cfssl-new-cert.rendered}"
+  }
+}
+
+// Client certificate for the API server to connect to the kubelets securely
+data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name   = "apiserver-kubelet-client"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org         = "system:masters"
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
+
+  content {
+    content = "${data.template_file.master-apiserver-kubelet-client-cfssl-new-cert.rendered}"
   }
 }
 
@@ -245,7 +301,9 @@ data "ignition_config" "master" {
         data.ignition_file.cfssl.id,
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
-        data.ignition_file.master-cfssl-new-cert.id,
+        data.ignition_file.master-cfssl-new-node-cert.id,
+        data.ignition_file.master-cfssl-new-apiserver-cert.id,
+        data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.id,
         data.ignition_file.master-cfssl-keys-and-certs-get.id,
         data.ignition_file.master-prom-machine-role.id,
         data.ignition_file.master-kubeconfig.id,
