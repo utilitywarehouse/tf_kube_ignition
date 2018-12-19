@@ -21,7 +21,7 @@ data "template_file" "master-node-cfssl-new-cert" {
     org       = "system:master-nodes"
     get_ip    = "${var.get_ip_command[var.cloud_provider]}"
 
-    extra_names = "localhost"
+    extra_names = ""
   }
 }
 
@@ -58,6 +58,7 @@ data "template_file" "master-apiserver-cfssl-new-cert" {
       "elb.master.${var.dns_domain}",
       "*.master.${var.dns_domain}",
       "localhost",
+      "127.0.0.1",
     ))}"
   }
 }
@@ -85,7 +86,7 @@ data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
     cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
     org         = "system:masters"
     get_ip      = "${var.get_ip_command[var.cloud_provider]}"
-    extra_names = "localhost"
+    extra_names = ""
   }
 }
 
@@ -112,7 +113,7 @@ data "template_file" "master-scheduler-cfssl-new-cert" {
     cn          = "system:kube-scheduler"
     org         = ""
     get_ip      = "${var.get_ip_command[var.cloud_provider]}"
-    extra_names = "localhost"
+    extra_names = ""
   }
 }
 
@@ -139,7 +140,7 @@ data "template_file" "master-controller-manager-cfssl-new-cert" {
     cn          = "system:kube-controller-manager"
     org         = ""
     get_ip      = "${var.get_ip_command[var.cloud_provider]}"
-    extra_names = "localhost"
+    extra_names = ""
   }
 }
 
