@@ -94,6 +94,33 @@ data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
   }
 }
 
+// Client certificate for the API server to connect to the kubelets securely
+data "template_file" "master-scheduler-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name   = "scheduler"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:kube-scheduler"
+    org         = ""
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-scheduler-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-scheduler-cert"
+
+  content {
+    content = "${data.template_file.master-scheduler-cfssl-new-cert.rendered}"
+  }
+}
+
 data "template_file" "master-cfssl-keys-and-certs-get" {
   template = "${file("${path.module}/resources/cfssl-keys-and-certs-get")}"
 
@@ -313,6 +340,7 @@ data "ignition_config" "master" {
         data.ignition_file.master-cfssl-new-node-cert.id,
         data.ignition_file.master-cfssl-new-apiserver-cert.id,
         data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.id,
+        data.ignition_file.master-cfssl-new-scheduler-cert.id,
         data.ignition_file.master-cfssl-keys-and-certs-get.id,
         data.ignition_file.master-prom-machine-role.id,
         data.ignition_file.master-kubeconfig.id,

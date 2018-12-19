@@ -18,6 +18,7 @@ ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
 ExecStartPre=/opt/bin/cfssl-new-node-cert
 ExecStartPre=/opt/bin/cfssl-new-apiserver-cert
 ExecStartPre=/opt/bin/cfssl-new-apiserver-kubelet-client-cert
+ExecStartPre=/opt/bin/cfssl-new-scheduler-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"
 ExecStart=/usr/bin/docker \
