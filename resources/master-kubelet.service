@@ -14,6 +14,9 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 # This is a partial workaround to this upstream Kubernetes issue:
 #  https://github.com/kubernetes/kubernetes/issues/41916#issuecomment-312428731
 ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
+# This is a temporal workaround this upstream Kubernetes issue:
+#  https://github.com/kubernetes/kubernetes/issues/69015
+ExecStartPre=/sbin/sysctl -w fs.inotify.max_user_watches=524288
 ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
 ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
