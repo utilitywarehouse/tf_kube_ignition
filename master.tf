@@ -17,10 +17,7 @@ data "template_file" "master-node-cfssl-new-cert" {
     org       = "system:nodes"
     get_ip    = "${var.get_ip_command[var.cloud_provider]}"
 
-    extra_names = "${join(",", list(
-      "localhost",
-      "127.0.0.1",
-    ))}"
+    extra_names = ""
   }
 }
 
@@ -150,13 +147,21 @@ data "ignition_file" "master-kubelet-conf" {
   }
 }
 
+data "template_file" "master-kubeconfig" {
+  template = "${file("${path.module}/resources/master-kubeconfig")}"
+
+  vars {
+    master_address = "${var.master_address}"
+  }
+}
+
 data "ignition_file" "master-kubeconfig" {
   mode       = 0644
   filesystem = "root"
   path       = "/etc/kubernetes/config/master-kubeconfig"
 
   content {
-    content = "${file("${path.module}/resources/master-kubeconfig")}"
+    content = "${data.template_file.master-kubeconfig.rendered}"
   }
 }
 
@@ -166,7 +171,7 @@ data "ignition_file" "kubelet-kubeconfig" {
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
-    content = "${file("${path.module}/resources/master-kubeconfig")}"
+    content = "${data.template_file.master-kubeconfig.rendered}"
   }
 }
 
