@@ -7,7 +7,7 @@ data "template_file" "worker-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-	  cert_name   = "node"
+    cert_name   = "node"
     user        = "root"
     group       = "root"
     profile     = "client"
