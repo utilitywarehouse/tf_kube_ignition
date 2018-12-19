@@ -3,10 +3,11 @@ data "ignition_systemd_unit" "locksmithd_master" {
   mask = "${!var.enable_container_linux_locksmithd_master}"
 }
 
-// Node certificate for kubelet to use as part of system:master-nodes. We need ClusterRoleBindings to allow kube components creation
-// and bind the group with system:node role.
-// In order to be authorized by the Node authorizer, kubelets must use a credential that identifies them as being in 
-// the system:nodes group, with a username of system:node:<nodeName>
+// Node certificate for kubelet to use as part of system:master-nodes. We need
+// ClusterRoleBindings to allow kube components creation and bind the group
+// with system:node role. In order to be authorized by the Node authorizer,
+// kubelets must use a credential that identifies them as being in the
+// system:nodes group, with a username of system:node:<nodeName>
 data "template_file" "master-node-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
