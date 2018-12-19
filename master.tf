@@ -8,15 +8,19 @@ data "template_file" "master-node-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    cert_name   = "node"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org         = "system:nodes"
-    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
-    extra_names = ""
+    cert_name = "node"
+    user      = "root"
+    group     = "root"
+    profile   = "client-server"
+    path      = "/etc/kubernetes/ssl"
+    cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org       = "system:nodes"
+    get_ip    = "${var.get_ip_command[var.cloud_provider]}"
+
+    extra_names = "${join(",", list(
+      "localhost",
+      "127.0.0.1",
+    ))}"
   }
 }
 
