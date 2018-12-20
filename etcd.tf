@@ -8,13 +8,14 @@ data "template_file" "etcd-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    user    = "etcd"
-    group   = "etcd"
-    profile = "client-server"
-    path    = "/etc/etcd/ssl"
-    cn      = "${count.index}.etcd.${var.dns_domain}"
-    org     = ""
-    get_ip  = "${var.get_ip_command[var.cloud_provider]}"
+    cert_name = "node"
+    user      = "etcd"
+    group     = "etcd"
+    profile   = "client-server"
+    path      = "/etc/etcd/ssl"
+    cn        = "${count.index}.etcd.${var.dns_domain}"
+    org       = ""
+    get_ip    = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
       "etcd.${var.dns_domain}",
