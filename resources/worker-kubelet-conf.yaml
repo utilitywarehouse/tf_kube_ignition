@@ -4,7 +4,7 @@ authentication:
   anonymous:
     enabled: false
   webhook:
-    enabled: false
+    enabled: true
   x509:
     clientCAFile: "/etc/kubernetes/ssl/ca.pem"
 authorization:
