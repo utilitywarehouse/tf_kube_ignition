@@ -191,9 +191,7 @@ variable "feature_gates" {
   #   "PodShareProcessNamespace"  = "true"
   # }
   # ```
-  default = {
-    "DryRun" = "true"
-  }
+  default = {}
 }
 
 variable "admission_plugins" {
