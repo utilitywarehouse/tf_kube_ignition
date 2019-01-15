@@ -52,8 +52,16 @@ spec:
       httpGet:
         host: 127.0.0.1
         port: 8080
+        path: /healthz?exclude=etcd
+      # https://github.com/kubernetes/kubernetes/pull/71054/files#diff-e6e5eefc330d75c8ef2e218de62c5fdfR57
+      initialDelaySeconds: 45
+      timeoutSeconds: 15
+    # https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/manifests/kube-apiserver.manifest#L42
+    readinessProbe:
+      httpGet:
+        host: 127.0.0.1
+        port: 8080
         path: /healthz
-      initialDelaySeconds: 15
       timeoutSeconds: 15
     ports:
     - containerPort: 443
