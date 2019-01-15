@@ -215,16 +215,6 @@ data "template_file" "master-kubeconfig" {
   }
 }
 
-data "ignition_file" "master-kubeconfig" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/kubernetes/config/master-kubeconfig"
-
-  content {
-    content = "${data.template_file.master-kubeconfig.rendered}"
-  }
-}
-
 data "ignition_file" "kubelet-kubeconfig" {
   mode       = 0644
   filesystem = "root"
@@ -413,7 +403,6 @@ data "ignition_config" "master" {
         data.ignition_file.master-cfssl-new-controller-manager-cert.id,
         data.ignition_file.master-cfssl-keys-and-certs-get.id,
         data.ignition_file.master-prom-machine-role.id,
-        data.ignition_file.master-kubeconfig.id,
         data.ignition_file.scheduler-kubeconfig.id,
         data.ignition_file.controller-manager-kubeconfig.id,
         data.ignition_file.kubelet-kubeconfig.id,
