@@ -61,7 +61,7 @@ data "ignition_file" "etcdctl-wrapper" {
   filesystem = "root"
   uid        = 500
   gid        = 500
-  path       = "/home/core/etcdctl-wrapper"
+  path       = "/opt/bin/etcdctl-wrapper"
 
   content {
     content = "${element(data.template_file.etcdctl-wrapper.*.rendered, count.index)}"
