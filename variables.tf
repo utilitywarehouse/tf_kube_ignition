@@ -44,7 +44,7 @@ variable "node_exporter_image_url" {
 
 variable "node_exporter_image_tag" {
   description = "The version of the node_exporter image to use."
-  default     = "v0.15.2"
+  default     = "v0.17.0"
 }
 
 variable "hyperkube_image_url" {
@@ -54,7 +54,7 @@ variable "hyperkube_image_url" {
 
 variable "hyperkube_image_tag" {
   description = "The version of the hyperkube image to use."
-  default     = "v1.11.1"
+  default     = "v1.13.3"
 }
 
 variable "cluster_dns" {
@@ -184,10 +184,19 @@ variable "feature_gates" {
   description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
   type        = "map"
 
-  default = {
-    "ExpandPersistentVolumes"  = "true"
-    "PodShareProcessNamespace" = "true"
-  }
+  # yaml fragment for config file use, example default feature gates:
+  # ```
+  # default = {
+  #   "ExpandPersistentVolumes"   = "true"
+  #   "PodShareProcessNamespace"  = "true"
+  # }
+  # ```
+  default = {}
+}
+
+variable "admission_plugins" {
+  description = "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/"
+  default     = "NodeRestriction"
 }
 
 locals {

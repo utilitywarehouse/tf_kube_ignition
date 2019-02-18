@@ -14,15 +14,15 @@ spec:
     - kube-apiserver
     - --etcd-servers=${etcd_endpoints}
     - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
-    - --etcd-certfile=/etc/kubernetes/ssl/node.pem
-    - --etcd-keyfile=/etc/kubernetes/ssl/node-key.pem
+    - --etcd-certfile=/etc/kubernetes/ssl/apiserver.pem
+    - --etcd-keyfile=/etc/kubernetes/ssl/apiserver-key.pem
     - --allow-privileged=true
     - --service-cluster-ip-range=${service_network}
     - --secure-port=443
-    - --enable-admission-plugins=NodeRestriction,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota,PersistentVolumeClaimResize
+    - --enable-admission-plugins=${admission_plugins}
     ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
-    - --tls-cert-file=/etc/kubernetes/ssl/node.pem
-    - --tls-private-key-file=/etc/kubernetes/ssl/node-key.pem
+    - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
+    - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
     - --service-account-key-file=/etc/kubernetes/ssl/signing-key.pem
     - --service-account-lookup=true
@@ -45,15 +45,23 @@ spec:
     - --requestheader-username-headers=X-Remote-User
     - --proxy-client-cert-file=/etc/kubernetes/ssl/proxy.pem
     - --proxy-client-key-file=/etc/kubernetes/ssl/proxy-key.pem
-    - --kubelet-client-certificate=/etc/kubernetes/ssl/node.pem
-    - --kubelet-client-key=/etc/kubernetes/ssl/node-key.pem
+    - --kubelet-client-certificate=/etc/kubernetes/ssl/apiserver-kubelet-client.pem
+    - --kubelet-client-key=/etc/kubernetes/ssl/apiserver-kubelet-client-key.pem
     - --v=0
     livenessProbe:
       httpGet:
         host: 127.0.0.1
         port: 8080
+        path: /healthz?exclude=etcd
+      # https://github.com/kubernetes/kubernetes/pull/71054/files#diff-e6e5eefc330d75c8ef2e218de62c5fdfR57
+      initialDelaySeconds: 45
+      timeoutSeconds: 15
+    # https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/manifests/kube-apiserver.manifest#L42
+    readinessProbe:
+      httpGet:
+        host: 127.0.0.1
+        port: 8080
         path: /healthz
-      initialDelaySeconds: 15
       timeoutSeconds: 15
     ports:
     - containerPort: 443

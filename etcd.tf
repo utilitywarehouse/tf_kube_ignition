@@ -8,13 +8,14 @@ data "template_file" "etcd-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    user    = "etcd"
-    group   = "etcd"
-    profile = "client-server"
-    path    = "/etc/etcd/ssl"
-    cn      = "${count.index}.etcd.${var.dns_domain}"
-    org     = ""
-    get_ip  = "${var.get_ip_command[var.cloud_provider]}"
+    cert_name = "node"
+    user      = "etcd"
+    group     = "etcd"
+    profile   = "client-server"
+    path      = "/etc/etcd/ssl"
+    cn        = "${count.index}.etcd.${var.dns_domain}"
+    org       = ""
+    get_ip    = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
       "etcd.${var.dns_domain}",
@@ -60,7 +61,7 @@ data "ignition_file" "etcdctl-wrapper" {
   filesystem = "root"
   uid        = 500
   gid        = 500
-  path       = "/home/core/etcdctl-wrapper"
+  path       = "/opt/bin/etcdctl-wrapper"
 
   content {
     content = "${element(data.template_file.etcdctl-wrapper.*.rendered, count.index)}"

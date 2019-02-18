@@ -10,16 +10,12 @@ ExecStart=/bin/sh -c "\
     /usr/bin/docker run --rm \
       --name %p_$(uuidgen) \
       -p 9100:9100 \
-      -v /proc:/host/proc \
-      -v /sys:/host/sys \
-      -v /:/rootfs \
-      -v /etc/prom-text-collectors:/text-collectors \
       --net=host \
+      --pid=host \
+      -v /:/host:ro,rslave \
       ${node_exporter_image_url}:${node_exporter_image_tag} \
-        --path.procfs /host/proc \
-        --path.sysfs /host/sys \
-        --collector.filesystem.ignored-mount-points '^/(sys|proc|dev|host|etc)($|/)' \
-        --collector.textfile.directory=/text-collectors"
+        --path.rootfs /host \
+        --collector.textfile.directory=/host/etc/prom-text-collectors"
 ExecStop=-/bin/sh -c 'docker stop -t 3 "$(docker ps -q --filter=name=%p_)"'
 Restart=on-failure
 RestartSec=60

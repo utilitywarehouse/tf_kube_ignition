@@ -3,10 +3,12 @@ data "ignition_systemd_unit" "locksmithd_worker" {
   mask = "${!var.enable_container_linux_locksmithd_worker}"
 }
 
+// All nodes should belong to system:nodes group
 data "template_file" "worker-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
+    cert_name   = "node"
     user        = "root"
     group       = "root"
     profile     = "client"

@@ -3,17 +3,51 @@ data "ignition_systemd_unit" "locksmithd_master" {
   mask = "${!var.enable_container_linux_locksmithd_master}"
 }
 
-data "template_file" "master-cfssl-new-cert" {
+// Node certificate for kubelet to use as part of system:master-nodes. We need
+// ClusterRoleBindings to allow kube components creation and bind the group
+// with system:node role. In order to be authorized by the Node authorizer,
+// kubelets must use a credential that identifies them as being in the
+// system:nodes group, with a username of system:node:<nodeName>
+data "template_file" "master-node-cfssl-new-cert" {
   template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
-    user    = "root"
-    group   = "root"
-    profile = "client-server"
-    path    = "/etc/kubernetes/ssl"
-    cn      = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org     = "system:masters"
-    get_ip  = "${var.get_ip_command[var.cloud_provider]}"
+    cert_name = "node"
+    user      = "root"
+    group     = "root"
+    profile   = "client-server"
+    path      = "/etc/kubernetes/ssl"
+    cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org       = "system:master-nodes"
+    get_ip    = "${var.get_ip_command[var.cloud_provider]}"
+
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-node-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-node-cert"
+
+  content {
+    content = "${data.template_file.master-node-cfssl-new-cert.rendered}"
+  }
+}
+
+// Serving certificate for the API server
+data "template_file" "master-apiserver-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name = "apiserver"
+    user      = "root"
+    group     = "root"
+    profile   = "client-server"
+    path      = "/etc/kubernetes/ssl"
+    cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org       = ""
+    get_ip    = "${var.get_ip_command[var.cloud_provider]}"
 
     extra_names = "${join(",", list(
       "${local.kubernetes_master_svc}",
@@ -23,17 +57,100 @@ data "template_file" "master-cfssl-new-cert" {
       "kubernetes.default.svc.cluster.local",
       "elb.master.${var.dns_domain}",
       "*.master.${var.dns_domain}",
+      "localhost",
+      "127.0.0.1",
     ))}"
   }
 }
 
-data "ignition_file" "master-cfssl-new-cert" {
+data "ignition_file" "master-cfssl-new-apiserver-cert" {
   mode       = 0755
   filesystem = "root"
-  path       = "/opt/bin/cfssl-new-cert"
+  path       = "/opt/bin/cfssl-new-apiserver-cert"
 
   content {
-    content = "${data.template_file.master-cfssl-new-cert.rendered}"
+    content = "${data.template_file.master-apiserver-cfssl-new-cert.rendered}"
+  }
+}
+
+// Client certificate for the API server to connect to the kubelets securely
+data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name   = "apiserver-kubelet-client"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org         = "system:masters"
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
+
+  content {
+    content = "${data.template_file.master-apiserver-kubelet-client-cfssl-new-cert.rendered}"
+  }
+}
+
+// Client certificate for kube-scheduler
+data "template_file" "master-scheduler-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name   = "scheduler"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:kube-scheduler"
+    org         = ""
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-scheduler-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-scheduler-cert"
+
+  content {
+    content = "${data.template_file.master-scheduler-cfssl-new-cert.rendered}"
+  }
+}
+
+// Client certificate for kube-controller-manager
+data "template_file" "master-controller-manager-cfssl-new-cert" {
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+
+  vars {
+    cert_name   = "controller-manager"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:kube-controller-manager"
+    org         = ""
+    get_ip      = "${var.get_ip_command[var.cloud_provider]}"
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "master-cfssl-new-controller-manager-cert" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-controller-manager-cert"
+
+  content {
+    content = "${data.template_file.master-controller-manager-cfssl-new-cert.rendered}"
   }
 }
 
@@ -90,13 +207,11 @@ data "ignition_file" "master-kubelet-conf" {
   }
 }
 
-data "ignition_file" "master-kubeconfig" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/kubernetes/config/master-kubeconfig"
+data "template_file" "master-kubeconfig" {
+  template = "${file("${path.module}/resources/master-kubeconfig")}"
 
-  content {
-    content = "${file("${path.module}/resources/master-kubeconfig")}"
+  vars {
+    master_address = "localhost:443"
   }
 }
 
@@ -106,7 +221,43 @@ data "ignition_file" "kubelet-kubeconfig" {
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
-    content = "${file("${path.module}/resources/master-kubeconfig")}"
+    content = "${data.template_file.master-kubeconfig.rendered}"
+  }
+}
+
+data "template_file" "scheduler-kubeconfig" {
+  template = "${file("${path.module}/resources/scheduler-kubeconfig")}"
+
+  vars {
+    master_address = "localhost:443"
+  }
+}
+
+data "ignition_file" "scheduler-kubeconfig" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/scheduler.conf"
+
+  content {
+    content = "${data.template_file.scheduler-kubeconfig.rendered}"
+  }
+}
+
+data "template_file" "controller-manager-kubeconfig" {
+  template = "${file("${path.module}/resources/controller-manager-kubeconfig")}"
+
+  vars {
+    master_address = "localhost:443"
+  }
+}
+
+data "ignition_file" "controller-manager-kubeconfig" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/controller-manager.conf"
+
+  content {
+    content = "${data.template_file.controller-manager-kubeconfig.rendered}"
   }
 }
 
@@ -124,6 +275,7 @@ data "template_file" "kube-apiserver" {
     oidc_issuer_url       = "${var.oidc_issuer_url}"
     oidc_client_id        = "${var.oidc_client_id}"
     feature_gates         = "${local.feature_gates_csv}"
+    admission_plugins     = "${var.admission_plugins}"
 
     /*
      * for the list of APIs & resources enabled by default, please see near the
@@ -244,10 +396,15 @@ data "ignition_config" "master" {
         data.ignition_file.cfssl.id,
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
-        data.ignition_file.master-cfssl-new-cert.id,
+        data.ignition_file.master-cfssl-new-node-cert.id,
+        data.ignition_file.master-cfssl-new-apiserver-cert.id,
+        data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.id,
+        data.ignition_file.master-cfssl-new-scheduler-cert.id,
+        data.ignition_file.master-cfssl-new-controller-manager-cert.id,
         data.ignition_file.master-cfssl-keys-and-certs-get.id,
         data.ignition_file.master-prom-machine-role.id,
-        data.ignition_file.master-kubeconfig.id,
+        data.ignition_file.scheduler-kubeconfig.id,
+        data.ignition_file.controller-manager-kubeconfig.id,
         data.ignition_file.kubelet-kubeconfig.id,
         data.ignition_file.kube-apiserver.id,
         data.ignition_file.kube-scheduler.id,

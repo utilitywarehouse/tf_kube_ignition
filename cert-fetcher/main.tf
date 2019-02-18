@@ -9,7 +9,7 @@ Description=Fetch new certificates from cfssl server
 After=network-online.target
 [Service]
 Type=oneshot
-ExecStart=/opt/bin/cfssl-new-cert
+ExecStart=/bin/sh -c 'while ! /opt/bin/cfssl-new-cert; do echo "cfssl not ready, sleeping 5 seconds";sleep 5; done'
 [Install]
 WantedBy=multi-user.target
 EOS
