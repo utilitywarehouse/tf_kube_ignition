@@ -170,7 +170,7 @@ data "template_file" "cfssl-nginx" {
 
   vars {
     nginx_image_url = "nginx"
-    nginx_image_tag = "1.13-alpine"
+    nginx_image_tag = "1.15-alpine"
   }
 }
 
