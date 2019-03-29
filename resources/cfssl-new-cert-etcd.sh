@@ -12,7 +12,7 @@ _hostname="$(hostname)"
 # include first member's ip in SAN for all nodes
 # this replicates kubeadm behaviour to include first node's ip, as kubeadm
 # generates all certificates on the first node
-_first_member_ip="$(echo ${_ip} | sed 's/[0-9]*$/4/')"
+_first_member_ip="$(echo $${_ip} | sed 's/[0-9]*$/4/')"
 
 /opt/bin/cfssl gencert \
   -config=/etc/cfssl/config.json \
