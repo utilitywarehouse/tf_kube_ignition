@@ -5,7 +5,7 @@ data "ignition_systemd_unit" "locksmithd_etcd" {
 
 data "template_file" "etcd-cfssl-new-cert" {
   count    = "${length(var.etcd_addresses)}"
-  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
+  template = "${file("${path.module}/resources/cfssl-new-cert-etcd.sh")}"
 
   vars {
     cert_name = "node"
