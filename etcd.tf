@@ -5,7 +5,7 @@ data "ignition_systemd_unit" "locksmithd_etcd" {
 
 data "template_file" "etcd-cfssl-new-cert" {
   count    = "${length(var.etcd_addresses)}"
-  template = "${file("${path.module}/resources/cfssl-new-cert-etcd.sh")}"
+  template = "${file("${path.module}/resources/cfssl-new-cert.sh")}"
 
   vars {
     cert_name = "node"
@@ -19,6 +19,12 @@ data "template_file" "etcd-cfssl-new-cert" {
 
     extra_names = "${join(",", list(
       "etcd.${var.dns_domain}",
+
+      # workaround for https://github.com/kubernetes/kubernetes/issues/72102
+      # include first member's ip in SAN for all nodes
+      # this replicates kubeadm behaviour to include first node's ip, as kubeadm
+      # generates all certificates on the first node
+			"${var.etcd_addresses[0]}",
     ))}"
   }
 }
