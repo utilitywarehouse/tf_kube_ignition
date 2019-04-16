@@ -58,7 +58,8 @@ variable "hyperkube_image_tag" {
 }
 
 variable "cluster_dns" {
-  description = "Comma-separated list of DNS server IP address. Used by kubelet."
+  description = "List of DNS server IP addresses. Used by kubelet."
+  type        = "list"
 }
 
 variable "master_address" {
@@ -214,4 +215,15 @@ locals {
   # note the two white space chars at the start of the line, this corresponds to the
   # formatting in worker-kubelet-conf.yaml and master-kubelet-conf.yaml
   feature_gates_yaml_fragment = "${join("\n  ", formatlist("%s: %s", keys(var.feature_gates), values(var.feature_gates)))}"
+
+  # cluster_dns list formatted for KubeletConfiguration yaml
+  #
+  # example:
+  #  clusterDNS: ${cluster_dns}
+  #  ...
+  #  clusterDNS:
+  #    - "169.254.20.10"
+  #    - "10.3.0.10"
+  #
+  cluster_dns_yaml = "${join("", formatlist("\n  - \"%s\"", var.cluster_dns))}"
 }
