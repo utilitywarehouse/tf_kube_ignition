@@ -192,7 +192,7 @@ data "template_file" "master-kubelet-conf" {
   template = "${file("${path.module}/resources/master-kubelet-conf.yaml")}"
 
   vars {
-    cluster_dns   = "${var.cluster_dns}"
+    cluster_dns   = "${local.cluster_dns_yaml}"
     feature_gates = "${local.feature_gates_yaml_fragment}"
   }
 }
