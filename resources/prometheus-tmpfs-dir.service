@@ -1,0 +1,7 @@
+[Unit]
+Description=Mount a tmpfs dir for prometheus textfile collector
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/bin/mkdir -p /etc/prom-text-collectors
+ExecStart=mount -t tmpfs -o size=10M,nr_inodes=1k,mode=755 tmpfs /etc/prom-text-collectors

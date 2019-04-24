@@ -1,0 +1,10 @@
+[Unit]
+Description=Add the machine_role static metric to prometheus
+After=prometheus-tmpfs-dir.service
+Requires=prometheus-tmpfs-dir.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'echo machine_role{role=\\\"${role}\\\"} 1 > /etc/prom-text-collectors/machine_role.prom'
+[Install]
+WantedBy=multi-user.target

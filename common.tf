@@ -1,9 +1,3 @@
-// common configuration items
-data "ignition_filesystem" "root" {
-  name = "root"
-  path = "/sysroot"
-}
-
 data "ignition_systemd_unit" "update-engine" {
   name = "update-engine.service"
   mask = "${!var.enable_container_linux_update-engine}"

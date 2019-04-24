@@ -1,0 +1,12 @@
+[Unit]
+Description=Run prometheus-ro-rootfs service periodically
+After=prometheus-tmpfs-dir.service
+Requires=prometheus-tmpfs-dir.service
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=10
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
