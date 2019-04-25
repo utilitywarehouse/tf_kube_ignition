@@ -9,7 +9,7 @@ authentication:
     clientCAFile: "/etc/kubernetes/ssl/ca.pem"
 authorization:
   mode: AlwaysAllow
-clusterDNS: ${cluster_dns}
+clusterDNS:${cluster_dns}
 clusterDomain: "cluster.local"
 evictionHard:
   memory.available: "1Gi"
