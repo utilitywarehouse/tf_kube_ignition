@@ -5,8 +5,8 @@ Requires=prometheus-tmpfs-dir.service
 
 [Timer]
 OnBootSec=60
-OnUnitInactiveSec=10
-AccuracySec=1s
+OnUnitInactiveSec=30
+AccuracySec=5s
 
 [Install]
 WantedBy=timers.target
