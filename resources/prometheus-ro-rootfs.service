@@ -1,0 +1,6 @@
+[Unit]
+Description=Runs ro-rootfs
+
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/prometheus-ro-rootfs
