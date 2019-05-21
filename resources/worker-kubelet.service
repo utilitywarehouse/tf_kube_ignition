@@ -32,6 +32,7 @@ ExecStart=/usr/bin/docker \
     --volume /var/lib/kubelet/:/var/lib/kubelet:shared \
     --volume /var/log:/var/log:shared \
     --volume /etc/kubernetes:/etc/kubernetes:ro \
+    --volume /etc/kubernetes/kubelet-plugins/volume:/etc/kubernetes/kubelet-plugins/volume:rw \
     --volume /etc/cni/net.d:/etc/cni/net.d:rw \
     --volume /etc/resolv.conf:/etc/resolv.conf:ro \
     --volume /opt/cni/bin:/opt/cni/bin:rw \
@@ -52,6 +53,7 @@ ExecStart=/usr/bin/docker \
     --network-plugin=cni \
     --node-labels=role=${role} \
     --lock-file=/var/run/lock/kubelet.lock \
+    --volume-plugin-dir=/etc/kubernetes/kubelet-plugins/volume \
     --v=0
 Restart=always
 RestartSec=10
