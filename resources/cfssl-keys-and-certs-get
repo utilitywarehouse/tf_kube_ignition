@@ -3,7 +3,7 @@
 set -o errexit
 
 key() {
-  local key=$$1
+  local key=$1
   /usr/bin/curl -Ls -o $${key} \
       -H 'Authorization: Basic ${auth}' \
       http://$(jq -r '.remotes.server | split(":")[0]' /etc/cfssl/config.json):8889/$${key}
@@ -18,7 +18,7 @@ key() {
 }
 
 cert () {
-  local cert=$$1
+  local cert=$1
   /usr/bin/curl -Ls -o $${cert} \
       -H 'Authorization: Basic ${auth}' \
       http://$(jq -r '.remotes.server | split(":")[0]' /etc/cfssl/config.json):8889/$${cert}
