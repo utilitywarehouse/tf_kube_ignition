@@ -41,6 +41,15 @@ data "ignition_systemd_unit" "docker-opts-dropin" {
   }
 }
 
+data "ignition_systemd_unit" "containerd-opts-dropin" {
+  name = "containerd.service"
+
+  dropin {
+    name    = "10-custom-options.conf"
+    content = "${file("${path.module}/resources/containerd-dropin.conf")}"
+  }
+}
+
 data "template_file" "node-exporter" {
   template = "${file("${path.module}/resources/node-exporter.service")}"
 

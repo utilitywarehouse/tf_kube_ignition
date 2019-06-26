@@ -143,13 +143,23 @@ data "ignition_file" "prometheus-ro-rootfs" {
   }
 }
 
-// data.ignition_file.worker-prom-machine-role.id,
+data "ignition_file" "containerd-config" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/containerd/config.toml"
+
+  content {
+    content = "${file("${path.module}/resources/containerd-config.toml")}"
+  }
+}
+
 data "ignition_config" "worker" {
   files = ["${concat(
     list(
         data.ignition_file.cfssl.id,
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
+        data.ignition_file.containerd-config.id,
         data.ignition_file.worker-cfssl-new-cert.id,
         data.ignition_file.worker-kubeconfig.id,
         data.ignition_file.worker-sysctl-vm.id,
@@ -164,6 +174,7 @@ data "ignition_config" "worker" {
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd_worker.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
+        data.ignition_systemd_unit.containerd-opts-dropin.id,
         data.ignition_systemd_unit.worker-kubelet.id,
         data.ignition_systemd_unit.prometheus-tmpfs-dir.id,
         data.ignition_systemd_unit.prometheus-machine-role.id,

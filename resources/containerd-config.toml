@@ -1,0 +1,38 @@
+# based on /run/torcx/unpack/docker/usr/share/containerd/config.toml
+# without disabling the 'cri' plugin
+
+# persistent data location
+root = "/var/lib/containerd"
+# runtime state information
+state = "/run/docker/libcontainerd/containerd"
+# set containerd as a subreaper on linux when it is not running as PID 1
+subreaper = true
+# set containerd's OOM score
+oom_score = -999
+
+# grpc configuration
+[grpc]
+address = "/run/docker/libcontainerd/docker-containerd.sock"
+# socket uid
+uid = 0
+# socket gid
+gid = 0
+
+[plugins.linux]
+# shim binary name/path
+shim = "containerd-shim"
+# runtime binary name/path
+runtime = "runc"
+# do not use a shim when starting containers, saves on memory but
+# live restore is not supported
+no_shim = false
+# display shim logs in the containerd daemon's log output
+shim_debug = true
+
+# cri plugin configuration
+[plugins.cri.containerd]
+  snapshotter = "overlayfs"
+  [plugins.cri.containerd.default_runtime]
+    runtime_type = "io.containerd.runtime.v1.linux"
+    runtime_engine = "/usr/bin/runc"
+    runtime_root = ""
