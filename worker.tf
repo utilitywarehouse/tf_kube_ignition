@@ -31,7 +31,9 @@ data "ignition_file" "worker-cfssl-new-cert" {
 }
 
 data "template_file" "worker-kubelet" {
-  template = "${file("${path.module}/resources/worker-kubelet.service")}"
+  template = "${ var.enable_iscsid_worker ?
+                file("${path.module}/resources/worker-kubelet-iscsid.service") :
+                file("${path.module}/resources/worker-kubelet.service")}"
 
   vars {
     kubelet_image_url = "${var.hyperkube_image_url}"
@@ -143,6 +145,15 @@ data "ignition_file" "prometheus-ro-rootfs" {
   }
 }
 
+// Enable iscsid service
+data "ignition_systemd_unit" "iscsid" {
+  name = "iscsid.service"
+}
+
+locals {
+  additional_systemd_config = "${var.enable_iscsid_worker ? data.ignition_systemd_unit.iscsid.id : ""}"
+}
+
 // data.ignition_file.worker-prom-machine-role.id,
 data "ignition_config" "worker" {
   files = ["${concat(
@@ -171,6 +182,7 @@ data "ignition_config" "worker" {
         data.ignition_systemd_unit.prometheus-ro-rootfs-timer.id,
     ),
     module.kubelet-restarter.systemd_units,
-    var.worker_additional_systemd_units
+    var.worker_additional_systemd_units,
+    list(local.additional_systemd_config,),
   )}"]
 }
