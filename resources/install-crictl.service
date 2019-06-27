@@ -1,0 +1,8 @@
+[Unit]
+Description=Installs crictl
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/bin/install-crictl
+[Install]
+WantedBy=multi-user.target

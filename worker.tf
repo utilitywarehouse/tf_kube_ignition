@@ -160,6 +160,8 @@ data "ignition_config" "worker" {
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-client-config.id,
         data.ignition_file.containerd-config.id,
+        data.ignition_file.crictl-config.id,
+        data.ignition_file.install-crictl.id,
         data.ignition_file.worker-cfssl-new-cert.id,
         data.ignition_file.worker-kubeconfig.id,
         data.ignition_file.worker-sysctl-vm.id,
@@ -180,6 +182,7 @@ data "ignition_config" "worker" {
         data.ignition_systemd_unit.prometheus-machine-role.id,
         data.ignition_systemd_unit.prometheus-ro-rootfs.id,
         data.ignition_systemd_unit.prometheus-ro-rootfs-timer.id,
+        data.ignition_systemd_unit.install-crictl.id,
     ),
     module.kubelet-restarter.systemd_units,
     var.worker_additional_systemd_units

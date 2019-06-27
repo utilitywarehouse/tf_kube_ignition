@@ -74,3 +74,37 @@ data "ignition_file" "format-and-mount" {
     content = "${file("${path.module}/resources/format-and-mount")}"
   }
 }
+
+data "template_file" "install-crictl" {
+  template = "${file("${path.module}/resources/install-crictl")}"
+
+  vars {
+    kube_version = "${var.hyperkube_image_tag}"
+  }
+}
+
+data "ignition_file" "install-crictl" {
+  mode       = 0755
+  filesystem = "root"
+  path       = "/opt/bin/install-crictl"
+
+  content {
+    content = "${data.template_file.install-crictl.rendered}"
+  }
+}
+
+data "ignition_file" "crictl-config" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/crictl.yaml"
+
+  content {
+    content = "${file("${path.module}/resources/crictl-config.yaml")}"
+  }
+}
+
+data "ignition_systemd_unit" "install-crictl" {
+  name = "install-crictl.service"
+
+  content = "${file("${path.module}/resources/install-crictl.service")}"
+}
