@@ -143,16 +143,6 @@ data "ignition_file" "prometheus-ro-rootfs" {
   }
 }
 
-data "ignition_file" "containerd-config" {
-  mode       = 0644
-  filesystem = "root"
-  path       = "/etc/containerd/config.toml"
-
-  content {
-    content = "${file("${path.module}/resources/containerd-config.toml")}"
-  }
-}
-
 data "ignition_config" "worker" {
   files = ["${concat(
     list(

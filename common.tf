@@ -50,6 +50,16 @@ data "ignition_systemd_unit" "containerd-opts-dropin" {
   }
 }
 
+data "ignition_file" "containerd-config" {
+  mode       = 0644
+  filesystem = "root"
+  path       = "/etc/containerd/config.toml"
+
+  content {
+    content = "${file("${path.module}/resources/containerd-config.toml")}"
+  }
+}
+
 data "template_file" "node-exporter" {
   template = "${file("${path.module}/resources/node-exporter.service")}"
 
