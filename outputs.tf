@@ -7,7 +7,7 @@ output "master" {
 }
 
 output "worker" {
-  value = data.ignition_config.worker.rendered
+  value = data.ignition_config.worker.*.rendered
 }
 
 output "etcd" {
@@ -32,17 +32,17 @@ output "master_ignition_files" {
 }
 
 output "worker_ignition_systemd" {
-  value = data.ignition_config.worker.systemd
+  value = data.ignition_config.worker.*.systemd
 }
 
 output "worker_ignition_files" {
-  value = data.ignition_config.worker.files
+  value = data.ignition_config.worker.*.files
 }
 
 output "etcd_ignition_systemd" {
-  value = [data.ignition_config.etcd.*.systemd]
+  value = data.ignition_config.etcd.*.systemd
 }
 
 output "etcd_ignition_files" {
-  value = [data.ignition_config.etcd.*.files]
+  value = data.ignition_config.etcd.*.files
 }

@@ -140,16 +140,14 @@ variable "master_additional_files" {
   type        = list(string)
 }
 
-variable "worker_additional_systemd_units" {
-  description = "Additional systemd units to include in the igntion config data for worker nodes."
-  default     = []
-  type        = list(string)
-}
-
-variable "worker_additional_files" {
-  description = "Additional files to include in the igntion config data for worker nodes."
-  default     = []
-  type        = list(string)
+variable "worker_groups" {
+  type = list(object({
+    role                     = string
+    taints                   = string
+    additional_systemd_units = list(string)
+    additional_files         = list(string)
+  }))
+  default = []
 }
 
 variable "cfssl_ca_cn" {

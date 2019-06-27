@@ -18,6 +18,15 @@ The input variables are documented in their description and it's best to refer t
 Below is an example of how you might use this terraform module:
 
 ```hcl
+locals {
+  worker = {
+    role                     = "worker",
+    taints                   = "",
+    additional_systemd_units = [data.ignition_systemd_unit.isu.id],
+    additional_files         = []
+  }
+}
+
 module "ignition" {
   source = "github.com/utilitywarehouse/tf_kube_ignition?ref=1.0.0"
 
@@ -33,14 +42,14 @@ module "ignition" {
   oidc_issuer_url                          = "https://accounts.google.com"
   oidc_client_id                           = "000000000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com"
   cfssl_ca_cn                              = "Example CA"
-  cfssl_server_address                     = "${var.cfssl_instance_address}"
+  cfssl_server_address                     = var.cfssl_instance_address
   cfssl_node_renew_timer                   = "*-*-* 00/6:00:00"
-  cfssl_data_volumeid                      = "${module.cluster.cfssl_data_volumeid}"
-  etcd_data_volumeids                      = "${module.cluster.etcd_data_volumeids}"
-  etcd_additional_files                    = ["${data.ignition_file.if.id}"]
-  etcd_additional_systemd_units            = ["${data.ignition_systemd_unit.isu.id}", "${data.ignition_systemd_unit.isu2.id}"]
-  master_additional_systemd_units          = ["${data.ignition_systemd_unit.isu.id}"]
-  worker_additional_systemd_units          = ["${data.ignition_systemd_unit.isu.id}"]
-  cfssl_additional_systemd_units           = ["${data.ignition_systemd_unit.isu.id}"]
+  cfssl_data_volumeid                      = module.cluster.cfssl_data_volumeid
+  etcd_data_volumeids                      = module.cluster.etcd_data_volumeids
+  etcd_additional_files                    = [data.ignition_file.if.id]
+  etcd_additional_systemd_units            = [data.ignition_systemd_unit.isu.id, data.ignition_systemd_unit.isu2.id]
+  master_additional_systemd_units          = [data.ignition_systemd_unit.isu.id]
+  worker_groups                            = [local.worker]
+  cfssl_additional_systemd_units           = [data.ignition_systemd_unit.isu.id]
 }
 ```
