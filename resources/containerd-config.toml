@@ -1,5 +1,5 @@
-# based on /run/torcx/unpack/docker/usr/share/containerd/config.toml
-# without disabling the 'cri' plugin
+# based on https://github.com/coreos/coreos-overlay/blob/master/app-emulation/containerd/files/config.toml
+# edited to enable and configure the "cri" plugin
 
 # persistent data location
 root = "/var/lib/containerd"
