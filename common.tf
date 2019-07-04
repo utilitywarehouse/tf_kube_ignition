@@ -1,12 +1,12 @@
 data "ignition_systemd_unit" "update-engine" {
   name = "update-engine.service"
-  mask = "${!var.enable_container_linux_update-engine}"
+  mask = false == var.enable_container_linux_update-engine
 }
 
 data "ignition_file" "cfssl" {
   filesystem = "root"
   path       = "/opt/bin/cfssl"
-  mode       = 0755
+  mode       = 493
 
   source {
     source       = "https://pkg.cfssl.org/R1.2/cfssl_linux-amd64"
@@ -17,7 +17,7 @@ data "ignition_file" "cfssl" {
 data "ignition_file" "cfssljson" {
   filesystem = "root"
   path       = "/opt/bin/cfssljson"
-  mode       = 0755
+  mode       = 493
 
   source {
     source       = "https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64"
@@ -29,7 +29,7 @@ module "kubelet-restarter" {
   source = "./systemd_service_restarter"
 
   service_name = "kubelet"
-  on_calendar  = "${var.cfssl_node_renew_timer}"
+  on_calendar  = var.cfssl_node_renew_timer
 }
 
 data "ignition_systemd_unit" "docker-opts-dropin" {
@@ -37,31 +37,31 @@ data "ignition_systemd_unit" "docker-opts-dropin" {
 
   dropin {
     name    = "10-custom-options.conf"
-    content = "${file("${path.module}/resources/docker-dropin.conf")}"
+    content = file("${path.module}/resources/docker-dropin.conf")
   }
 }
 
 data "template_file" "node-exporter" {
-  template = "${file("${path.module}/resources/node-exporter.service")}"
+  template = file("${path.module}/resources/node-exporter.service")
 
-  vars {
-    node_exporter_image_url = "${var.node_exporter_image_url}"
-    node_exporter_image_tag = "${var.node_exporter_image_tag}"
+  vars = {
+    node_exporter_image_url = var.node_exporter_image_url
+    node_exporter_image_tag = var.node_exporter_image_tag
   }
 }
 
 data "ignition_systemd_unit" "node-exporter" {
   name = "node-exporter.service"
 
-  content = "${data.template_file.node-exporter.rendered}"
+  content = data.template_file.node-exporter.rendered
 }
 
 data "ignition_file" "format-and-mount" {
-  mode       = 0755
+  mode       = 493
   filesystem = "root"
   path       = "/opt/bin/format-and-mount"
 
   content {
-    content = "${file("${path.module}/resources/format-and-mount")}"
+    content = file("${path.module}/resources/format-and-mount")
   }
 }
