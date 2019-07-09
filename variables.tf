@@ -23,11 +23,6 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
-variable "enable_iscsid_worker" {
-  description = "Whether to enable iscsid for pvc provisioning on kube worker nodes."
-  default     = false
-}
-
 variable "dns_domain" {
   description = "The domain under which this cluster's DNS records are set (cluster-name.example.com)."
 }

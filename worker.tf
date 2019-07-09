@@ -38,7 +38,7 @@ data "template_file" "worker-kubelet" {
     kubelet_image_tag = "${var.hyperkube_image_tag}"
     cloud_provider    = "${var.cloud_provider}"
     role              = "worker"
-		taints            = ""
+    taints            = ""
   }
 }
 
@@ -144,15 +144,6 @@ data "ignition_file" "prometheus-ro-rootfs" {
   }
 }
 
-// Enable iscsid service
-data "ignition_systemd_unit" "iscsid" {
-  name = "iscsid.service"
-}
-
-locals {
-  additional_systemd_config = "${var.enable_iscsid_worker ? data.ignition_systemd_unit.iscsid.id : ""}"
-}
-
 // data.ignition_file.worker-prom-machine-role.id,
 data "ignition_config" "worker" {
   files = ["${concat(
@@ -182,6 +173,5 @@ data "ignition_config" "worker" {
     ),
     module.kubelet-restarter.systemd_units,
     var.worker_additional_systemd_units,
-    list(local.additional_systemd_config,),
   )}"]
 }
