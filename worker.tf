@@ -31,9 +31,7 @@ data "ignition_file" "worker-cfssl-new-cert" {
 }
 
 data "template_file" "worker-kubelet" {
-  template = "${ var.enable_iscsid_worker ?
-                file("${path.module}/resources/worker-kubelet-iscsid.service") :
-                file("${path.module}/resources/worker-kubelet.service")}"
+  template = "${file("${path.module}/resources/worker-kubelet.service")}"
 
   vars {
     kubelet_image_url = "${var.hyperkube_image_url}"
