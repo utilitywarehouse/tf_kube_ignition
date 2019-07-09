@@ -1,11 +1,12 @@
 data "template_file" "storage-worker-kubelet" {
-  template = "${file("${path.module}/resources/storage-worker-kubelet.service")}"
+  template = "${file("${path.module}/resources/worker-kubelet.service")}"
 
   vars {
     kubelet_image_url = "${var.hyperkube_image_url}"
     kubelet_image_tag = "${var.hyperkube_image_tag}"
     cloud_provider    = "${var.cloud_provider}"
     role              = "storage-worker"
+    taints            = "key=value:NoSchedule"
   }
 }
 
