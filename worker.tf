@@ -38,6 +38,7 @@ data "template_file" "worker-kubelet" {
     kubelet_image_tag = "${var.hyperkube_image_tag}"
     cloud_provider    = "${var.cloud_provider}"
     role              = "worker"
+		taints            = ""
   }
 }
 
