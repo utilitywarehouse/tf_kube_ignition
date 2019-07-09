@@ -59,7 +59,7 @@ variable "hyperkube_image_tag" {
 
 variable "cluster_dns" {
   description = "List of DNS server IP addresses. Used by kubelet."
-  type        = "list"
+  type        = list(string)
 }
 
 variable "master_address" {
@@ -83,7 +83,7 @@ variable "master_instance_count" {
 
 variable "etcd_addresses" {
   description = "A list of IP addresses for the etcd nodes. Used by the etcd services and the API server."
-  type        = "list"
+  type        = list(string)
 }
 
 variable "oidc_issuer_url" {
@@ -107,49 +107,49 @@ variable "pod_network" {
 variable "cfssl_additional_systemd_units" {
   description = "Additional systemd units to include in the igntion config data for the cfssl node."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "cfssl_additional_files" {
   description = "Additional files to include in the igntion config data for the cfssl node."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "etcd_additional_systemd_units" {
   description = "Additional systemd units to include in the igntion config data for etcd nodes."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "etcd_additional_files" {
   description = "Additional files to include in the igntion config data for etcd nodes."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "master_additional_systemd_units" {
   description = "Additional systemd units to include in the igntion config data for master nodes."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "master_additional_files" {
   description = "Additional files to include in the igntion config data for master nodes."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "worker_additional_systemd_units" {
   description = "Additional systemd units to include in the igntion config data for worker nodes."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "worker_additional_files" {
   description = "Additional files to include in the igntion config data for worker nodes."
   default     = []
-  type        = "list"
+  type        = list(string)
 }
 
 variable "cfssl_ca_cn" {
@@ -175,15 +175,16 @@ variable "cfssl_server_address" {
   description = "The IP address of the cfssl server."
 }
 
-variable "cfssl_data_volumeid" {}
+variable "cfssl_data_volumeid" {
+}
 
 variable "etcd_data_volumeids" {
-  type = "list"
+  type = list(string)
 }
 
 variable "feature_gates" {
   description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
-  type        = "map"
+  type        = map(string)
 
   # yaml fragment for config file use, example default feature gates:
   # ```
@@ -203,7 +204,7 @@ variable "admission_plugins" {
 locals {
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
-  feature_gates_csv = "${join(",", formatlist("%s=%s", keys(var.feature_gates), values(var.feature_gates)))}"
+  feature_gates_csv = join(",", formatlist("%s=%s", keys(var.feature_gates), values(var.feature_gates)))
 
   # yaml fragment for config file use, example output:
   # ```
@@ -214,7 +215,7 @@ locals {
   #
   # note the two white space chars at the start of the line, this corresponds to the
   # formatting in worker-kubelet-conf.yaml and master-kubelet-conf.yaml
-  feature_gates_yaml_fragment = "${join("\n  ", formatlist("%s: %s", keys(var.feature_gates), values(var.feature_gates)))}"
+  feature_gates_yaml_fragment = join("\n  ", formatlist("%s: %s", keys(var.feature_gates), values(var.feature_gates)))
 
   # cluster_dns list formatted for KubeletConfiguration yaml
   #
@@ -225,5 +226,5 @@ locals {
   #    - "169.254.20.10"
   #    - "10.3.0.10"
   #
-  cluster_dns_yaml = "${join("", formatlist("\n  - \"%s\"", var.cluster_dns))}"
+  cluster_dns_yaml = join("", formatlist("\n  - \"%s\"", var.cluster_dns))
 }
