@@ -51,7 +51,7 @@ ExecStart=/usr/bin/docker \
     --kubeconfig=/var/lib/kubelet/kubeconfig \
     --network-plugin=cni \
     --node-labels=role=${role} \
-    ${taints == "" ? "" : "--register-with-taints==${taints}"} \
+    ${taints == "" ? "" : "--register-with-taints=${taints}"} \
     --lock-file=/var/run/lock/kubelet.lock \
     --v=0
 Restart=always
