@@ -13,35 +13,35 @@ resource "random_id" "cfssl-auth-key-apiserver" {
 
 data "ignition_systemd_unit" "locksmithd_cfssl" {
   name = "locksmithd.service"
-  mask = "${!var.enable_container_linux_locksmithd_cfssl}"
+  mask = false == var.enable_container_linux_locksmithd_cfssl
 }
 
 // used by clients
 data "template_file" "cfssl-client-config" {
-  template = "${file("${path.module}/resources/cfssl-client-config.json")}"
+  template = file("${path.module}/resources/cfssl-client-config.json")
 
-  vars {
-    cfssl_server_endpoint = "${var.cfssl_server_address}"
-    cfssl_auth_key        = "${random_id.cfssl-auth-key-client.hex}"
+  vars = {
+    cfssl_server_endpoint = var.cfssl_server_address
+    cfssl_auth_key        = random_id.cfssl-auth-key-client.hex
   }
 }
 
 data "ignition_file" "cfssl-client-config" {
-  mode       = 0600
+  mode       = 384
   filesystem = "root"
   path       = "/etc/cfssl/config.json"
 
   content {
-    content = "${data.template_file.cfssl-client-config.rendered}"
+    content = data.template_file.cfssl-client-config.rendered
   }
 }
 
 data "template_file" "cfssl-disk-mounter" {
-  template = "${file("${path.module}/resources/disk-mounter.service")}"
+  template = file("${path.module}/resources/disk-mounter.service")
 
-  vars {
+  vars = {
     script_path = "/opt/bin/format-and-mount"
-    volume_id   = "${var.cfssl_data_volumeid}"
+    volume_id   = var.cfssl_data_volumeid
     filesystem  = "ext4"
     user        = "root"
     group       = "root"
@@ -51,11 +51,11 @@ data "template_file" "cfssl-disk-mounter" {
 
 data "ignition_systemd_unit" "cfssl-disk-mounter" {
   name    = "disk-mounter.service"
-  content = "${data.template_file.cfssl-disk-mounter.rendered}"
+  content = data.template_file.cfssl-disk-mounter.rendered
 }
 
 data "ignition_file" "cfssl-ca-csr" {
-  mode       = 0644
+  mode       = 420
   filesystem = "root"
   path       = "/etc/cfssl/ca-csr.json"
 
@@ -67,72 +67,72 @@ EOS
 }
 
 data "ignition_file" "cfssl-init-ca" {
-  mode       = 0755
+  mode       = 493
   filesystem = "root"
   path       = "/opt/bin/cfssl-init-ca"
 
   content {
-    content = "${file("${path.module}/resources/cfssl-init-ca.sh")}"
+    content = file("${path.module}/resources/cfssl-init-ca.sh")
   }
 }
 
 data "ignition_file" "cfssl-init-proxy-pki" {
-  mode       = 0755
+  mode       = 493
   filesystem = "root"
   path       = "/opt/bin/cfssl-init-proxy-pki"
 
   content {
-    content = "${file("${path.module}/resources/cfssl-init-proxy-pki")}"
+    content = file("${path.module}/resources/cfssl-init-proxy-pki")
   }
 }
 
 data "ignition_file" "cfssl-proxy-ca-csr-json" {
-  mode       = 0644
+  mode       = 420
   filesystem = "root"
   path       = "/etc/cfssl/proxy-ca-csr.json"
 
   content {
-    content = "${file("${path.module}/resources/cfssl-proxy-ca-csr.json")}"
+    content = file("${path.module}/resources/cfssl-proxy-ca-csr.json")
   }
 }
 
 data "ignition_file" "cfssl-proxy-csr-json" {
-  mode       = 0644
+  mode       = 420
   filesystem = "root"
   path       = "/etc/cfssl/proxy-csr.json"
 
   content {
-    content = "${file("${path.module}/resources/cfssl-proxy-csr.json")}"
+    content = file("${path.module}/resources/cfssl-proxy-csr.json")
   }
 }
 
 data "template_file" "cfssl-server-config" {
-  template = "${file("${path.module}/resources/cfssl-server-config.json")}"
+  template = file("${path.module}/resources/cfssl-server-config.json")
 
-  vars {
-    expiry_hours     = "${var.cfssl_node_expiry_hours}"
-    cfssl_unused_key = "${random_id.cfssl-auth-key-unused.hex}"
-    cfssl_auth_key   = "${random_id.cfssl-auth-key-client.hex}"
+  vars = {
+    expiry_hours     = var.cfssl_node_expiry_hours
+    cfssl_unused_key = random_id.cfssl-auth-key-unused.hex
+    cfssl_auth_key   = random_id.cfssl-auth-key-client.hex
   }
 }
 
 data "ignition_file" "cfssl-server-config" {
-  mode       = 0600
+  mode       = 384
   filesystem = "root"
   path       = "/etc/cfssl/config.json"
 
   content {
-    content = "${data.template_file.cfssl-server-config.rendered}"
+    content = data.template_file.cfssl-server-config.rendered
   }
 }
 
 data "ignition_systemd_unit" "cfssl" {
   name    = "cfssl.service"
-  content = "${file("${path.module}/resources/cfssl.service")}"
+  content = file("${path.module}/resources/cfssl.service")
 }
 
 data "ignition_file" "cfssl-sk-csr" {
-  mode       = 0644
+  mode       = 420
   filesystem = "root"
   path       = "/etc/cfssl/sk-csr.json"
 
@@ -144,17 +144,17 @@ EOS
 }
 
 data "ignition_file" "cfssl-nginx-conf" {
-  mode       = 0644
+  mode       = 420
   filesystem = "root"
   path       = "/etc/cfssl/sk-nginx.conf"
 
   content {
-    content = "${file("${path.module}/resources/cfssl-nginx.conf")}"
+    content = file("${path.module}/resources/cfssl-nginx.conf")
   }
 }
 
 data "ignition_file" "cfssl-nginx-auth" {
-  mode       = 0644
+  mode       = 420
   filesystem = "root"
   path       = "/etc/cfssl/sk-nginx.htpasswd"
 
@@ -166,9 +166,9 @@ data "ignition_file" "cfssl-nginx-auth" {
 }
 
 data "template_file" "cfssl-nginx" {
-  template = "${file("${path.module}/resources/cfssl-nginx.service")}"
+  template = file("${path.module}/resources/cfssl-nginx.service")
 
-  vars {
+  vars = {
     nginx_image_url = "nginx"
     nginx_image_tag = "1.15-alpine"
   }
@@ -177,7 +177,7 @@ data "template_file" "cfssl-nginx" {
 data "ignition_systemd_unit" "cfssl-nginx" {
   name = "cfssl-nginx.service"
 
-  content = "${data.template_file.cfssl-nginx.rendered}"
+  content = data.template_file.cfssl-nginx.rendered
 }
 
 module "cfssl-restarter" {
@@ -188,8 +188,8 @@ module "cfssl-restarter" {
 }
 
 data "ignition_config" "cfssl" {
-  files = ["${concat(
-    list(
+  files = concat(
+      [
         data.ignition_file.cfssl.id,
         data.ignition_file.cfssljson.id,
         data.ignition_file.cfssl-server-config.id,
@@ -202,12 +202,12 @@ data "ignition_config" "cfssl" {
         data.ignition_file.cfssl-nginx-conf.id,
         data.ignition_file.cfssl-nginx-auth.id,
         data.ignition_file.format-and-mount.id,
-    ),
-    var.cfssl_additional_files,
-  )}"]
+      ],
+      var.cfssl_additional_files
+    )
 
-  systemd = ["${concat(
-    list(
+  systemd = concat(
+      [
         data.ignition_systemd_unit.update-engine.id,
         data.ignition_systemd_unit.locksmithd_cfssl.id,
         data.ignition_systemd_unit.docker-opts-dropin.id,
@@ -215,8 +215,8 @@ data "ignition_config" "cfssl" {
         data.ignition_systemd_unit.cfssl.id,
         data.ignition_systemd_unit.cfssl-nginx.id,
         data.ignition_systemd_unit.cfssl-disk-mounter.id,
-    ),
-    module.cfssl-restarter.systemd_units,
-    var.cfssl_additional_systemd_units,
-  )}"]
+      ],
+      module.cfssl-restarter.systemd_units,
+      var.cfssl_additional_systemd_units
+    )
 }

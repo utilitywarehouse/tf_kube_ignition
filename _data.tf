@@ -1,5 +1,5 @@
 variable "node_name_command" {
-  type = "map"
+  type = map(string)
 
   default = {
     ""    = "hostname -f"
@@ -9,7 +9,7 @@ variable "node_name_command" {
 }
 
 variable "get_ip_command" {
-  type = "map"
+  type = map(string)
 
   default = {
     ""    = "ip route get 1.2.3.4 | head  -n 1 | awk '{print $7}'"
@@ -20,5 +20,5 @@ variable "get_ip_command" {
 
 // master address is the first in the service subnet
 locals {
-  kubernetes_master_svc = "${cidrhost(var.service_network, 1)}"
+  kubernetes_master_svc = cidrhost(var.service_network, 1)
 }
