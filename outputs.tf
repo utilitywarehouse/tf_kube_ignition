@@ -40,7 +40,7 @@ output "worker_ignition_files" {
 }
 
 output "storage_worker_ignition_systemd" {
-  value = "${data.ignition_config.storage-worker.systemd}"
+  value = data.ignition_config.storage-worker.systemd
 }
 
 output "etcd_ignition_systemd" {
