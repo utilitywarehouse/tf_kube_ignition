@@ -44,9 +44,9 @@ output "storage_worker_ignition_systemd" {
 }
 
 output "etcd_ignition_systemd" {
-  value = [data.ignition_config.etcd.*.systemd]
+  value = data.ignition_config.etcd.*.systemd
 }
 
 output "etcd_ignition_files" {
-  value = [data.ignition_config.etcd.*.files]
+  value = data.ignition_config.etcd.*.files
 }
