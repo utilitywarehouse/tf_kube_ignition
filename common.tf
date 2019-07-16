@@ -65,3 +65,34 @@ data "ignition_file" "format-and-mount" {
     content = file("${path.module}/resources/format-and-mount")
   }
 }
+
+data "template_file" "fetch-kubelet-script" {
+  template = file("${path.module}/resources/fetch-kubelet.tmpl")
+
+  vars = {
+    kubelet_binary_version = var.kubelet_binary_version
+  }
+}
+
+data "ignition_file" "fetch-kubelet-script" {
+  mode       = 493
+  filesystem = "root"
+  path       = "/opt/bin/fetch-kubelet"
+
+  content {
+    content = data.template_file.fetch-kubelet-script.rendered
+  }
+}
+
+data "template_file" "fetch-kubelet-service" {
+  template = file("${path.module}/resources/fetch-kubelet.service.tmpl")
+
+  vars = {
+    fetch_script_path = "/opt/bin/fetch-kubelet"
+  }
+}
+
+data "ignition_systemd_unit" "fetch-kubelet-service" {
+  name    = "fetch-kubelet.service"
+  content = data.template_file.fetch-kubelet-service.rendered
+}

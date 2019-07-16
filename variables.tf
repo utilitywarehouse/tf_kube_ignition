@@ -57,6 +57,11 @@ variable "hyperkube_image_tag" {
   default     = "v1.14.2"
 }
 
+variable "kubelet_binary_version" {
+  description = "kubelet binary version to fetch from https://storage.googleapis.com/kubernetes-release/release"
+  default     = "v1.14.2"
+}
+
 variable "cluster_dns" {
   description = "List of DNS server IP addresses. Used by kubelet."
   type        = list(string)
