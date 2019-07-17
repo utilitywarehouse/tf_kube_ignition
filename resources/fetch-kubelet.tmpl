@@ -1,7 +1,0 @@
-# https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/?origin_team=T0HR00WDA#installing-kubeadm-kubelet-and-kubectl
-RELEASE=${kubelet_binary_version}
-
-mkdir -p /opt/bin
-cd /opt/bin
-curl -L --remote-name-all https://storage.googleapis.com/kubernetes-release/release/$${RELEASE}/bin/linux/amd64/kubelet
-chmod +x kubelet

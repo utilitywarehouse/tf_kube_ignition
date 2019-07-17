@@ -66,33 +66,12 @@ data "ignition_file" "format-and-mount" {
   }
 }
 
-data "template_file" "fetch-kubelet-script" {
-  template = file("${path.module}/resources/fetch-kubelet.tmpl")
-
-  vars = {
-    kubelet_binary_version = var.kubelet_binary_version
-  }
-}
-
-data "ignition_file" "fetch-kubelet-script" {
+data "ignition_file" "kubelet" {
   mode       = 493
   filesystem = "root"
-  path       = "/opt/bin/fetch-kubelet"
+  path       = "/opt/bin/kubelet"
 
-  content {
-    content = data.template_file.fetch-kubelet-script.rendered
+  source {
+    source = "https://storage.googleapis.com/kubernetes-release/release/${var.hyperkube_image_tag}/bin/linux/amd64/kubelet"
   }
-}
-
-data "template_file" "fetch-kubelet-service" {
-  template = file("${path.module}/resources/fetch-kubelet.service.tmpl")
-
-  vars = {
-    fetch_script_path = "/opt/bin/fetch-kubelet"
-  }
-}
-
-data "ignition_systemd_unit" "fetch-kubelet-service" {
-  name    = "fetch-kubelet.service"
-  content = data.template_file.fetch-kubelet-service.rendered
 }
