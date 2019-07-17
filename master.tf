@@ -178,9 +178,8 @@ data "template_file" "master-kubelet" {
   template = file("${path.module}/resources/master-kubelet.service")
 
   vars = {
-    kubelet_image_url = var.hyperkube_image_url
-    kubelet_image_tag = var.hyperkube_image_tag
-    cloud_provider    = var.cloud_provider
+    kubelet_binary_path = "/opt/bin/kubelet"
+    cloud_provider      = var.cloud_provider
   }
 }
 
@@ -390,39 +389,40 @@ locals {
 
 data "ignition_config" "master" {
   files = concat(
-      [
-        data.ignition_file.audit-policy.id,
-        data.ignition_file.cfssl.id,
-        data.ignition_file.cfssljson.id,
-        data.ignition_file.cfssl-client-config.id,
-        data.ignition_file.master-cfssl-new-node-cert.id,
-        data.ignition_file.master-cfssl-new-apiserver-cert.id,
-        data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.id,
-        data.ignition_file.master-cfssl-new-scheduler-cert.id,
-        data.ignition_file.master-cfssl-new-controller-manager-cert.id,
-        data.ignition_file.master-cfssl-keys-and-certs-get.id,
-        data.ignition_file.master-prom-machine-role.id,
-        data.ignition_file.scheduler-kubeconfig.id,
-        data.ignition_file.controller-manager-kubeconfig.id,
-        data.ignition_file.kubelet-kubeconfig.id,
-        data.ignition_file.kube-apiserver.id,
-        data.ignition_file.kube-scheduler.id,
-        data.ignition_file.kube-scheduler-config.id,
-        data.ignition_file.kube-controller-manager.id,
-        data.ignition_file.master-kubelet-conf.id,
-      ],
-      var.master_additional_files,
-      [local.kube_controller_additional_config]
-    )
+    [
+      data.ignition_file.audit-policy.id,
+      data.ignition_file.cfssl.id,
+      data.ignition_file.cfssljson.id,
+      data.ignition_file.cfssl-client-config.id,
+      data.ignition_file.master-cfssl-new-node-cert.id,
+      data.ignition_file.master-cfssl-new-apiserver-cert.id,
+      data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.id,
+      data.ignition_file.master-cfssl-new-scheduler-cert.id,
+      data.ignition_file.master-cfssl-new-controller-manager-cert.id,
+      data.ignition_file.master-cfssl-keys-and-certs-get.id,
+      data.ignition_file.master-prom-machine-role.id,
+      data.ignition_file.scheduler-kubeconfig.id,
+      data.ignition_file.controller-manager-kubeconfig.id,
+      data.ignition_file.kubelet-kubeconfig.id,
+      data.ignition_file.kube-apiserver.id,
+      data.ignition_file.kube-scheduler.id,
+      data.ignition_file.kube-scheduler-config.id,
+      data.ignition_file.kube-controller-manager.id,
+      data.ignition_file.kubelet.id,
+      data.ignition_file.master-kubelet-conf.id,
+    ],
+    var.master_additional_files,
+    [local.kube_controller_additional_config]
+  )
 
   systemd = concat(
-      [
-        data.ignition_systemd_unit.update-engine.id,
-        data.ignition_systemd_unit.locksmithd_master.id,
-        data.ignition_systemd_unit.docker-opts-dropin.id,
-        data.ignition_systemd_unit.master-kubelet.id,
-      ],
-      module.kubelet-restarter.systemd_units,
-      var.master_additional_systemd_units
-    )
+    [
+      data.ignition_systemd_unit.update-engine.id,
+      data.ignition_systemd_unit.locksmithd_master.id,
+      data.ignition_systemd_unit.docker-opts-dropin.id,
+      data.ignition_systemd_unit.master-kubelet.id,
+    ],
+    module.kubelet-restarter.systemd_units,
+    var.master_additional_systemd_units
+  )
 }

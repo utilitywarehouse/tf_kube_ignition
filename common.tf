@@ -65,3 +65,13 @@ data "ignition_file" "format-and-mount" {
     content = file("${path.module}/resources/format-and-mount")
   }
 }
+
+data "ignition_file" "kubelet" {
+  mode       = 493
+  filesystem = "root"
+  path       = "/opt/bin/kubelet"
+
+  source {
+    source = "https://storage.googleapis.com/kubernetes-release/release/${var.hyperkube_image_tag}/bin/linux/amd64/kubelet"
+  }
+}

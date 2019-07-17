@@ -1,4 +1,3 @@
-# https://github.com/openshift/installer/blob/master/modules/ignition/resources/services/kubelet.service
 [Unit]
 Description=Kubernetes Kubelet
 Requires=docker.service
@@ -25,40 +24,20 @@ ExecStartPre=/opt/bin/cfssl-new-scheduler-cert
 ExecStartPre=/opt/bin/cfssl-new-controller-manager-cert
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"
-ExecStart=/usr/bin/docker \
-  run \
-    --rm \
-    --net host \
-    --pid host \
-    --privileged \
-    --volume /dev:/dev:rw \
-    --volume /sys:/sys:ro \
-    --volume /var/run:/var/run:rw \
-    --volume /var/lib/cni/:/var/lib/cni:rw \
-    --volume /var/lib/docker/:/var/lib/docker:rw \
-    --volume /var/lib/kubelet/:/var/lib/kubelet:shared \
-    --volume /var/log:/var/log:shared \
-    --volume /etc/kubernetes:/etc/kubernetes:ro \
-    --volume /etc/cni/net.d:/etc/cni/net.d:rw \
-    --volume /etc/resolv.conf:/etc/resolv.conf:ro \
-    --volume /opt/cni/bin:/opt/cni/bin:rw \
-    --volume /var/run/calico:/var/run/calico:rw \
-    --volume /var/lib/calico:/var/lib/calico:rw \
-    --entrypoint /usr/local/bin/kubelet \
-  "${kubelet_image_url}:${kubelet_image_tag}" \
-    --allow-privileged \
-    --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
-    --kubeconfig=/var/lib/kubelet/kubeconfig \
-    --node-labels=role=master,node-role.kubernetes.io/master="" \
-    --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-    --container-runtime=docker \
-    --network-plugin=cni \
-    --cni-bin-dir=/opt/cni/bin \
-    --cni-conf-dir=/etc/cni/net.d \
-    ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
-    --lock-file=/var/run/lock/kubelet.lock \
-    --exit-on-lock-contention \
-    --v=0
+ExecStart=${kubelet_binary_path} \
+  --allow-privileged \
+  --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
+  --kubeconfig=/var/lib/kubelet/kubeconfig \
+  --node-labels=role=master,node-role.kubernetes.io/master="" \
+  --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
+  --container-runtime=docker \
+  --network-plugin=cni \
+  --cni-bin-dir=/opt/cni/bin \
+  --cni-conf-dir=/etc/cni/net.d \
+  ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
+  --lock-file=/var/run/lock/kubelet.lock \
+  --exit-on-lock-contention \
+  --v=0
 Restart=always
 RestartSec=10
 [Install]
