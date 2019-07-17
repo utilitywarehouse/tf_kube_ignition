@@ -46,3 +46,16 @@ output "etcd_ignition_systemd" {
 output "etcd_ignition_files" {
   value = [data.ignition_config.etcd.*.files]
 }
+
+// output cfssl ignition file list and template to allow other nodes to fetch certs
+output "cfssl_client_ignition_files" {
+  value = [
+    data.ignition_file.cfssl.id,
+    data.ignition_file.cfssljson.id,
+    data.ignition_file.cfssl-client-config.id,
+  ]
+}
+
+output "cfssl_client_new_cert_template" {
+  value = file("${path.module}/resources/cfssl-new-cert.sh")
+}
