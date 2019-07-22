@@ -67,9 +67,9 @@ EOS
 }
 
 data "ignition_file" "cfssl-init-ca" {
-  mode       = 493
+  mode = 493
   filesystem = "root"
-  path       = "/opt/bin/cfssl-init-ca"
+  path = "/opt/bin/cfssl-init-ca"
 
   content {
     content = file("${path.module}/resources/cfssl-init-ca.sh")
@@ -77,9 +77,9 @@ data "ignition_file" "cfssl-init-ca" {
 }
 
 data "ignition_file" "cfssl-init-proxy-pki" {
-  mode       = 493
+  mode = 493
   filesystem = "root"
-  path       = "/opt/bin/cfssl-init-proxy-pki"
+  path = "/opt/bin/cfssl-init-proxy-pki"
 
   content {
     content = file("${path.module}/resources/cfssl-init-proxy-pki")
@@ -87,9 +87,9 @@ data "ignition_file" "cfssl-init-proxy-pki" {
 }
 
 data "ignition_file" "cfssl-proxy-ca-csr-json" {
-  mode       = 420
+  mode = 420
   filesystem = "root"
-  path       = "/etc/cfssl/proxy-ca-csr.json"
+  path = "/etc/cfssl/proxy-ca-csr.json"
 
   content {
     content = file("${path.module}/resources/cfssl-proxy-ca-csr.json")
@@ -97,9 +97,9 @@ data "ignition_file" "cfssl-proxy-ca-csr-json" {
 }
 
 data "ignition_file" "cfssl-proxy-csr-json" {
-  mode       = 420
+  mode = 420
   filesystem = "root"
-  path       = "/etc/cfssl/proxy-csr.json"
+  path = "/etc/cfssl/proxy-csr.json"
 
   content {
     content = file("${path.module}/resources/cfssl-proxy-csr.json")
@@ -110,16 +110,16 @@ data "template_file" "cfssl-server-config" {
   template = file("${path.module}/resources/cfssl-server-config.json")
 
   vars = {
-    expiry_hours     = var.cfssl_node_expiry_hours
+    expiry_hours = var.cfssl_node_expiry_hours
     cfssl_unused_key = random_id.cfssl-auth-key-unused.hex
-    cfssl_auth_key   = random_id.cfssl-auth-key-client.hex
+    cfssl_auth_key = random_id.cfssl-auth-key-client.hex
   }
 }
 
 data "ignition_file" "cfssl-server-config" {
-  mode       = 384
+  mode = 384
   filesystem = "root"
-  path       = "/etc/cfssl/config.json"
+  path = "/etc/cfssl/config.json"
 
   content {
     content = data.template_file.cfssl-server-config.rendered
@@ -127,14 +127,14 @@ data "ignition_file" "cfssl-server-config" {
 }
 
 data "ignition_systemd_unit" "cfssl" {
-  name    = "cfssl.service"
+  name = "cfssl.service"
   content = file("${path.module}/resources/cfssl.service")
 }
 
 data "ignition_file" "cfssl-sk-csr" {
-  mode       = 420
+  mode = 420
   filesystem = "root"
-  path       = "/etc/cfssl/sk-csr.json"
+  path = "/etc/cfssl/sk-csr.json"
 
   content {
     content = <<EOS

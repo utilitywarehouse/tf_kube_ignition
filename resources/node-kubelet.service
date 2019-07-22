@@ -1,0 +1,39 @@
+[Unit]
+Description=Kubernetes Kubelet
+Requires=docker.service
+After=docker.service
+[Service]
+ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
+ExecStartPre=/usr/bin/mkdir -p /var/log/containers
+ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
+ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
+ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
+ExecStartPre=/usr/bin/mkdir -p /var/run/calico
+ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
+# This is a partial workaround to this upstream Kubernetes issue:
+#  https://github.com/kubernetes/kubernetes/issues/41916#issuecomment-312428731
+ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
+# This is a temporal workaround this upstream Kubernetes issue:
+#  https://github.com/kubernetes/kubernetes/issues/69015
+ExecStartPre=/sbin/sysctl -w fs.inotify.max_user_watches=524288
+ExecStartPre=/opt/bin/cfssl-new-cert
+ExecStart=${kubelet_binary_path} \
+  --allow-privileged \
+%{ if cloud_provider != "" }  --cloud-provider=${cloud_provider} \
+%{ endif ~}
+  --cni-bin-dir=/opt/cni/bin \
+  --cni-conf-dir=/etc/cni/net.d \
+  --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
+  --container-runtime=docker \
+  --exit-on-lock-contention \
+  --kubeconfig=/var/lib/kubelet/kubeconfig \
+  --network-plugin=cni \
+  --node-labels=role=${role} \
+%{ if taints != "" }  --register-with-taints=${taints} \
+%{ endif ~}
+  --lock-file=/var/run/lock/kubelet.lock \
+  --v=0
+Restart=always
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
