@@ -23,6 +23,11 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
+variable "enable_container_linux_locksmithd_storage_node" {
+  description = "Whether to enable automatic updates for Container Linux on kube worker storage nodes."
+  default     = false
+}
+
 variable "dns_domain" {
   description = "The domain under which this cluster's DNS records are set (cluster-name.example.com)."
 }
@@ -152,6 +157,18 @@ variable "worker_additional_files" {
   type        = list(string)
 }
 
+variable "storage_node_additional_systemd_units" {
+  description = "Additional systemd units to include in the igntion config data for storage nodes."
+  default     = []
+  type        = list(string)
+}
+
+variable "storage_node_additional_files" {
+  description = "Additional files to include in the igntion config data for storage nodes."
+  default     = []
+  type        = list(string)
+}
+
 variable "cfssl_ca_cn" {
   description = "The Common Name for the CA certificate."
 }
@@ -180,6 +197,11 @@ variable "cfssl_data_volumeid" {
 
 variable "etcd_data_volumeids" {
   type = list(string)
+}
+
+variable "storage_node_volumeid" {
+  description = "storage node data volume id. Defaults to empty (optional)"
+  default     = ""
 }
 
 variable "feature_gates" {
