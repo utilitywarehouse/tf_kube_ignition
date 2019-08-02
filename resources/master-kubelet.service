@@ -22,8 +22,11 @@ ExecStartPre=/opt/bin/cfssl-new-apiserver-cert
 ExecStartPre=/opt/bin/cfssl-new-apiserver-kubelet-client-cert
 ExecStartPre=/opt/bin/cfssl-new-scheduler-cert
 ExecStartPre=/opt/bin/cfssl-new-controller-manager-cert
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-controller-manager' | awk '{ print $1; }')"
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps --no-trunc | grep 'kube-apiserver' | awk '{ print $1; }')"
+# Hack to reload certs on control plane tier
+#  https://github.com/kubernetes/kubernetes/issues/46287
+ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-controller-manager)"
+ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-apiserver)"
+ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-scheduler)"
 ExecStart=${kubelet_binary_path} \
   --allow-privileged \
   --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
