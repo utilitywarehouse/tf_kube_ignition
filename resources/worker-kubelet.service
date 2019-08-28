@@ -18,7 +18,6 @@ ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 ExecStartPre=/sbin/sysctl -w fs.inotify.max_user_watches=524288
 ExecStartPre=/opt/bin/cfssl-new-cert
 ExecStart=${kubelet_binary_path} \
-  --allow-privileged \
   ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
   --cni-bin-dir=/opt/cni/bin \
   --cni-conf-dir=/etc/cni/net.d \
