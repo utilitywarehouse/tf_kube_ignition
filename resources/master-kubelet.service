@@ -28,7 +28,6 @@ ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-control
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-apiserver)"
 ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-scheduler)"
 ExecStart=${kubelet_binary_path} \
-  --allow-privileged \
   --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --node-labels=role=master,node-role.kubernetes.io/master="" \
