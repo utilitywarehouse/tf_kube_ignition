@@ -9,8 +9,8 @@ data "template_file" "storage-node-kubelet" {
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
     cloud_provider      = var.cloud_provider
-    role                = "storage-node"
-    taints              = "key=value:NoSchedule"
+    labels              = "role=storage-node,node.longhorn.io/create-default-disk=true"
+    taints              = "storage=longhorn:NoSchedule"
   }
 }
 

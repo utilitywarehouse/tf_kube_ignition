@@ -9,7 +9,7 @@ data "template_file" "worker-kubelet" {
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
     cloud_provider      = var.cloud_provider
-    role                = "worker"
+    labels              = "role=worker"
     taints              = ""
   }
 }

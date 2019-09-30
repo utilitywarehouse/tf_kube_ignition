@@ -27,7 +27,7 @@ ExecStart=${kubelet_binary_path} \
   --exit-on-lock-contention \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --network-plugin=cni \
-  --node-labels=role=${role} \
+  --node-labels=${labels} \
 %{ if taints != "" }  --register-with-taints=${taints} \
 %{ endif ~}
   --lock-file=/var/run/lock/kubelet.lock \
