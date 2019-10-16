@@ -30,7 +30,7 @@ ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-schedul
 ExecStart=${kubelet_binary_path} \
   --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
-  --node-labels=role=master,node-role.kubernetes.io/master="" \
+  --node-labels=role=master \
   --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
   --container-runtime=docker \
   --network-plugin=cni \
