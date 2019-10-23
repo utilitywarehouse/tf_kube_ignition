@@ -52,7 +52,6 @@ data "ignition_file" "kubelet-cfssl-new-cert" {
   }
 }
 
-
 // Kubeconfig will be the same for all kubernetes nodes as it only
 // contains master address and certs
 data "template_file" "node-kubeconfig" {
