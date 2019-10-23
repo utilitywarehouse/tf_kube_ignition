@@ -33,7 +33,7 @@ data "template_file" "kubelet-cfssl-new-cert" {
     cert_name   = "kubelet"
     user        = "root"
     group       = "root"
-    profile     = "client"
+    profile     = "client-server"
     path        = "/etc/kubernetes/ssl"
     cn          = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
     org         = "system:kubelets"
