@@ -49,7 +49,7 @@ module "ignition" {
 
 Certificates for the cluster components are fetched from the `cfssl` server, and they all use the same `CA`.
 
-As part of `kubelet` systemd service pre start processes we fetch all the needed certificates, following `kubeadm` [docs](https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/#generate-the-necessary-certificates). All kube components authenticate against apiserves using a client certificate and in particular `CN` as RBAC user and `ORG` as RBAC group.
+As part of `kubelet` systemd service pre start processes we fetch all the needed certificates, following `kubeadm` [docs](https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/#generate-the-necessary-certificates). All kube components authenticate against apiservers using a client certificate and in particular `CN` as RBAC user and `ORG` as RBAC group.
 
 We get the following certificates on every `kubelet` service restart:
 
