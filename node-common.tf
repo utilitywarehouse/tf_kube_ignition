@@ -26,7 +26,7 @@ data "ignition_file" "node-cfssl-new-cert" {
 }
 
 // Get a cert for to kubelet serve
-data "template_file" "kubelet-cfssl-new-cert" {
+data "template_file" "node-kubelet-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
@@ -42,13 +42,13 @@ data "template_file" "kubelet-cfssl-new-cert" {
   }
 }
 
-data "ignition_file" "kubelet-cfssl-new-cert" {
+data "ignition_file" "node-kubelet-cfssl-new-cert" {
   mode       = 493
   filesystem = "root"
   path       = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
-    content = data.template_file.kubelet-cfssl-new-cert.rendered
+    content = data.template_file.node-kubelet-cfssl-new-cert.rendered
   }
 }
 

@@ -35,7 +35,7 @@ data "ignition_file" "master-cfssl-new-node-cert" {
 }
 
 // Get a cert for to kubelet serve
-data "template_file" "kubelet-cfssl-new-cert" {
+data "template_file" "master-kubelet-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
@@ -51,13 +51,13 @@ data "template_file" "kubelet-cfssl-new-cert" {
   }
 }
 
-data "ignition_file" "kubelet-cfssl-new-cert" {
+data "ignition_file" "master-kubelet-cfssl-new-cert" {
   mode       = 493
   filesystem = "root"
   path       = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
-    content = data.template_file.kubelet-cfssl-new-cert.rendered
+    content = data.template_file.master-kubelet-cfssl-new-cert.rendered
   }
 }
 
@@ -421,13 +421,13 @@ data "ignition_config" "master" {
       data.ignition_file.cfssl.id,
       data.ignition_file.cfssljson.id,
       data.ignition_file.cfssl-client-config.id,
-      data.ignition_file.kubelet-cfssl-new-cert.id,
       data.ignition_file.master-cfssl-new-node-cert.id,
       data.ignition_file.master-cfssl-new-apiserver-cert.id,
       data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.id,
       data.ignition_file.master-cfssl-new-scheduler-cert.id,
       data.ignition_file.master-cfssl-new-controller-manager-cert.id,
       data.ignition_file.master-cfssl-keys-and-certs-get.id,
+      data.ignition_file.master-kubelet-cfssl-new-cert.id,
       data.ignition_file.master-prom-machine-role.id,
       data.ignition_file.scheduler-kubeconfig.id,
       data.ignition_file.controller-manager-kubeconfig.id,

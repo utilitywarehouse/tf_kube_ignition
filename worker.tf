@@ -42,7 +42,7 @@ data "ignition_config" "worker" {
       data.ignition_file.cfssljson.id,
       data.ignition_file.cfssl-client-config.id,
       data.ignition_file.node-cfssl-new-cert.id,
-      data.ignition_file.kubelet-cfssl-new-cert.id,
+      data.ignition_file.node-kubelet-cfssl-new-cert.id,
       data.ignition_file.kubelet.id,
       data.ignition_file.node-kubeconfig.id,
       data.ignition_file.node-sysctl-vm.id,
