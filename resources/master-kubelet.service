@@ -18,6 +18,7 @@ ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 ExecStartPre=/sbin/sysctl -w fs.inotify.max_user_watches=524288
 ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
 ExecStartPre=/opt/bin/cfssl-new-node-cert
+ExecStartPre=/opt/bin/cfssl-new-kubelet-cert
 ExecStartPre=/opt/bin/cfssl-new-apiserver-cert
 ExecStartPre=/opt/bin/cfssl-new-apiserver-kubelet-client-cert
 ExecStartPre=/opt/bin/cfssl-new-scheduler-cert
@@ -38,6 +39,8 @@ ExecStart=${kubelet_binary_path} \
   --cni-conf-dir=/etc/cni/net.d \
   ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
   --lock-file=/var/run/lock/kubelet.lock \
+  --tls-cert-file=/etc/kubernetes/ssl/kubelet.pem \
+  --tls-private-key-file=/etc/kubernetes/ssl/kubelet-key.pem \
   --exit-on-lock-contention \
   --v=0
 Restart=always

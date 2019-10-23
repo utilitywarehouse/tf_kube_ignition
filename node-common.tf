@@ -25,6 +25,33 @@ data "ignition_file" "node-cfssl-new-cert" {
   }
 }
 
+// Get a cert for to kubelet serve
+data "template_file" "node-kubelet-cfssl-new-cert" {
+  template = file("${path.module}/resources/cfssl-new-cert.sh")
+
+  vars = {
+    cert_name   = "kubelet"
+    user        = "root"
+    group       = "root"
+    profile     = "client-server"
+    path        = "/etc/kubernetes/ssl"
+    cn          = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
+    org         = "system:kubelets"
+    get_ip      = var.get_ip_command[var.cloud_provider]
+    extra_names = ""
+  }
+}
+
+data "ignition_file" "node-kubelet-cfssl-new-cert" {
+  mode       = 493
+  filesystem = "root"
+  path       = "/opt/bin/cfssl-new-kubelet-cert"
+
+  content {
+    content = data.template_file.node-kubelet-cfssl-new-cert.rendered
+  }
+}
+
 // Kubeconfig will be the same for all kubernetes nodes as it only
 // contains master address and certs
 data "template_file" "node-kubeconfig" {
