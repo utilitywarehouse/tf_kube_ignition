@@ -60,6 +60,7 @@ data "ignition_config" "storage-node" {
       data.ignition_file.format-and-mount.id,
       data.ignition_file.kubelet.id,
       data.ignition_file.node-cfssl-new-cert.id,
+      data.ignition_file.node-cfssl-new-kubelet-cert.id,
       data.ignition_file.node-sysctl-vm.id,
       data.ignition_file.node-kubeconfig.id,
       data.ignition_file.node-kubelet-conf.id,
