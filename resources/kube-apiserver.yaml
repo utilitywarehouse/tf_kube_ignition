@@ -45,6 +45,7 @@ spec:
     - --requestheader-username-headers=X-Remote-User
     - --proxy-client-cert-file=/etc/kubernetes/ssl/proxy.pem
     - --proxy-client-key-file=/etc/kubernetes/ssl/proxy-key.pem
+    - --kubelet-certificate-authority=/etc/kubernetes/ssl/ca.pem
     - --kubelet-client-certificate=/etc/kubernetes/ssl/apiserver-kubelet-client.pem
     - --kubelet-client-key=/etc/kubernetes/ssl/apiserver-kubelet-client-key.pem
     - --v=0
