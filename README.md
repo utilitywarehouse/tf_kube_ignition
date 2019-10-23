@@ -64,7 +64,7 @@ ORG=system:master-nodes
 - A `kubelet` certificate to serve apiserver requests on port `:10250`, based on [doc](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet)
 ```
 CN=system:kubelet:<node_name>
-ORG=ystem:kubelets
+ORG=system:kubelets
 ```
 
 - A serving certificate for the API server (`apiserver`)
@@ -99,5 +99,5 @@ ORG=system:nodes
 - A `kubelet` certificate to serve apiserver requests on port `:10250`, based on [doc](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet)
 ```
 CN=system:kubelet:<node_name>
-ORG=ystem:kubelets
+ORG=system:kubelets
 ```
