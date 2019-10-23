@@ -44,3 +44,60 @@ module "ignition" {
   cfssl_additional_systemd_units           = ["${data.ignition_systemd_unit.isu.id}"]
 }
 ```
+
+## Certificates
+
+Certificates for the cluster components are fetched from the `cfssl` server, and they all use the same `CA`.
+
+As part of `kubelet` systemd service pre start processes we fetch all the needed certificates, following `kubeadm` [docs](https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/#generate-the-necessary-certificates). All kube components authenticate against apiserves using a client certificate and in particular `CN` as RBAC user and `ORG` as RBAC group.
+
+We get the following certificates on every `kubelet` service restart:
+
+### Master
+
+- A `node` certificate to be used by kubelet kubeconfig to authenticate against apiserver
+```
+CN=system:node:<node_name>
+ORG=system:master-nodes
+```
+
+- A `kubelet` certificate to serve apiserver requests on port `:10250`, based on [doc](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet)
+```
+CN=system:kubelet:<node_name>
+ORG=ystem:kubelets
+```
+
+- A serving certificate for the API server (`apiserver`)
+Common Name and Organisation are not important here as the cert will not be used to authenticate against apiservers, but the certificate need to specify all the alternative DNS names that the apiservers listen to.
+
+- A client certificate for the API server to connect to the kubelets securely (`apiserver-kubelet-client`)
+```
+CN=system:node:<node_name>
+ORG=system:masters
+```
+
+- A `scheduler` certificate to be used in kube-scheduler's kubeconfig file to communicate with apiservers.
+```
+CN=system:kube-scheduler
+ORG=
+```
+
+- A `controller-manager` certificate to be used in kube-controller-manager's kubeconfig file to communicate with apiservers.
+```
+CN=system:kube-controller-manager
+ORG=
+```
+
+### Node
+
+- A `node` certificate to be used by kubelet kubeconfig to authenticate against apiserver
+```
+CN=system:node:<node_name>
+ORG=system:nodes
+```
+
+- A `kubelet` certificate to serve apiserver requests on port `:10250`, based on [doc](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet)
+```
+CN=system:kubelet:<node_name>
+ORG=ystem:kubelets
+```
