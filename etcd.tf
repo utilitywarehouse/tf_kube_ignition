@@ -8,14 +8,15 @@ data "template_file" "etcd-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name = "node"
-    user      = "etcd"
-    group     = "etcd"
-    profile   = "client-server"
-    path      = "/etc/etcd/ssl"
-    cn        = "${count.index}.etcd.${var.dns_domain}"
-    org       = ""
-    get_ip    = var.get_ip_command[var.cloud_provider]
+    cert_name    = "node"
+    user         = "etcd"
+    group        = "etcd"
+    profile      = "client-server"
+    path         = "/etc/etcd/ssl"
+    cn           = "${count.index}.etcd.${var.dns_domain}"
+    org          = ""
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
     # workaround for https://github.com/kubernetes/kubernetes/issues/72102
     # include first member's ip in SAN for all nodes
     # this replicates kubeadm behaviour to include first node's ip, as kubeadm

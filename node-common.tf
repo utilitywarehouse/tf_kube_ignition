@@ -3,15 +3,16 @@ data "template_file" "node-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "node"
-    user        = "root"
-    group       = "root"
-    profile     = "client"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org         = "system:nodes"
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "node"
+    user         = "root"
+    group        = "root"
+    profile      = "client"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org          = "system:nodes"
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 
@@ -30,15 +31,16 @@ data "template_file" "node-kubelet-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "kubelet"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
-    org         = "system:kubelets"
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "kubelet"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
+    org          = "system:kubelets"
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 

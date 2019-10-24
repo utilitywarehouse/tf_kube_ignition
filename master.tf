@@ -12,15 +12,16 @@ data "template_file" "master-node-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "node"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org         = "system:master-nodes"
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "node"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org          = "system:master-nodes"
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 
@@ -39,15 +40,16 @@ data "template_file" "master-kubelet-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "kubelet"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
-    org         = "system:kubelets"
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "kubelet"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
+    org          = "system:kubelets"
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 
@@ -66,14 +68,15 @@ data "template_file" "master-apiserver-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name = "apiserver"
-    user      = "root"
-    group     = "root"
-    profile   = "client-server"
-    path      = "/etc/kubernetes/ssl"
-    cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org       = ""
-    get_ip    = var.get_ip_command[var.cloud_provider]
+    cert_name    = "apiserver"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org          = ""
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
     extra_names = join(
       ",",
       [
@@ -106,15 +109,16 @@ data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "apiserver-kubelet-client"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org         = "system:masters"
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "apiserver-kubelet-client"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+    org          = "system:masters"
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 
@@ -133,15 +137,16 @@ data "template_file" "master-scheduler-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "scheduler"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:kube-scheduler"
-    org         = ""
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "scheduler"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:kube-scheduler"
+    org          = ""
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 
@@ -160,15 +165,16 @@ data "template_file" "master-controller-manager-cfssl-new-cert" {
   template = file("${path.module}/resources/cfssl-new-cert.sh")
 
   vars = {
-    cert_name   = "controller-manager"
-    user        = "root"
-    group       = "root"
-    profile     = "client-server"
-    path        = "/etc/kubernetes/ssl"
-    cn          = "system:kube-controller-manager"
-    org         = ""
-    get_ip      = var.get_ip_command[var.cloud_provider]
-    extra_names = ""
+    cert_name    = "controller-manager"
+    user         = "root"
+    group        = "root"
+    profile      = "client-server"
+    path         = "/etc/kubernetes/ssl"
+    cn           = "system:kube-controller-manager"
+    org          = ""
+    get_ip       = var.get_ip_command[var.cloud_provider]
+    get_hostname = var.node_name_command[var.cloud_provider]
+    extra_names  = ""
   }
 }
 
