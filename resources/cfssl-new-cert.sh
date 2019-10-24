@@ -6,7 +6,7 @@ mkdir -p ${path}
 cd ${path}
 
 _ip="$(${get_ip})"
-_hostname="$(hostname)"
+_hostname="$(${get_hostname})"
 
 /opt/bin/cfssl gencert \
   -config=/etc/cfssl/config.json \
