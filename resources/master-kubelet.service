@@ -1,7 +1,7 @@
 [Unit]
 Description=Kubernetes Kubelet
 Requires=docker.service
-After=docker.service cert-refresh.service
+After=docker.service
 [Service]
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
