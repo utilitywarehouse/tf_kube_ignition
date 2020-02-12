@@ -142,3 +142,8 @@ data "ignition_file" "prometheus-ro-rootfs" {
     content = file("${path.module}/resources/prometheus-ro-rootfs")
   }
 }
+
+module "cert-refresh-node" {
+  source      = "./modules/cert-refresh-node"
+  on_calendar = var.cfssl_node_renew_timer
+}
