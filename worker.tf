@@ -3,6 +3,11 @@ data "ignition_systemd_unit" "locksmithd_worker" {
   mask = false == var.enable_container_linux_locksmithd_worker
 }
 
+module "cert-refresh-worker" {
+  source      = "./modules/cert-refresh-worker"
+  on_calendar = var.cfssl_node_renew_timer
+}
+
 data "template_file" "worker-kubelet" {
   template = file("${path.module}/resources/node-kubelet.service")
 
@@ -63,7 +68,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.prometheus-ro-rootfs.id,
       data.ignition_systemd_unit.prometheus-ro-rootfs-timer.id,
     ],
-    module.kubelet-restarter.systemd_units,
+    module.cert-refresh-worker.systemd_units,
     var.worker_additional_systemd_units
   )
 }

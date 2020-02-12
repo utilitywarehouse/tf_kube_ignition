@@ -16,18 +16,6 @@ ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 # This is a temporal workaround this upstream Kubernetes issue:
 #  https://github.com/kubernetes/kubernetes/issues/69015
 ExecStartPre=/sbin/sysctl -w fs.inotify.max_user_watches=524288
-ExecStartPre=/opt/bin/cfssl-keys-and-certs-get
-ExecStartPre=/opt/bin/cfssl-new-node-cert
-ExecStartPre=/opt/bin/cfssl-new-kubelet-cert
-ExecStartPre=/opt/bin/cfssl-new-apiserver-cert
-ExecStartPre=/opt/bin/cfssl-new-apiserver-kubelet-client-cert
-ExecStartPre=/opt/bin/cfssl-new-scheduler-cert
-ExecStartPre=/opt/bin/cfssl-new-controller-manager-cert
-# Hack to reload certs on control plane tier
-#  https://github.com/kubernetes/kubernetes/issues/46287
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-controller-manager)"
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-apiserver)"
-ExecStartPre=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-scheduler)"
 ExecStart=${kubelet_binary_path} \
   --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
   --kubeconfig=/var/lib/kubelet/kubeconfig \

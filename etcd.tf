@@ -125,7 +125,7 @@ data "ignition_systemd_unit" "etcd-member-dropin" {
 }
 
 module "etcd-cert-fetcher" {
-  source = "./cert-fetcher"
+  source = "./modules/cert-fetcher-etcd"
 
   on_calendar = var.cfssl_node_renew_timer
 }

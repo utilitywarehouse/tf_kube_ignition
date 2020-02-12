@@ -16,8 +16,6 @@ ExecStartPre=/sbin/sysctl -w net.ipv4.tcp_retries2=8
 # This is a temporal workaround this upstream Kubernetes issue:
 #  https://github.com/kubernetes/kubernetes/issues/69015
 ExecStartPre=/sbin/sysctl -w fs.inotify.max_user_watches=524288
-ExecStartPre=/opt/bin/cfssl-new-cert
-ExecStartPre=/opt/bin/cfssl-new-kubelet-cert
 ExecStart=${kubelet_binary_path} \
 %{ if cloud_provider != "" }  --cloud-provider=${cloud_provider} \
 %{ endif ~}

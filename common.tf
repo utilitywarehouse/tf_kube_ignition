@@ -25,13 +25,6 @@ data "ignition_file" "cfssljson" {
   }
 }
 
-module "kubelet-restarter" {
-  source = "./systemd_service_restarter"
-
-  service_name = "kubelet"
-  on_calendar  = var.cfssl_node_renew_timer
-}
-
 data "ignition_systemd_unit" "docker-opts-dropin" {
   name = "docker.service"
 
