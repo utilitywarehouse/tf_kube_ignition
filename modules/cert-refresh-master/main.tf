@@ -22,9 +22,9 @@ ExecStart=/opt/bin/cfssl-new-controller-manager-cert
 # Hack to reload certs on control plane tier
 #  https://github.com/kubernetes/kubernetes/issues/46287
 ExecStart=/usr/bin/systemctl try-restart kubelet.service
-ExecStart=/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-controller-manager)"
-ExecStart=/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-apiserver)"
-ExecStart=/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-scheduler)"
+ExecStart=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-controller-manager)"
+ExecStart=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-apiserver)"
+ExecStart=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-scheduler)"
 [Install]
 WantedBy=multi-user.target
 EOS
