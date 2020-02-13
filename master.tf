@@ -3,6 +3,11 @@ data "ignition_systemd_unit" "locksmithd_master" {
   mask = false == var.enable_container_linux_locksmithd_master
 }
 
+module "cert-refresh-master" {
+  source      = "./modules/cert-refresh-master"
+  on_calendar = var.cfssl_node_renew_timer
+}
+
 // Node certificate for kubelet to use as part of system:master-nodes. We need
 // ClusterRoleBindings to allow kube components creation and bind the group
 // with system:node role. In order to be authorized by the Node authorizer,
@@ -456,7 +461,7 @@ data "ignition_config" "master" {
       data.ignition_systemd_unit.docker-opts-dropin.id,
       data.ignition_systemd_unit.master-kubelet.id,
     ],
-    module.kubelet-restarter.systemd_units,
-    var.master_additional_systemd_units
+    module.cert-refresh-master.systemd_units,
+    var.master_additional_systemd_units,
   )
 }

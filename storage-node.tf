@@ -81,7 +81,7 @@ data "ignition_config" "storage-node" {
       data.ignition_systemd_unit.prometheus-ro-rootfs-timer.id,
       data.ignition_systemd_unit.storage-node-disk-mounter.id,
     ],
-    module.kubelet-restarter.systemd_units,
+    module.cert-refresh-node.systemd_units,
     var.storage_node_additional_systemd_units
   )
 }

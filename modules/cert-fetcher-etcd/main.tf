@@ -32,7 +32,7 @@ EOS
 
 output "systemd_units" {
   value = [
-    "${data.ignition_systemd_unit.cert-fetch-service.id}",
-    "${data.ignition_systemd_unit.cert-fetch-timer.id}",
+    data.ignition_systemd_unit.cert-fetch-service.id,
+    data.ignition_systemd_unit.cert-fetch-timer.id,
   ]
 }
