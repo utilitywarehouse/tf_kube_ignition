@@ -112,6 +112,7 @@ data "template_file" "prometheus-tmpfs-dir" {
 
 data "ignition_systemd_unit" "prometheus-tmpfs-dir" {
   name    = "prometheus-tmpfs-dir.service"
+  enabled = false # not enabled because this service is started by prometheus-ro-rootfs.timer
   content = data.template_file.prometheus-tmpfs-dir.rendered
 }
 
@@ -121,6 +122,7 @@ data "template_file" "prometheus-ro-rootfs" {
 
 data "ignition_systemd_unit" "prometheus-ro-rootfs" {
   name    = "prometheus-ro-rootfs.service"
+  enabled = false # not enabled because this service is started by prometheus-ro-rootfs.timer
   content = data.template_file.prometheus-ro-rootfs.rendered
 }
 
