@@ -21,10 +21,14 @@ ExecStart=/opt/bin/cfssl-new-scheduler-cert
 ExecStart=/opt/bin/cfssl-new-controller-manager-cert
 # Hack to reload certs on control plane tier
 #  https://github.com/kubernetes/kubernetes/issues/46287
-ExecStart=/usr/bin/systemctl try-restart kubelet.service
 ExecStart=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-controller-manager)"
 ExecStart=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-apiserver)"
 ExecStart=-/bin/sh -c "docker restart $(docker ps -q -f name=k8s_kube-scheduler)"
+# Restart kubelet after docker has finished restarting kube components.
+# Restarting containers while kubelet is also restarting could result in a
+# situation where kubelet loses track of the static pods and tries to create
+# new ones but they conflict with the restarted containers.
+ExecStart=/usr/bin/systemctl try-restart kubelet.service
 [Install]
 WantedBy=multi-user.target
 EOS
