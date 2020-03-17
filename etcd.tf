@@ -107,6 +107,7 @@ data "template_file" "etcd-member-dropin" {
     index                = count.index
     etcd_initial_cluster = join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))
     private_ipv4         = var.etcd_addresses[count.index]
+    uuid_file            = "/var/lib/${var.container_linux_distribution}/etcd-member-wrapper.uuid"
   }
 }
 
