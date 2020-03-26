@@ -21,6 +21,16 @@ data "template_file" "etcd-cfssl-new-cert" {
   }
 }
 
+data "ignition_file" "etcd" {
+  mode       = 493
+  filesystem = "root"
+  path       = "/opt/bin/etcd.tar.gz"
+
+  source {
+    source = "https://storage.googleapis.com/etcd/${var.etcd_image_tag}/etcd-${var.etcd_image_tag}-linux-amd64.tar.gz"
+  }
+}
+
 data "ignition_file" "etcd-cfssl-new-cert" {
   count      = length(var.etcd_addresses)
   mode       = 493
@@ -43,6 +53,15 @@ data "ignition_file" "etcd-prom-machine-role" {
   content {
     content = "machine_role{role=\"etcd\"} 1\n"
   }
+}
+
+data "template_file" "etcd-setup" {
+  template = file("${path.module}/resources/etcd-setup.service")
+}
+
+data "ignition_systemd_unit" "etcd-setup" {
+  name    = "etcd-setup.service"
+  content = data.template_file.etcd-setup.rendered
 }
 
 data "template_file" "etcdctl-wrapper" {
@@ -97,9 +116,9 @@ resource "null_resource" "etcd_member" {
   }
 }
 
-data "template_file" "etcd-member-dropin" {
+data "template_file" "etcd-member" {
   count    = length(var.etcd_addresses)
-  template = file("${path.module}/resources/etcd-member-dropin.conf")
+  template = file("${path.module}/resources/etcd-member.service")
 
   vars = {
     etcd_image_url       = var.etcd_image_url
@@ -107,18 +126,13 @@ data "template_file" "etcd-member-dropin" {
     index                = count.index
     etcd_initial_cluster = join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))
     private_ipv4         = var.etcd_addresses[count.index]
-    uuid_file            = "/var/lib/${var.container_linux_distribution}/etcd-member-wrapper.uuid"
   }
 }
 
-data "ignition_systemd_unit" "etcd-member-dropin" {
-  count = length(var.etcd_addresses)
-  name  = "etcd-member.service"
-
-  dropin {
-    name    = "10-custom-options.conf"
-    content = element(data.template_file.etcd-member-dropin.*.rendered, count.index)
-  }
+data "ignition_systemd_unit" "etcd-member" {
+  count   = length(var.etcd_addresses)
+  name    = "etcd-member.service"
+  content = element(data.template_file.etcd-member.*.rendered, count.index)
 }
 
 module "etcd-cert-fetcher" {
@@ -135,6 +149,7 @@ data "ignition_config" "etcd" {
       data.ignition_file.cfssl.id,
       data.ignition_file.cfssljson.id,
       data.ignition_file.cfssl-client-config.id,
+      data.ignition_file.etcd.id,
       element(data.ignition_file.etcd-cfssl-new-cert.*.id, count.index),
       data.ignition_file.etcd-prom-machine-role.id,
       element(data.ignition_file.etcdctl-wrapper.*.id, count.index),
@@ -149,7 +164,8 @@ data "ignition_config" "etcd" {
       data.ignition_systemd_unit.locksmithd_etcd.id,
       data.ignition_systemd_unit.docker-opts-dropin.id,
       data.ignition_systemd_unit.node-exporter.id,
-      element(data.ignition_systemd_unit.etcd-member-dropin.*.id, count.index),
+      data.ignition_systemd_unit.etcd-setup.id,
+      element(data.ignition_systemd_unit.etcd-member.*.id, count.index),
       element(data.ignition_systemd_unit.etcd-disk-mounter.*.id, count.index)
     ],
     module.etcd-cert-fetcher.systemd_units,

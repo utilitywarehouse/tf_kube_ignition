@@ -1,8 +1,3 @@
-variable "container_linux_distribution" {
-  description = "The distribution of Container Linux ('coreos' or 'flatcar')."
-  default     = "flatcar"
-}
-
 variable "enable_container_linux_update-engine" {
   description = "Whether to enable automatic updates for Container Linux."
   default     = true

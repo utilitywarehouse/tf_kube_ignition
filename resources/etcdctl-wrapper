@@ -2,7 +2,6 @@
 docker run --rm \
     -i \
     -v /etc/etcd/ssl:/etc/etcd/ssl \
-    -e ETCDCTL_API=3 \
     --entrypoint /usr/local/bin/etcdctl \
     ${etcd_image_url}:${etcd_image_tag} \
     --cacert /etc/etcd/ssl/ca.pem \

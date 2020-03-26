@@ -1,9 +1,22 @@
+# Replacing /usr/lib/systemd/system/etcd-member.service
+
 [Unit]
-After=disk-mounter.service
-Requires=disk-mounter.service
+Description=etcd (System Application Container)
+Documentation=https://github.com/coreos/etcd
+Wants=network-online.target network.target
+Requires=disk-mounter.service etcd-setup.service cert-fetch.service
+After=network-online.target disk-mounter.service etcd-setup.service cert-fetch.service
+Conflicts=etcd.service
+Conflicts=etcd2.service
+
 [Service]
-Environment="ETCD_IMAGE_URL=${etcd_image_url}"
-Environment="ETCD_IMAGE_TAG=${etcd_image_tag}"
+Type=notify
+Restart=on-failure
+RestartSec=10s
+TimeoutStartSec=0
+LimitNOFILE=40000
+
+Environment="ETCD_DATA_DIR=/var/lib/etcd"
 Environment="ETCD_NAME=member${index}"
 Environment="ETCD_INITIAL_CLUSTER=${etcd_initial_cluster}"
 Environment="ETCD_LISTEN_PEER_URLS=https://${private_ipv4}:2380"
@@ -19,8 +32,8 @@ Environment="ETCD_PEER_CLIENT_CERT_AUTH=true"
 Environment="ETCD_PEER_TRUSTED_CA_FILE=/etc/etcd/ssl/ca.pem"
 Environment="ETCD_PEER_CERT_FILE=/etc/etcd/ssl/node.pem"
 Environment="ETCD_PEER_KEY_FILE=/etc/etcd/ssl/node-key.pem"
-Environment="RKT_RUN_ARGS=\
-  --uuid-file-save=${uuid_file} \
-  --volume etc-etcd,kind=host,source=/etc/etcd,readOnly=true \
-  --mount volume=etc-etcd,target=/etc/etcd"
-ExecStartPre=/usr/bin/mkdir -p /etc/etcd
+
+ExecStart=/opt/bin/etcd
+
+[Install]
+WantedBy=multi-user.target
