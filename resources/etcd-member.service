@@ -33,14 +33,11 @@ Environment="ETCD_PEER_TRUSTED_CA_FILE=/etc/etcd/ssl/ca.pem"
 Environment="ETCD_PEER_CERT_FILE=/etc/etcd/ssl/node.pem"
 Environment="ETCD_PEER_KEY_FILE=/etc/etcd/ssl/node-key.pem"
 
-ExecStartPre=-/bin/sh -c " \
+ExecStartPre=-/bin/sh -c "\
   test ! -f /opt/bin/etcd && \
   test -f /opt/bin/etcd.tar.gz && \
-  mkdir -p /tmp/etcd && \
-  tar xzf /opt/bin/etcd.tar.gz -C /tmp/etcd --strip-components=1 && \
-  mv /tmp/etcd/etcd /opt/bin/etcd && \
-  mv /tmp/etcd/etcdctl /opt/bin/etcdctl && \
-  rm -rf /tmp/etcd"
+  tar --strip-components=1 -C /opt/bin \
+    -xzf /opt/bin/etcd.tar.gz etcd-${var.etcd_version}-linux-amd64/etcd"
 
 ExecStart=/opt/bin/etcd
 
