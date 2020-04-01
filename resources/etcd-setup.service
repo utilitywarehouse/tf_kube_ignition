@@ -8,6 +8,5 @@ ExecStart=tar xzvf /opt/bin/etcd.tar.gz -C /tmp/etcd --strip-components=1
 ExecStart=mv /tmp/etcd/etcd /opt/bin/etcd
 ExecStart=mv /tmp/etcd/etcdctl /opt/bin/etcdctl
 ExecStartPost=rm -rf /tmp/etcd
-ExecStartPost=rm -f /opt/bin/etcd.tar.gz
 [Install]
 WantedBy=multi-user.target
