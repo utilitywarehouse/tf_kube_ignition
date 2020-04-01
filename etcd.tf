@@ -55,15 +55,6 @@ data "ignition_file" "etcd-prom-machine-role" {
   }
 }
 
-data "template_file" "etcd-setup" {
-  template = file("${path.module}/resources/etcd-setup.service")
-}
-
-data "ignition_systemd_unit" "etcd-setup" {
-  name    = "etcd-setup.service"
-  content = data.template_file.etcd-setup.rendered
-}
-
 data "template_file" "etcdctl-wrapper" {
   count    = length(var.etcd_addresses)
   template = file("${path.module}/resources/etcdctl-wrapper")
@@ -121,8 +112,7 @@ data "template_file" "etcd-member" {
   template = file("${path.module}/resources/etcd-member.service")
 
   vars = {
-    etcd_image_url       = var.etcd_image_url
-    etcd_image_tag       = var.etcd_image_tag
+    etcd_version         = var.etcd_image_tag
     index                = count.index
     etcd_initial_cluster = join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))
     private_ipv4         = var.etcd_addresses[count.index]
@@ -164,7 +154,6 @@ data "ignition_config" "etcd" {
       data.ignition_systemd_unit.locksmithd_etcd.id,
       data.ignition_systemd_unit.docker-opts-dropin.id,
       data.ignition_systemd_unit.node-exporter.id,
-      data.ignition_systemd_unit.etcd-setup.id,
       element(data.ignition_systemd_unit.etcd-member.*.id, count.index),
       element(data.ignition_systemd_unit.etcd-disk-mounter.*.id, count.index)
     ],

@@ -4,8 +4,8 @@
 Description=etcd (System Application Container)
 Documentation=https://github.com/coreos/etcd
 Wants=network-online.target network.target
-Requires=disk-mounter.service etcd-setup.service cert-fetch.service
-After=network-online.target disk-mounter.service etcd-setup.service cert-fetch.service
+Requires=disk-mounter.service cert-fetch.service
+After=network-online.target disk-mounter.service cert-fetch.service
 Conflicts=etcd.service
 Conflicts=etcd2.service
 
@@ -32,6 +32,12 @@ Environment="ETCD_PEER_CLIENT_CERT_AUTH=true"
 Environment="ETCD_PEER_TRUSTED_CA_FILE=/etc/etcd/ssl/ca.pem"
 Environment="ETCD_PEER_CERT_FILE=/etc/etcd/ssl/node.pem"
 Environment="ETCD_PEER_KEY_FILE=/etc/etcd/ssl/node-key.pem"
+
+ExecStartPre=-/bin/sh -c "\
+  test ! -f /opt/bin/etcd && \
+  test -f /opt/bin/etcd.tar.gz && \
+  tar --strip-components=1 -C /opt/bin \
+    -xzf /opt/bin/etcd.tar.gz etcd-${etcd_version}-linux-amd64/etcd"
 
 ExecStart=/opt/bin/etcd
 
