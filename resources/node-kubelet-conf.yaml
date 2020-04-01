@@ -11,6 +11,7 @@ authorization:
   mode: AlwaysAllow
 clusterDNS:${cluster_dns}
 clusterDomain: "cluster.local"
+cpuManagerPolicy: "static"
 evictionHard:
   memory.available: "1Gi"
   nodefs.available: "2Gi"
