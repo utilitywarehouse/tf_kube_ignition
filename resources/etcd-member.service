@@ -37,7 +37,7 @@ ExecStartPre=-/bin/sh -c "\
   test ! -f /opt/bin/etcd && \
   test -f /opt/bin/etcd.tar.gz && \
   tar --strip-components=1 -C /opt/bin \
-    -xzf /opt/bin/etcd.tar.gz etcd-${var.etcd_version}-linux-amd64/etcd"
+    -xzf /opt/bin/etcd.tar.gz etcd-${etcd_version}-linux-amd64/etcd"
 
 ExecStart=/opt/bin/etcd
 
