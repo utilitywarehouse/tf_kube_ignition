@@ -11,17 +11,20 @@ authorization:
   mode: AlwaysAllow
 clusterDNS:${cluster_dns}
 clusterDomain: "cluster.local"
+${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
+serializeImagePulls: false
+staticPodPath: "/etc/kubernetes/manifests"
+
+# Resource allocation
 cpuManagerPolicy: "static"
+systemReserved: "cpu=500m,memory=1Gi,ephemeral-storage=20Gi,pid=1000"
 evictionHard:
   memory.available: "1Gi"
   nodefs.available: "2Gi"
-evictionMaxPodGracePeriod: 30
 evictionSoft:
   memory.available: "2Gi"
   nodefs.available: "4Gi"
 evictionSoftGracePeriod:
   memory.available: "1m"
   nodefs.available: "1m"
-${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
-serializeImagePulls: false
-staticPodPath: "/etc/kubernetes/manifests"
+evictionMaxPodGracePeriod: 30
