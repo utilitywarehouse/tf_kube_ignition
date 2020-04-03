@@ -19,7 +19,7 @@ cgroupDriver: systemd
 
 # Resource allocation
 cpuManagerPolicy: "static"
-systemReserved: "cpu=500m,memory=1Gi,ephemeral-storage=20Gi,pid=1000"
+systemReserved: "cpu=500m,memory=1Gi"
 evictionHard:
   memory.available: "1Gi"
   nodefs.available: "2Gi"
