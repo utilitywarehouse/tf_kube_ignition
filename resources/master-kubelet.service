@@ -5,7 +5,7 @@ After=docker.service
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
-ExecStartPre=/usr/bin/touch /etc/kubernetes/config/kubeletenv
+ExecStartPre=/usr/bin/truncate -s0 /etc/kubernetes/config/kubeletenv
 ExecStartPre=/bin/sh -c 'echo "NODE_HOSTNAME=$(${get_hostname})" >> /etc/kubernetes/config/kubeletenv'
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
