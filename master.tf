@@ -218,6 +218,7 @@ data "template_file" "master-kubelet" {
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
     cloud_provider      = var.cloud_provider
+    get_hostname        = var.node_name_command[var.cloud_provider]
   }
 }
 

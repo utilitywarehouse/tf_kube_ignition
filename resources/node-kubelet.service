@@ -3,6 +3,10 @@ Description=Kubernetes Kubelet
 Requires=docker.service
 After=docker.service
 [Service]
+EnvironmentFile=-/etc/kubernetes/config/kubeletenv
+ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
+ExecStartPre=/usr/bin/truncate -s0 /etc/kubernetes/config/kubeletenv
+ExecStartPre=/bin/sh -c 'echo "NODE_HOSTNAME=$(${get_hostname})" >> /etc/kubernetes/config/kubeletenv'
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
 ExecStartPre=/usr/bin/mkdir -p /var/log/containers
 ExecStartPre=/usr/bin/mkdir -p /opt/cni/bin
@@ -24,6 +28,7 @@ ExecStart=${kubelet_binary_path} \
   --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
   --container-runtime=docker \
   --exit-on-lock-contention \
+  --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --network-plugin=cni \
   --node-labels=${labels} \
