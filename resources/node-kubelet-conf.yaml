@@ -15,6 +15,8 @@ clusterDomain: "cluster.local"
 ${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
 serializeImagePulls: false
 staticPodPath: "/etc/kubernetes/manifests"
+tlsCertFile: "/etc/kubernetes/ssl/kubelet.pem"
+tlsPrivateKeyFile: "/etc/kubernetes/ssl/kubelet-key.pem"
 cgroupDriver: systemd
 
 # Resource allocation
