@@ -35,8 +35,6 @@ ExecStart=${kubelet_binary_path} \
 %{ if taints != "" }  --register-with-taints=${taints} \
 %{ endif ~}
   --lock-file=/var/run/lock/kubelet.lock \
-  --tls-cert-file=/etc/kubernetes/ssl/kubelet.pem \
-  --tls-private-key-file=/etc/kubernetes/ssl/kubelet-key.pem \
   --v=0
 Restart=always
 RestartSec=10
