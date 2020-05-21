@@ -160,4 +160,8 @@ data "ignition_config" "etcd" {
     module.etcd-cert-fetcher.systemd_units,
     var.etcd_additional_systemd_units
   )
+
+  directories = [
+    data.ignition_directory.journald.id
+  ]
 }

@@ -465,4 +465,8 @@ data "ignition_config" "master" {
     module.cert-refresh-master.systemd_units,
     var.master_additional_systemd_units,
   )
+
+  directories = [
+    data.ignition_directory.journald.id
+  ]
 }

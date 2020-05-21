@@ -67,4 +67,8 @@ data "ignition_config" "worker" {
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units
   )
+
+  directories = [
+    data.ignition_directory.journald.id
+  ]
 }
