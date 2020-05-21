@@ -85,4 +85,8 @@ data "ignition_config" "storage-node" {
     module.cert-refresh-node.systemd_units,
     var.storage_node_additional_systemd_units
   )
+
+  directories = [
+    data.ignition_directory.journald.id
+  ]
 }

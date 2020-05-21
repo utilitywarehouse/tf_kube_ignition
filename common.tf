@@ -68,3 +68,9 @@ data "ignition_file" "kubelet" {
     source = "https://storage.googleapis.com/kubernetes-release/release/${var.hyperkube_image_tag}/bin/linux/amd64/kubelet"
   }
 }
+
+# Dir used by systemd to store logs in disk instead of memory
+data "ignition_directory" "journald" {
+  filesystem = "root"
+  path       = "/var/log/journal"
+}
