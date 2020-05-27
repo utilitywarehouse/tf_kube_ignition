@@ -72,7 +72,7 @@ variable "master_address" {
 }
 
 variable "external_apiserver_address" {
-  description = "The expernal address passed to apiservers to use when generating externalized URLs. If nothing passed the master_address will be used."
+  description = "The external address passed to apiservers to use when generating externalized URLs. If nothing passed the master_address will be used."
   default     = ""
 }
 
