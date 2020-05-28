@@ -308,7 +308,7 @@ data "template_file" "kube-apiserver" {
     hyperkube_image_tag   = var.hyperkube_image_tag
     etcd_endpoints        = join(",", formatlist("https://%s:2379", var.etcd_addresses))
     service_network       = var.service_network
-    master_address        = var.master_address
+    master_address        = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
     master_instance_count = var.master_instance_count
     cloud_provider        = var.cloud_provider
     oidc_issuer_url       = var.oidc_issuer_url

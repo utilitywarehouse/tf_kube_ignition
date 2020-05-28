@@ -71,6 +71,11 @@ variable "master_address" {
   description = "The address of the kubernetes API server, typically of their load balancer. Used by the worker kubelet."
 }
 
+variable "external_apiserver_address" {
+  description = "The external address passed to apiservers to use when generating externalized URLs. If nothing passed the master_address will be used."
+  default     = ""
+}
+
 variable "cloud_provider" {
   description = "The cloud provider. Used by the API Server, the Controller Manager and kubelet."
   default     = ""
