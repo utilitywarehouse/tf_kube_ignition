@@ -59,7 +59,7 @@ variable "hyperkube_image_url" {
 
 variable "hyperkube_image_tag" {
   description = "The version of the hyperkube image to use."
-  default     = "v1.17.3"
+  default     = "v1.18.3"
 }
 
 variable "cluster_dns" {
