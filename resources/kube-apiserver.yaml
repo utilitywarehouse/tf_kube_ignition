@@ -12,6 +12,7 @@ spec:
     image: ${hyperkube_image_url}:${hyperkube_image_tag}
     command:
     - kube-apiserver
+    - --admission-control-config-file=/etc/kubernetes/config/admission-configuration.yaml
     - --etcd-servers=${etcd_endpoints}
     - --etcd-cafile=/etc/kubernetes/ssl/ca.pem
     - --etcd-certfile=/etc/kubernetes/ssl/apiserver.pem

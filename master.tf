@@ -422,6 +422,15 @@ data "ignition_file" "master-prom-machine-role" {
   }
 }
 
+data "ignition_file" "admission_configuration" {
+  mode       = 420
+  filesystem = "root"
+  path       = "/etc/kubernetes/config/admission-configuration.yaml"
+  content {
+    content = file("${path.module}/resources/admission-configuration.yaml")
+  }
+}
+
 locals {
   kube_controller_additional_config = var.kube_controller_cloud_config == "" ? "" : data.ignition_file.kube-controller-conf.id
 }
@@ -429,6 +438,7 @@ locals {
 data "ignition_config" "master" {
   files = concat(
     [
+      data.ignition_file.admission_configuration.id,
       data.ignition_file.audit-policy.id,
       data.ignition_file.cfssl.id,
       data.ignition_file.cfssljson.id,
