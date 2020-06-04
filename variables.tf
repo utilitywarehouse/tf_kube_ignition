@@ -225,7 +225,7 @@ variable "feature_gates" {
 
 variable "admission_plugins" {
   description = "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/"
-  default     = "NodeRestriction"
+  default     = "NodeRestriction,PodTolerationRestriction"
 }
 
 locals {
