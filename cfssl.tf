@@ -219,4 +219,8 @@ data "ignition_config" "cfssl" {
     module.cfssl-restarter.systemd_units,
     var.cfssl_additional_systemd_units
   )
+
+  directories = [
+    data.ignition_directory.journald.id
+  ]
 }
