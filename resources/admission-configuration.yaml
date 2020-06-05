@@ -3,7 +3,10 @@ kind: AdmissionConfiguration
 plugins:
   - name: "PodTolerationRestriction"
     configuration:
-      apiVersion: podtolerationrestriction.admission.k8s.io
+      apiVersion: podtolerationrestriction.admission.k8s.io/v1alpha1
       kind: Configuration
       default: []
-      whitelist: []
+      whitelist:
+        - key: noop-key
+          operator: Exists
+          effect: NoSchedule
