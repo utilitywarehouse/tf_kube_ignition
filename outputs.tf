@@ -10,10 +10,6 @@ output "worker" {
   value = data.ignition_config.worker.rendered
 }
 
-output "storage_node" {
-  value = data.ignition_config.storage-node.rendered
-}
-
 output "etcd" {
   value = data.ignition_config.etcd.*.rendered
 }
@@ -53,18 +49,6 @@ output "worker_ignition_files" {
 
 output "worker_ignition_directories" {
   value = data.ignition_config.worker.directories
-}
-
-output "storage_node_ignition_systemd" {
-  value = data.ignition_config.storage-node.systemd
-}
-
-output "storage_node_ignition_files" {
-  value = data.ignition_config.storage-node.files
-}
-
-output "storage_node_ignition_directories" {
-  value = data.ignition_config.storage-node.directories
 }
 
 output "etcd_ignition_systemd" {
