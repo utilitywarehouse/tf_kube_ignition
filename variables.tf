@@ -44,7 +44,7 @@ variable "node_exporter_image_url" {
 
 variable "node_exporter_image_tag" {
   description = "The version of the node_exporter image to use."
-  default     = "v0.18.0"
+  default     = "v1.0.1"
 }
 
 variable "hyperkube_image_url" {
