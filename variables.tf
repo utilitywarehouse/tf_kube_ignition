@@ -47,13 +47,8 @@ variable "node_exporter_image_tag" {
   default     = "v1.0.1"
 }
 
-variable "hyperkube_image_url" {
-  description = "Where to get the hyperkube image from."
-  default     = "gcr.io/google-containers/hyperkube-amd64"
-}
-
-variable "hyperkube_image_tag" {
-  description = "The version of the hyperkube image to use."
+variable "kubernetes_version" {
+  description = "Kubernetes version, used to specify k8s.gcr.io docker image version and Kubernetes binaries"
   default     = "v1.18.3"
 }
 

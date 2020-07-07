@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
   - name: kube-controller-manager
-    image: ${hyperkube_image_url}:${hyperkube_image_tag}
+    image: k8s.gcr.io/kube-controller-manager:${kubernetes_version}
     command:
     - kube-controller-manager
     - --kubeconfig=/etc/kubernetes/config/controller-manager.conf
