@@ -9,7 +9,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: ${hyperkube_image_url}:${hyperkube_image_tag}
+    image: k8s.gcr.io/kube-apiserver:${kubernetes_version}
     command:
     - kube-apiserver
     - --etcd-servers=${etcd_endpoints}

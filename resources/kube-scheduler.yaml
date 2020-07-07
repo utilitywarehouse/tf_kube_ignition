@@ -9,7 +9,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-scheduler
-    image: ${hyperkube_image_url}:${hyperkube_image_tag}
+    image: k8s.gcr.io/kube-scheduler:${kubernetes_version}
     command:
     - kube-scheduler
     - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
