@@ -1,11 +1,12 @@
 #!/bin/sh
-docker run --rm \
-    -i \
-    -v /etc/etcd/ssl:/etc/etcd/ssl \
-    --entrypoint /usr/local/bin/etcdctl \
-    ${etcd_image_url}:${etcd_image_tag} \
-    --cacert /etc/etcd/ssl/ca.pem \
-    --cert /etc/etcd/ssl/node.pem \
-    --key /etc/etcd/ssl/node-key.pem \
-    --endpoints https://${private_ipv4}:2379 \
-    "$@"
+
+docker run --rm -ti \
+  -v /etc/etcd/ssl/:/etc/etcd/ssl/:rw \
+  -v /var/lib/etcd/:/var/lib/etcd/:rw \
+  --entrypoint /usr/local/bin/etcdctl \
+  ${etcd_image_url}:${etcd_image_tag} \
+  --cacert /etc/etcd/ssl/ca.pem \
+  --cert /etc/etcd/ssl/node.pem \
+  --key /etc/etcd/ssl/node-key.pem \
+  --endpoints https://${private_ipv4}:2379 \
+  "$@"
