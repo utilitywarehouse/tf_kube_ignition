@@ -34,7 +34,7 @@ variable "etcd_image_url" {
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.4.5"
+  default     = "v3.4.9"
 }
 
 variable "node_exporter_image_url" {
@@ -49,7 +49,7 @@ variable "node_exporter_image_tag" {
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify k8s.gcr.io docker image version and Kubernetes binaries"
-  default     = "v1.18.3"
+  default     = "v1.18.5"
 }
 
 variable "cluster_dns" {
