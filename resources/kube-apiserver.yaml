@@ -53,17 +53,26 @@ spec:
       httpGet:
         host: 127.0.0.1
         port: 8080
-        path: /healthz?exclude=etcd
-      # https://github.com/kubernetes/kubernetes/pull/71054/files#diff-e6e5eefc330d75c8ef2e218de62c5fdfR57
-      initialDelaySeconds: 45
+        # https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/manifests/kube-apiserver.manifest#L40
+        path: /livez?exclude=etcd
+      # https://github.com/kubernetes/kubernetes/blob/master/cmd/kubeadm/app/util/staticpod/utils.go#L270
+      #
+      # Longer initialDelaySeconds because we have failed to start within 75sec
+      # before. But, don't feel comfortable removing this probe completely not
+      # knowing adverse side-effects
+      initialDelaySeconds: 60
       timeoutSeconds: 15
-    # https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/manifests/kube-apiserver.manifest#L42
+      failureThreshold: 8
+      periodSeconds: 10
     readinessProbe:
       httpGet:
         host: 127.0.0.1
         port: 8080
-        path: /healthz
+        path: /readyz
+      # https://github.com/kubernetes/kubernetes/blob/master/cmd/kubeadm/app/util/staticpod/utils.go#L277
       timeoutSeconds: 15
+      failureThreshold: 3
+      periodSeconds: 1
     ports:
     - containerPort: 443
       hostPort: 443
