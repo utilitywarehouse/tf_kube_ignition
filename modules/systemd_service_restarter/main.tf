@@ -30,7 +30,7 @@ EOS
 
 output "systemd_units" {
   value = [
-    data.ignition_systemd_unit.service-restart.id,
-    data.ignition_systemd_unit.service-restart-timer.id,
+    data.ignition_systemd_unit.service-restart.rendered,
+    data.ignition_systemd_unit.service-restart-timer.rendered,
   ]
 }

@@ -51,7 +51,7 @@ EOS
 
 output "systemd_units" {
   value = [
-    data.ignition_systemd_unit.cert-refresh.id,
-    data.ignition_systemd_unit.cert-refresh-timer.id,
+    data.ignition_systemd_unit.cert-refresh.rendered,
+    data.ignition_systemd_unit.cert-refresh-timer.rendered,
   ]
 }

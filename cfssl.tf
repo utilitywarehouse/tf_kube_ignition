@@ -190,37 +190,37 @@ module "cfssl-restarter" {
 data "ignition_config" "cfssl" {
   files = concat(
     [
-      data.ignition_file.cfssl.id,
-      data.ignition_file.cfssljson.id,
-      data.ignition_file.cfssl-server-config.id,
-      data.ignition_file.cfssl-ca-csr.id,
-      data.ignition_file.cfssl-init-ca.id,
-      data.ignition_file.cfssl-sk-csr.id,
-      data.ignition_file.cfssl-init-proxy-pki.id,
-      data.ignition_file.cfssl-proxy-ca-csr-json.id,
-      data.ignition_file.cfssl-proxy-csr-json.id,
-      data.ignition_file.cfssl-nginx-conf.id,
-      data.ignition_file.cfssl-nginx-auth.id,
-      data.ignition_file.format-and-mount.id,
+      data.ignition_file.cfssl.rendered,
+      data.ignition_file.cfssljson.rendered,
+      data.ignition_file.cfssl-server-config.rendered,
+      data.ignition_file.cfssl-ca-csr.rendered,
+      data.ignition_file.cfssl-init-ca.rendered,
+      data.ignition_file.cfssl-sk-csr.rendered,
+      data.ignition_file.cfssl-init-proxy-pki.rendered,
+      data.ignition_file.cfssl-proxy-ca-csr-json.rendered,
+      data.ignition_file.cfssl-proxy-csr-json.rendered,
+      data.ignition_file.cfssl-nginx-conf.rendered,
+      data.ignition_file.cfssl-nginx-auth.rendered,
+      data.ignition_file.format-and-mount.rendered,
     ],
     var.cfssl_additional_files
   )
 
   systemd = concat(
     [
-      data.ignition_systemd_unit.update-engine.id,
-      data.ignition_systemd_unit.locksmithd_cfssl.id,
-      data.ignition_systemd_unit.docker-opts-dropin.id,
-      data.ignition_systemd_unit.node-exporter.id,
-      data.ignition_systemd_unit.cfssl.id,
-      data.ignition_systemd_unit.cfssl-nginx.id,
-      data.ignition_systemd_unit.cfssl-disk-mounter.id,
+      data.ignition_systemd_unit.update-engine.rendered,
+      data.ignition_systemd_unit.locksmithd_cfssl.rendered,
+      data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.node-exporter.rendered,
+      data.ignition_systemd_unit.cfssl.rendered,
+      data.ignition_systemd_unit.cfssl-nginx.rendered,
+      data.ignition_systemd_unit.cfssl-disk-mounter.rendered,
     ],
     module.cfssl-restarter.systemd_units,
     var.cfssl_additional_systemd_units
   )
 
   directories = [
-    data.ignition_directory.journald.id
+    data.ignition_directory.journald.rendered
   ]
 }

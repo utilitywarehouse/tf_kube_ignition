@@ -37,11 +37,11 @@ module "ignition" {
   cfssl_node_renew_timer                   = "*-*-* 00/6:00:00"
   cfssl_data_volumeid                      = "${module.cluster.cfssl_data_volumeid}"
   etcd_data_volumeids                      = "${module.cluster.etcd_data_volumeids}"
-  etcd_additional_files                    = ["${data.ignition_file.if.id}"]
-  etcd_additional_systemd_units            = ["${data.ignition_systemd_unit.isu.id}", "${data.ignition_systemd_unit.isu2.id}"]
-  master_additional_systemd_units          = ["${data.ignition_systemd_unit.isu.id}"]
-  worker_additional_systemd_units          = ["${data.ignition_systemd_unit.isu.id}"]
-  cfssl_additional_systemd_units           = ["${data.ignition_systemd_unit.isu.id}"]
+  etcd_additional_files                    = ["${data.ignition_file.if.rendered}"]
+  etcd_additional_systemd_units            = ["${data.ignition_systemd_unit.isu.rendered}", "${data.ignition_systemd_unit.isu2.rendered}"]
+  master_additional_systemd_units          = ["${data.ignition_systemd_unit.isu.rendered}"]
+  worker_additional_systemd_units          = ["${data.ignition_systemd_unit.isu.rendered}"]
+  cfssl_additional_systemd_units           = ["${data.ignition_systemd_unit.isu.rendered}"]
 }
 ```
 
