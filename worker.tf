@@ -35,40 +35,40 @@ data "ignition_systemd_unit" "prometheus-machine-role-worker" {
 }
 
 
-// data.ignition_file.worker-prom-machine-role.id,
+// data.ignition_file.worker-prom-machine-role.rendered,
 data "ignition_config" "worker" {
   files = concat(
     [
-      data.ignition_file.cfssl.id,
-      data.ignition_file.cfssljson.id,
-      data.ignition_file.cfssl-client-config.id,
-      data.ignition_file.node-cfssl-new-cert.id,
-      data.ignition_file.node-kubelet-cfssl-new-cert.id,
-      data.ignition_file.kubelet.id,
-      data.ignition_file.node-kubeconfig.id,
-      data.ignition_file.node-sysctl-vm.id,
-      data.ignition_file.node-kubelet-conf.id,
-      data.ignition_file.prometheus-ro-rootfs.id,
+      data.ignition_file.cfssl.rendered,
+      data.ignition_file.cfssljson.rendered,
+      data.ignition_file.cfssl-client-config.rendered,
+      data.ignition_file.node-cfssl-new-cert.rendered,
+      data.ignition_file.node-kubelet-cfssl-new-cert.rendered,
+      data.ignition_file.kubelet.rendered,
+      data.ignition_file.node-kubeconfig.rendered,
+      data.ignition_file.node-sysctl-vm.rendered,
+      data.ignition_file.node-kubelet-conf.rendered,
+      data.ignition_file.prometheus-ro-rootfs.rendered,
     ],
     var.worker_additional_files
   )
 
   systemd = concat(
     [
-      data.ignition_systemd_unit.update-engine.id,
-      data.ignition_systemd_unit.locksmithd_worker.id,
-      data.ignition_systemd_unit.docker-opts-dropin.id,
-      data.ignition_systemd_unit.worker-kubelet.id,
-      data.ignition_systemd_unit.prometheus-tmpfs-dir.id,
-      data.ignition_systemd_unit.prometheus-machine-role-worker.id,
-      data.ignition_systemd_unit.prometheus-ro-rootfs.id,
-      data.ignition_systemd_unit.prometheus-ro-rootfs-timer.id,
+      data.ignition_systemd_unit.update-engine.rendered,
+      data.ignition_systemd_unit.locksmithd_worker.rendered,
+      data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.worker-kubelet.rendered,
+      data.ignition_systemd_unit.prometheus-tmpfs-dir.rendered,
+      data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
+      data.ignition_systemd_unit.prometheus-ro-rootfs.rendered,
+      data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units
   )
 
   directories = [
-    data.ignition_directory.journald.id
+    data.ignition_directory.journald.rendered
   ]
 }

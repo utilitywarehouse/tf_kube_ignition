@@ -136,32 +136,32 @@ data "ignition_config" "etcd" {
 
   files = concat(
     [
-      data.ignition_file.cfssl.id,
-      data.ignition_file.cfssljson.id,
-      data.ignition_file.cfssl-client-config.id,
-      data.ignition_file.etcd.id,
-      element(data.ignition_file.etcd-cfssl-new-cert.*.id, count.index),
-      data.ignition_file.etcd-prom-machine-role.id,
-      element(data.ignition_file.etcdctl-wrapper.*.id, count.index),
-      data.ignition_file.format-and-mount.id
+      data.ignition_file.cfssl.rendered,
+      data.ignition_file.cfssljson.rendered,
+      data.ignition_file.cfssl-client-config.rendered,
+      data.ignition_file.etcd.rendered,
+      element(data.ignition_file.etcd-cfssl-new-cert.*.rendered, count.index),
+      data.ignition_file.etcd-prom-machine-role.rendered,
+      element(data.ignition_file.etcdctl-wrapper.*.rendered, count.index),
+      data.ignition_file.format-and-mount.rendered
     ],
     var.etcd_additional_files
   )
 
   systemd = concat(
     [
-      data.ignition_systemd_unit.update-engine.id,
-      data.ignition_systemd_unit.locksmithd_etcd.id,
-      data.ignition_systemd_unit.docker-opts-dropin.id,
-      data.ignition_systemd_unit.node-exporter.id,
-      element(data.ignition_systemd_unit.etcd-member.*.id, count.index),
-      element(data.ignition_systemd_unit.etcd-disk-mounter.*.id, count.index)
+      data.ignition_systemd_unit.update-engine.rendered,
+      data.ignition_systemd_unit.locksmithd_etcd.rendered,
+      data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.node-exporter.rendered,
+      element(data.ignition_systemd_unit.etcd-member.*.rendered, count.index),
+      element(data.ignition_systemd_unit.etcd-disk-mounter.*.rendered, count.index)
     ],
     module.etcd-cert-fetcher.systemd_units,
     var.etcd_additional_systemd_units
   )
 
   directories = [
-    data.ignition_directory.journald.id
+    data.ignition_directory.journald.rendered
   ]
 }
