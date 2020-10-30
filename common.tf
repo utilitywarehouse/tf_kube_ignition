@@ -80,7 +80,7 @@ data "ignition_file" "docker_daemon_json" {
   filesystem = "root"
   path       = "/etc/docker/daemon.json"
 
-  source {
+  content {
     content = file("${path.module}/resources/daemon.json")
   }
 }
