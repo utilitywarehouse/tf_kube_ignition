@@ -42,6 +42,7 @@ data "ignition_config" "worker" {
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.cfssl-client-config.rendered,
+      data.ignition_file.docker_daemon_json.rendered,
       data.ignition_file.node-cfssl-new-cert.rendered,
       data.ignition_file.node-kubelet-cfssl-new-cert.rendered,
       data.ignition_file.kubelet.rendered,

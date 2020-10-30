@@ -74,3 +74,13 @@ data "ignition_directory" "journald" {
   filesystem = "root"
   path       = "/var/log/journal"
 }
+
+data "ignition_file" "docker_daemon_json" {
+  mode       = 493
+  filesystem = "root"
+  path       = "/etc/docker/daemon.json"
+
+  content {
+    content = file("${path.module}/resources/docker_daemon.json")
+  }
+}

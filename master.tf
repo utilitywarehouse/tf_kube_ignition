@@ -430,6 +430,7 @@ data "ignition_config" "master" {
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.cfssl-client-config.rendered,
+      data.ignition_file.docker_daemon_json.rendered,
       data.ignition_file.master-cfssl-new-node-cert.rendered,
       data.ignition_file.master-cfssl-new-apiserver-cert.rendered,
       data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.rendered,
