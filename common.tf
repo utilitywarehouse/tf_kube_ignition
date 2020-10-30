@@ -81,6 +81,6 @@ data "ignition_file" "docker_daemon_json" {
   path       = "/etc/docker/daemon.json"
 
   content {
-    content = file("${path.module}/resources/daemon.json")
+    content = file("${path.module}/resources/docker_daemon.json")
   }
 }
