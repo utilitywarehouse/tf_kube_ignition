@@ -8,31 +8,31 @@ metadata:
 spec:
   hostNetwork: true
   containers:
-  - name: kube-scheduler
-    image: k8s.gcr.io/kube-scheduler:${kubernetes_version}
-    command:
-    - kube-scheduler
-    - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
-    ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
-    - --v=0
-    livenessProbe:
-      httpGet:
-        host: 127.0.0.1
-        path: /healthz
-        port: 10251
-      initialDelaySeconds: 15
-      timeoutSeconds: 15
-    volumeMounts:
-    - mountPath: /etc/kubernetes/config
-      name: kubernetes-configurations
-      readOnly: true
-    - mountPath: /etc/kubernetes/ssl
-      name: kubernetes-ssl
-      readOnly: true
+    - name: kube-scheduler
+      image: k8s.gcr.io/kube-scheduler:${kubernetes_version}
+      command:
+        - kube-scheduler
+        - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
+        ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
+        - --v=0
+      livenessProbe:
+        httpGet:
+          host: 127.0.0.1
+          path: /healthz
+          port: 10251
+        initialDelaySeconds: 15
+        timeoutSeconds: 15
+      volumeMounts:
+        - mountPath: /etc/kubernetes/config
+          name: kubernetes-configurations
+          readOnly: true
+        - mountPath: /etc/kubernetes/ssl
+          name: kubernetes-ssl
+          readOnly: true
   volumes:
-  - hostPath:
-      path: /etc/kubernetes/config
-    name: kubernetes-configurations
-  - hostPath:
-      path: /etc/kubernetes/ssl
-    name: kubernetes-ssl
+    - hostPath:
+        path: /etc/kubernetes/config
+      name: kubernetes-configurations
+    - hostPath:
+        path: /etc/kubernetes/ssl
+      name: kubernetes-ssl

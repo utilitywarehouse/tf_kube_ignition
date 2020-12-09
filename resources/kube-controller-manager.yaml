@@ -7,48 +7,48 @@ metadata:
     app: kube-controller
 spec:
   containers:
-  - name: kube-controller-manager
-    image: k8s.gcr.io/kube-controller-manager:${kubernetes_version}
-    command:
-    - kube-controller-manager
-    - --kubeconfig=/etc/kubernetes/config/controller-manager.conf
-    - --leader-elect=true
-    - --use-service-account-credentials
-    - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
-    - --root-ca-file=/etc/kubernetes/ssl/ca.pem
-    ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
-    ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
-    - --configure-cloud-routes=false
-    - --allocate-node-cidrs=true
-    - --cluster-cidr=${pod_network}
-    - --node-monitor-grace-period=120s
-    ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
-    - --v=0
-    livenessProbe:
-      httpGet:
-        host: 127.0.0.1
-        path: /healthz
-        port: 10252
-      initialDelaySeconds: 15
-      timeoutSeconds: 15
-    volumeMounts:
-    - mountPath: /etc/kubernetes/ssl
-      name: ssl-certs-kubernetes
-      readOnly: true
-    - mountPath: /etc/ssl/certs
-      name: ssl-certs-host
-      readOnly: true
-    - mountPath: /etc/kubernetes/config
-      name: config
-      readOnly: true
+    - name: kube-controller-manager
+      image: k8s.gcr.io/kube-controller-manager:${kubernetes_version}
+      command:
+        - kube-controller-manager
+        - --kubeconfig=/etc/kubernetes/config/controller-manager.conf
+        - --leader-elect=true
+        - --use-service-account-credentials
+        - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
+        - --root-ca-file=/etc/kubernetes/ssl/ca.pem
+        ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
+        ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
+        - --configure-cloud-routes=false
+        - --allocate-node-cidrs=true
+        - --cluster-cidr=${pod_network}
+        - --node-monitor-grace-period=120s
+        ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
+        - --v=0
+      livenessProbe:
+        httpGet:
+          host: 127.0.0.1
+          path: /healthz
+          port: 10252
+        initialDelaySeconds: 15
+        timeoutSeconds: 15
+      volumeMounts:
+        - mountPath: /etc/kubernetes/ssl
+          name: ssl-certs-kubernetes
+          readOnly: true
+        - mountPath: /etc/ssl/certs
+          name: ssl-certs-host
+          readOnly: true
+        - mountPath: /etc/kubernetes/config
+          name: config
+          readOnly: true
   hostNetwork: true
   volumes:
-  - hostPath:
-      path: /etc/kubernetes/ssl
-    name: ssl-certs-kubernetes
-  - hostPath:
-      path: /usr/share/ca-certificates
-    name: ssl-certs-host
-  - hostPath:
-      path: /etc/kubernetes/config
-    name: config
+    - hostPath:
+        path: /etc/kubernetes/ssl
+      name: ssl-certs-kubernetes
+    - hostPath:
+        path: /usr/share/ca-certificates
+      name: ssl-certs-host
+    - hostPath:
+        path: /etc/kubernetes/config
+      name: config
