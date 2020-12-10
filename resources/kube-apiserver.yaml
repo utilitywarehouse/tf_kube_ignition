@@ -24,8 +24,9 @@ spec:
         - --tls-cert-file=/etc/kubernetes/ssl/apiserver.pem
         - --tls-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
         - --client-ca-file=/etc/kubernetes/ssl/ca.pem
-        - --service-account-issuer=https://kubernetes.default.svc
+        - --service-account-issuer=https://kubernetes.default.svc.cluster.local
         - --service-account-key-file=/etc/kubernetes/ssl/signing-key.pem
+        - --service-account-signing-key-file=/etc/kubernetes/ssl/signing-key.pem
         ${runtime_config == "" ? "" : "- --runtime-config=${runtime_config}"}
         ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
         - --oidc-issuer-url=${oidc_issuer_url}
