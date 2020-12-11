@@ -53,9 +53,10 @@ spec:
       livenessProbe:
         httpGet:
           host: 127.0.0.1
-          port: 8080
+          port: 443
           # https://github.com/kubernetes/kubernetes/blob/v1.20.0/cluster/gce/manifests/kube-apiserver.manifest#L42
           path: /livez?exclude=etcd
+          scheme: HTTPS
         # https://github.com/kubernetes/kubernetes/blob/v1.20.0/cmd/kubeadm/app/util/staticpod/utils.go#L237
         #
         # Longer initialDelaySeconds because we have failed to start within 75sec
@@ -68,8 +69,9 @@ spec:
       readinessProbe:
         httpGet:
           host: 127.0.0.1
-          port: 8080
+          port: 443
           path: /readyz
+          scheme: HTTPS
         # https://github.com/kubernetes/kubernetes/blob/v1.20.0/cmd/kubeadm/app/util/staticpod/utils.go#L244
         timeoutSeconds: 15
         failureThreshold: 3
@@ -78,9 +80,6 @@ spec:
         - containerPort: 443
           hostPort: 443
           name: https
-        - containerPort: 8080
-          hostPort: 8080
-          name: local
       volumeMounts:
         - mountPath: /etc/kubernetes/ssl
           name: ssl-certs-kubernetes
