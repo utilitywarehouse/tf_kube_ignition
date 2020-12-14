@@ -88,3 +88,21 @@ data "ignition_file" "docker_daemon_json" {
     content = file("${path.module}/resources/docker_daemon.json")
   }
 }
+
+data "ignition_file" "containerd-config" {
+  filesystem = "root"
+  path       = "/etc/containerd/config.toml"
+  mode       = 384
+  content {
+    content = file("${path.module}/resources/containerd-config.toml")
+  }
+}
+
+data "ignition_systemd_unit" "containerd-dropin" {
+  name = "containerd.service"
+
+  dropin {
+    name    = "10-custom-options.conf"
+    content = file("${path.module}/resources/containerd-dropin.conf")
+  }
+}

@@ -50,6 +50,7 @@ data "ignition_config" "worker" {
       data.ignition_file.node-sysctl-vm.rendered,
       data.ignition_file.node-kubelet-conf.rendered,
       data.ignition_file.prometheus-ro-rootfs.rendered,
+      data.ignition_file.containerd-config.rendered,
     ],
     var.worker_additional_files
   )
@@ -64,6 +65,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
       data.ignition_systemd_unit.prometheus-ro-rootfs.rendered,
       data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
+      data.ignition_systemd_unit.containerd-dropin.rendered,
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units

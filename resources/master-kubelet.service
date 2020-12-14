@@ -26,7 +26,8 @@ ExecStart=${kubelet_binary_path} \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --node-labels=role=master \
   --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-  --container-runtime=docker \
+  --container-runtime=remote \
+  --container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock \
   --network-plugin=cni \
   --cni-bin-dir=/opt/cni/bin \
   --cni-conf-dir=/etc/cni/net.d \
