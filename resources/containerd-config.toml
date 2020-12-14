@@ -29,3 +29,6 @@ runtime = "runc"
 no_shim = false
 # display shim logs in the containerd daemon's log output
 shim_debug = true
+
+[plugins.cri.registry.mirrors."docker.io"]
+  endpoint = ["${dockerhub_mirror_endpoint}"]

@@ -75,17 +75,17 @@ data "ignition_directory" "journald" {
   path       = "/var/log/journal"
 }
 
-# We are using default docker daemon bridge address here (172.17.0.1) to address
-# registry mirror. Ideally we would use localhost, but there is a bug with IPVS
-# and using localhost:<nodeport> ::
-# https://github.com/kubernetes/kubernetes/issues/67730
 data "ignition_file" "docker_daemon_json" {
   mode       = 493
   filesystem = "root"
   path       = "/etc/docker/daemon.json"
 
   content {
-    content = file("${path.module}/resources/docker_daemon.json")
+    content = templatefile("${path.module}/resources/docker_daemon.json",
+      {
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+      }
+    )
   }
 }
 
@@ -94,7 +94,11 @@ data "ignition_file" "containerd-config" {
   path       = "/etc/containerd/config.toml"
   mode       = 384
   content {
-    content = file("${path.module}/resources/containerd-config.toml")
+    content = templatefile("${path.module}/resources/containerd-config.toml",
+      {
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+      }
+    )
   }
 }
 
