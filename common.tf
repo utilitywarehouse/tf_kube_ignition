@@ -110,3 +110,30 @@ data "ignition_systemd_unit" "containerd-dropin" {
     content = file("${path.module}/resources/containerd-dropin.conf")
   }
 }
+
+data "ignition_file" "crictl" {
+  mode       = 420
+  filesystem = "root"
+  path       = "/opt/crictl.tar.gz"
+
+  source {
+    source       = "https://github.com/kubernetes-sigs/cri-tools/releases/download/${var.crictl_version}/crictl-${var.crictl_version}-linux-amd64.tar.gz"
+    verification = var.crictl_verification
+  }
+}
+
+data "ignition_systemd_unit" "prepare-crictl" {
+  name = "prepare-crictl.service"
+
+  content = file("${path.module}/resources/prepare-crictl.service")
+}
+
+data "ignition_file" "crictl-config" {
+  filesystem = "root"
+  path       = "/etc/crictl.yaml"
+  mode       = 384
+
+  content {
+    content = file("${path.module}/resources/crictl.yaml")
+  }
+}

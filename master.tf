@@ -449,6 +449,8 @@ data "ignition_config" "master" {
       data.ignition_file.kubelet.rendered,
       data.ignition_file.master-kubelet-conf.rendered,
       data.ignition_file.containerd-config.rendered,
+      data.ignition_file.crictl.rendered,
+      data.ignition_file.crictl-config.rendered,
     ],
     var.master_additional_files,
     [local.kube_controller_additional_config]
@@ -461,6 +463,7 @@ data "ignition_config" "master" {
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.master-kubelet.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
+      data.ignition_systemd_unit.prepare-crictl.rendered,
     ],
     module.cert-refresh-master.systemd_units,
     var.master_additional_systemd_units,
