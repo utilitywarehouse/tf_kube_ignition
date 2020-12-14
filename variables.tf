@@ -191,6 +191,14 @@ variable "dockerhub_mirror_endpoint" {
   default     = "http://172.17.0.1:30001"
 }
 
+variable "dockerhub_username" {
+  description = "Docker Hub user"
+}
+
+variable "dockerhub_password" {
+  description = "Docker Hub password"
+}
+
 variable "crictl_version" {
   description = "The version of the crictl release to install"
   default     = "v1.19.0"

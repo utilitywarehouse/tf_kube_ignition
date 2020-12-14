@@ -32,3 +32,6 @@ shim_debug = true
 
 [plugins.cri.registry.mirrors."docker.io"]
   endpoint = ["${dockerhub_mirror_endpoint}"]
+
+[plugins.cri.registry.auths."registry-1.docker.io"]
+  auth = "${dockerhub_auth}"
