@@ -8,7 +8,7 @@ data "ignition_systemd_unit" "cert-refresh" {
   content = <<EOS
 [Unit]
 Description=Fetch new certificates from cfssl server and restart components to reload certs
-Requires=docker.service
+Requires=containerd.service
 After=network-online.target
 [Service]
 Type=oneshot

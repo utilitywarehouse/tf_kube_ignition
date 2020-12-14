@@ -1,7 +1,7 @@
 [Unit]
 Description=Kubernetes Kubelet
-Requires=docker.service
-After=docker.service
+Requires=containerd.service
+After=containerd.service
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
