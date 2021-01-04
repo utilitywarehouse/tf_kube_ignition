@@ -53,6 +53,8 @@ data "ignition_config" "worker" {
       data.ignition_file.containerd-config.rendered,
       data.ignition_file.crictl.rendered,
       data.ignition_file.crictl-config.rendered,
+      data.ignition_file.docker-config.rendered,
+      data.ignition_file.kubelet-docker-config.rendered,
     ],
     var.worker_additional_files
   )

@@ -451,6 +451,8 @@ data "ignition_config" "master" {
       data.ignition_file.containerd-config.rendered,
       data.ignition_file.crictl.rendered,
       data.ignition_file.crictl-config.rendered,
+      data.ignition_file.docker-config.rendered,
+      data.ignition_file.kubelet-docker-config.rendered,
     ],
     var.master_additional_files,
     [local.kube_controller_additional_config]

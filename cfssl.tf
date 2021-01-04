@@ -201,6 +201,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.cfssl-proxy-csr-json.rendered,
       data.ignition_file.cfssl-nginx-conf.rendered,
       data.ignition_file.cfssl-nginx-auth.rendered,
+      data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
     ],
     var.cfssl_additional_files

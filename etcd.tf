@@ -143,7 +143,8 @@ data "ignition_config" "etcd" {
       element(data.ignition_file.etcd-cfssl-new-cert.*.rendered, count.index),
       data.ignition_file.etcd-prom-machine-role.rendered,
       element(data.ignition_file.etcdctl-wrapper.*.rendered, count.index),
-      data.ignition_file.format-and-mount.rendered
+      data.ignition_file.format-and-mount.rendered,
+      data.ignition_file.docker-config.rendered,
     ],
     var.etcd_additional_files
   )

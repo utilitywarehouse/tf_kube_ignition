@@ -89,6 +89,42 @@ data "ignition_file" "docker_daemon_json" {
   }
 }
 
+data "ignition_file" "docker-config" {
+  mode       = 384
+  filesystem = "root"
+  path       = "/root/.docker/config.json"
+
+  content {
+    content = jsonencode(
+      {
+        auths = {
+          "https://index.docker.io/v1/" = {
+            auth = base64encode("${var.dockerhub_username}:${var.dockerhub_password}")
+          }
+        }
+      }
+    )
+  }
+}
+
+data "ignition_file" "kubelet-docker-config" {
+  mode       = 384
+  filesystem = "root"
+  path       = "/var/lib/kubelet/config.json"
+
+  content {
+    content = jsonencode(
+      {
+        auths = {
+          "https://index.docker.io/v1/" = {
+            auth = base64encode("${var.dockerhub_username}:${var.dockerhub_password}")
+          }
+        }
+      }
+    )
+  }
+}
+
 data "ignition_file" "containerd-config" {
   filesystem = "root"
   path       = "/etc/containerd/config.toml"
