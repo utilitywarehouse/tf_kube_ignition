@@ -1,4 +1,5 @@
 # adapted from: https://kinvolk.io/docs/flatcar-container-linux/latest/container-runtimes/switching-from-docker-to-containerd-for-kubernetes/
+version = 2
 
 # persistent data location
 root = "/var/lib/containerd"
@@ -13,25 +14,25 @@ disabled_plugins = []
 
 # grpc configuration
 [grpc]
-address = "/run/docker/libcontainerd/docker-containerd.sock"
-# socket uid
-uid = 0
-# socket gid
-gid = 0
+  address = "/run/docker/libcontainerd/docker-containerd.sock"
+  # socket uid
+  uid = 0
+  # socket gid
+  gid = 0
 
-[plugins.linux]
-# shim binary name/path
-shim = "containerd-shim"
-# runtime binary name/path
-runtime = "runc"
-# do not use a shim when starting containers, saves on memory but
-# live restore is not supported
-no_shim = false
-# display shim logs in the containerd daemon's log output
-shim_debug = true
+[plugins."io.containerd.runtime.v1.linux"]
+  # shim binary name/path
+  shim = "containerd-shim"
+  # runtime binary name/path
+  runtime = "runc"
+  # do not use a shim when starting containers, saves on memory but
+  # live restore is not supported
+  no_shim = false
+  # display shim logs in the containerd daemon's log output
+  shim_debug = true
 
-[plugins.cri.registry.mirrors."docker.io"]
+[plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
   endpoint = ["${dockerhub_mirror_endpoint}"]
 
-[plugins.cri.registry.auths."registry-1.docker.io"]
+[plugins."io.containerd.grpc.v1.cri".registry.auths."registry-1.docker.io"]
   auth = "${dockerhub_auth}"
