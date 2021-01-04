@@ -36,3 +36,8 @@ disabled_plugins = []
 
 [plugins."io.containerd.grpc.v1.cri".registry.auths."registry-1.docker.io"]
   auth = "${dockerhub_auth}"
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  runtime_type = "io.containerd.runc.v2"
+  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+    SystemdCgroup = true
