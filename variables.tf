@@ -182,6 +182,33 @@ variable "etcd_data_volumeids" {
   type = list(string)
 }
 
+# We are using default docker daemon bridge address here (172.17.0.1) to address
+# registry mirror. Ideally we would use localhost, but there is a bug with IPVS
+# and using localhost:<nodeport> ::
+# https://github.com/kubernetes/kubernetes/issues/67730
+variable "dockerhub_mirror_endpoint" {
+  description = "DockerHub mirror endpoint"
+  default     = "http://172.17.0.1:30001"
+}
+
+variable "dockerhub_username" {
+  description = "Docker Hub user"
+}
+
+variable "dockerhub_password" {
+  description = "Docker Hub password"
+}
+
+variable "crictl_version" {
+  description = "The version of the crictl release to install"
+  default     = "v1.19.0"
+}
+
+variable "crictl_verification" {
+  description = "Hash to verify crictl release tar.gz"
+  default     = "sha512-fbbb34a1667bcf94df911a92ab6b70a9d2b34da967244a222f288bf0135c587cbfdcc89deedc5afd1823e109921df9caaa4e9ff9cc39e55a9b8cdea8eb6ebe72"
+}
+
 variable "feature_gates" {
   description = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/"
   type        = map(string)

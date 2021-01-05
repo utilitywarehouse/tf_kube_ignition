@@ -1,7 +1,7 @@
 [Unit]
 Description=Kubernetes Kubelet
-Requires=docker.service
-After=docker.service
+Requires=containerd.service
+After=containerd.service
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
@@ -26,7 +26,8 @@ ExecStart=${kubelet_binary_path} \
   --cni-bin-dir=/opt/cni/bin \
   --cni-conf-dir=/etc/cni/net.d \
   --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
-  --container-runtime=docker \
+  --container-runtime=remote \
+  --container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock \
   --exit-on-lock-contention \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \

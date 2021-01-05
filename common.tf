@@ -75,16 +75,102 @@ data "ignition_directory" "journald" {
   path       = "/var/log/journal"
 }
 
-# We are using default docker daemon bridge address here (172.17.0.1) to address
-# registry mirror. Ideally we would use localhost, but there is a bug with IPVS
-# and using localhost:<nodeport> ::
-# https://github.com/kubernetes/kubernetes/issues/67730
 data "ignition_file" "docker_daemon_json" {
   mode       = 493
   filesystem = "root"
   path       = "/etc/docker/daemon.json"
 
   content {
-    content = file("${path.module}/resources/docker_daemon.json")
+    content = templatefile("${path.module}/resources/docker_daemon.json",
+      {
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+      }
+    )
+  }
+}
+
+data "ignition_file" "docker-config" {
+  mode       = 384
+  filesystem = "root"
+  path       = "/root/.docker/config.json"
+
+  content {
+    content = jsonencode(
+      {
+        auths = {
+          "https://index.docker.io/v1/" = {
+            auth = base64encode("${var.dockerhub_username}:${var.dockerhub_password}")
+          }
+        }
+      }
+    )
+  }
+}
+
+data "ignition_file" "kubelet-docker-config" {
+  mode       = 384
+  filesystem = "root"
+  path       = "/var/lib/kubelet/config.json"
+
+  content {
+    content = jsonencode(
+      {
+        auths = {
+          "https://index.docker.io/v1/" = {
+            auth = base64encode("${var.dockerhub_username}:${var.dockerhub_password}")
+          }
+        }
+      }
+    )
+  }
+}
+
+data "ignition_file" "containerd-config" {
+  filesystem = "root"
+  path       = "/etc/containerd/config.toml"
+  mode       = 384
+  content {
+    content = templatefile("${path.module}/resources/containerd-config.toml",
+      {
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+        dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
+      }
+    )
+  }
+}
+
+data "ignition_systemd_unit" "containerd-dropin" {
+  name = "containerd.service"
+
+  dropin {
+    name    = "10-custom-options.conf"
+    content = file("${path.module}/resources/containerd-dropin.conf")
+  }
+}
+
+data "ignition_file" "crictl" {
+  mode       = 420
+  filesystem = "root"
+  path       = "/opt/crictl.tar.gz"
+
+  source {
+    source       = "https://github.com/kubernetes-sigs/cri-tools/releases/download/${var.crictl_version}/crictl-${var.crictl_version}-linux-amd64.tar.gz"
+    verification = var.crictl_verification
+  }
+}
+
+data "ignition_systemd_unit" "prepare-crictl" {
+  name = "prepare-crictl.service"
+
+  content = file("${path.module}/resources/prepare-crictl.service")
+}
+
+data "ignition_file" "crictl-config" {
+  filesystem = "root"
+  path       = "/etc/crictl.yaml"
+  mode       = 384
+
+  content {
+    content = file("${path.module}/resources/crictl.yaml")
   }
 }
