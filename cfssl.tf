@@ -190,6 +190,7 @@ module "cfssl-restarter" {
 data "ignition_config" "cfssl" {
   files = concat(
     [
+      data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.cfssl-server-config.rendered,

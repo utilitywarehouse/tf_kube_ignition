@@ -136,6 +136,7 @@ data "ignition_config" "etcd" {
 
   files = concat(
     [
+      data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.cfssl-client-config.rendered,
