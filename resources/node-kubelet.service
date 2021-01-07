@@ -27,7 +27,7 @@ ExecStart=${kubelet_binary_path} \
   --cni-conf-dir=/etc/cni/net.d \
   --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
   --container-runtime=remote \
-  --container-runtime-endpoint=unix:///run/docker/libcontainerd/docker-containerd.sock \
+  --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
   --exit-on-lock-contention \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \

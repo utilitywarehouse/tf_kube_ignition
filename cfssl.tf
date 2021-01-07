@@ -201,6 +201,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.cfssl-proxy-csr-json.rendered,
       data.ignition_file.cfssl-nginx-conf.rendered,
       data.ignition_file.cfssl-nginx-auth.rendered,
+      data.ignition_file.containerd-config.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
     ],
@@ -216,6 +217,7 @@ data "ignition_config" "cfssl" {
       data.ignition_systemd_unit.cfssl.rendered,
       data.ignition_systemd_unit.cfssl-nginx.rendered,
       data.ignition_systemd_unit.cfssl-disk-mounter.rendered,
+      data.ignition_systemd_unit.containerd-dropin.rendered,
     ],
     module.cfssl-restarter.systemd_units,
     var.cfssl_additional_systemd_units
