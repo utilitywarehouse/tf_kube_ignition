@@ -174,3 +174,15 @@ data "ignition_file" "crictl-config" {
     content = file("${path.module}/resources/crictl.yaml")
   }
 }
+
+data "ignition_file" "bashrc" {
+  filesystem = "root"
+  path       = "/home/core/.bashrc"
+  mode       = 420
+  uid        = 500 # core
+  gid        = 500 # core
+
+  content {
+    content = file("${path.module}/resources/bashrc")
+  }
+}

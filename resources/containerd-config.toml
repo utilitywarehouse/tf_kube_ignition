@@ -1,4 +1,6 @@
 # adapted from: https://kinvolk.io/docs/flatcar-container-linux/latest/container-runtimes/switching-from-docker-to-containerd-for-kubernetes/
+
+# UW: switch to version 2 syntax
 version = 2
 
 # persistent data location
@@ -14,7 +16,12 @@ disabled_plugins = []
 
 # grpc configuration
 [grpc]
-  address = "/run/docker/libcontainerd/docker-containerd.sock"
+  # UW: override the custom socket location shipped with flatcar in
+  # favour of the containerd default. This plays more nicely with the defaults
+  # of things like ctr and kubelet's cadvisor.
+  #
+  # We pass this socket location to dockerd to maintain docker compatibility.
+  address = "/run/containerd/containerd.sock"
   # socket uid
   uid = 0
   # socket gid
@@ -36,8 +43,3 @@ disabled_plugins = []
 
 [plugins."io.containerd.grpc.v1.cri".registry.auths."registry-1.docker.io"]
   auth = "${dockerhub_auth}"
-
-[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
-  runtime_type = "io.containerd.runc.v2"
-  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
-    SystemdCgroup = true
