@@ -72,6 +72,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.prepare-crictl.rendered,
+      data.ignition_systemd_unit.journald-dropin.rendered,
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units

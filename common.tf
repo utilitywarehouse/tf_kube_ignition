@@ -34,6 +34,15 @@ data "ignition_systemd_unit" "docker-opts-dropin" {
   }
 }
 
+data "ignition_systemd_unit" "journald-dropin" {
+  name = "systemd-journald.service"
+
+  dropin {
+    name    = "10-custom-options.conf"
+    content = file("${path.module}/resources/journald-dropin.conf")
+  }
+}
+
 data "template_file" "node-exporter" {
   template = file("${path.module}/resources/node-exporter.service")
 
