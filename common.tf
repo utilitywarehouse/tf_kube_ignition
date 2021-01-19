@@ -43,6 +43,16 @@ data "ignition_systemd_unit" "journald-dropin" {
   }
 }
 
+data "ignition_file" "journald.conf" {
+  mode       = 493
+  filesystem = "root"
+  path       = "/etc/systemd/journald.conf"
+
+  content {
+    content = file("${path.module}/resources/journald.conf")
+  }
+}
+
 data "template_file" "node-exporter" {
   template = file("${path.module}/resources/node-exporter.service")
 
