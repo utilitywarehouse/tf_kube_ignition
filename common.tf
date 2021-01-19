@@ -43,7 +43,7 @@ data "ignition_systemd_unit" "journald-dropin" {
   }
 }
 
-data "ignition_file" "journald.conf" {
+data "ignition_file" "journald-conf" {
   mode       = 493
   filesystem = "root"
   path       = "/etc/systemd/journald.conf"
