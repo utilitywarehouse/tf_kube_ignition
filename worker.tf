@@ -56,6 +56,7 @@ data "ignition_config" "worker" {
       data.ignition_file.docker-config.rendered,
       data.ignition_file.kubelet-docker-config.rendered,
       data.ignition_file.bashrc.rendered,
+      data.ignition_file.journald-conf.rendered,
     ],
     var.worker_additional_files
   )
@@ -73,7 +74,6 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.prepare-crictl.rendered,
       data.ignition_systemd_unit.journald-dropin.rendered,
-      data.ignition_systemd_unit.journald-conf.rendered,
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units
