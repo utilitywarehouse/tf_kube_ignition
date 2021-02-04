@@ -25,6 +25,7 @@ ExecStart=-/bin/sh -c "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.k
 ExecStart=-/bin/sh -c "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-apiserver)"
 ExecStart=-/bin/sh -c "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-scheduler)"
 ExecStart=/usr/bin/systemctl try-restart kubelet.service
+Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOS
