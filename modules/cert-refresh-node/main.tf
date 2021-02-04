@@ -17,6 +17,7 @@ ExecStart=/opt/bin/cfssl-new-kubelet-cert
 # Hack to reload certs on control plane tier
 #  https://github.com/kubernetes/kubernetes/issues/46287
 ExecStart=/usr/bin/systemctl try-restart kubelet.service
+Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOS
