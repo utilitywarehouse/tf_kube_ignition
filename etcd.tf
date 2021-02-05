@@ -1,6 +1,25 @@
 data "ignition_systemd_unit" "locksmithd_etcd" {
+  count = length(var.etcd_addresses)
+
   name = "locksmithd.service"
   mask = false == var.enable_container_linux_locksmithd_etcd
+
+  dropin {
+    name = "10-custom-options.conf"
+    content = templatefile("${path.module}/resources/locksmithd-dropin.conf",
+      {
+        # Daily update windows, with a 1h buffer to prevent overlaps
+        # and give time to react to any problems
+        #   etcd-0: 10:00-11:00
+        #   < 1h free >
+        #   etcd-1: 12:00-13:00
+        #   < 1h free >
+        #   etcd-2: 14:00-15:00
+        reboot_window_start  = formatdate("hh:mm", timeadd("0000-01-01T10:00:00Z", "${count.index * 2}h"))
+        reboot_window_length = "1h"
+      }
+    )
+  }
 }
 
 data "template_file" "etcd-cfssl-new-cert" {
@@ -154,7 +173,7 @@ data "ignition_config" "etcd" {
   systemd = concat(
     [
       data.ignition_systemd_unit.update-engine.rendered,
-      data.ignition_systemd_unit.locksmithd_etcd.rendered,
+      element(data.ignition_systemd_unit.locksmithd_etcd.*.rendered, count.index),
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.node-exporter.rendered,
       element(data.ignition_systemd_unit.etcd-member.*.rendered, count.index),
