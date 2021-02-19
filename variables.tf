@@ -23,6 +23,11 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
+variable "containerd_log_level" {
+  description = "Log level for the containerd daemon (debug, info, warn, error, fatal, panic)"
+  default     = "warn"
+}
+
 variable "dns_domain" {
   description = "The domain under which this cluster's DNS records are set (cluster-name.example.com)."
 }
