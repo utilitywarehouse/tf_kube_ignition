@@ -134,6 +134,7 @@ data "ignition_file" "containerd-config" {
       {
         dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
         dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
+        containerd_log_level      = var.containerd_log_level
       }
     )
   }
