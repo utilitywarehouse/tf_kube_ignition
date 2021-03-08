@@ -41,7 +41,7 @@ disabled_plugins = []
 [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
   endpoint = ["${dockerhub_mirror_endpoint}"]
 
-[plugins."io.containerd.grpc.v1.cri".registry.auths."registry-1.docker.io"]
+[plugins."io.containerd.grpc.v1.cri".registry.configs."registry-1.docker.io".auth]
   auth = "${dockerhub_auth}"
 
 [debug]
