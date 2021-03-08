@@ -1,4 +1,4 @@
-# adapted from: https://kinvolk.io/docs/flatcar-container-linux/latest/container-runtimes/switching-from-docker-to-containerd-for-kubernetes/
+# adapted from: https://github.com/kinvolk/coreos-overlay/blob/main/app-emulation/containerd/files/config.toml
 
 # UW: switch to version 2 syntax
 version = 2
@@ -6,7 +6,7 @@ version = 2
 # persistent data location
 root = "/var/lib/containerd"
 # runtime state information
-state = "/run/docker/libcontainerd/containerd"
+state = "/run/containerd"
 # set containerd as a subreaper on linux when it is not running as PID 1
 subreaper = true
 # set containerd's OOM score
@@ -16,11 +16,6 @@ disabled_plugins = []
 
 # grpc configuration
 [grpc]
-  # UW: override the custom socket location shipped with flatcar in
-  # favour of the containerd default. This plays more nicely with the defaults
-  # of things like ctr and kubelet's cadvisor.
-  #
-  # We pass this socket location to dockerd to maintain docker compatibility.
   address = "/run/containerd/containerd.sock"
   # socket uid
   uid = 0
@@ -35,8 +30,6 @@ disabled_plugins = []
   # do not use a shim when starting containers, saves on memory but
   # live restore is not supported
   no_shim = false
-  # display shim logs in the containerd daemon's log output
-  shim_debug = true
 
 [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
   endpoint = ["${dockerhub_mirror_endpoint}"]
