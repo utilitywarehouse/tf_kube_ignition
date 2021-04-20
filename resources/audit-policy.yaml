@@ -1,8 +1,13 @@
-# Based on https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/gci/configure-helper.sh#L758
-apiVersion: audit.k8s.io/v1beta1
+# Based on
+# https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/gci/configure-helper.sh#L1114-L1239
+#
+# with "known_apis" manually substituted:
+# https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/gci/configure-helper.sh#L1092
+apiVersion: audit.k8s.io/v1
 kind: Policy
 rules:
-  # The following requests were manually identified as high-volume and low-risk, so drop them.
+  # The following requests were manually identified as high-volume and low-risk,
+  # so drop them.
   - level: None
     users: ["system:kube-proxy"]
     verbs: ["watch"]
@@ -11,6 +16,7 @@ rules:
         resources: ["endpoints", "services", "services/status"]
   - level: None
     # Ingress controller reads 'configmaps/ingress-uid' through the unsecured port.
+    # TODO(#46983): Change this to the ingress controller service account.
     users: ["system:unsecured"]
     namespaces: ["kube-system"]
     verbs: ["get"]
@@ -45,6 +51,13 @@ rules:
     resources:
       - group: "" # core
         resources: ["namespaces", "namespaces/status", "namespaces/finalize"]
+  - level: None
+    users: ["cluster-autoscaler"]
+    verbs: ["get", "update"]
+    namespaces: ["kube-system"]
+    resources:
+      - group: "" # core
+        resources: ["configmaps", "endpoints"]
   # Don't log HPA fetching metrics.
   - level: None
     users:
@@ -58,7 +71,7 @@ rules:
       - /healthz*
       - /version
       - /swagger*
-  # Don't log events requests.
+  # Don't log events requests because of performance impact.
   - level: None
     resources:
       - group: "" # core
@@ -86,7 +99,8 @@ rules:
     verbs: ["deletecollection"]
     omitStages:
       - "RequestReceived"
-  # Secrets, ConfigMaps, and TokenReviews can contain sensitive & binary data, so only log at the Metadata level.
+  # Secrets, ConfigMaps, and TokenReviews can contain sensitive & binary data,
+  # so only log at the Metadata level.
   - level: Metadata
     resources:
       - group: "" # core
@@ -95,7 +109,7 @@ rules:
         resources: ["tokenreviews"]
     omitStages:
       - "RequestReceived"
-  # Get responses can be large; skip them.
+  # Get repsonses can be large; skip them.
   - level: Request
     verbs: ["get", "list", "watch"]
     resources:
@@ -112,10 +126,10 @@ rules:
       - group: "extensions"
       - group: "metrics.k8s.io"
       - group: "networking.k8s.io"
+      - group: "node.k8s.io"
       - group: "policy"
       - group: "rbac.authorization.k8s.io"
       - group: "scheduling.k8s.io"
-      - group: "settings.k8s.io"
       - group: "storage.k8s.io"
     omitStages:
       - "RequestReceived"
@@ -135,10 +149,10 @@ rules:
       - group: "extensions"
       - group: "metrics.k8s.io"
       - group: "networking.k8s.io"
+      - group: "node.k8s.io"
       - group: "policy"
       - group: "rbac.authorization.k8s.io"
       - group: "scheduling.k8s.io"
-      - group: "settings.k8s.io"
       - group: "storage.k8s.io"
     omitStages:
       - "RequestReceived"
