@@ -54,7 +54,7 @@ variable "node_exporter_image_tag" {
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify k8s.gcr.io docker image version and Kubernetes binaries"
-  default     = "v1.20.2"
+  default     = "v1.21.0"
 }
 
 variable "cluster_dns" {
