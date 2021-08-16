@@ -150,6 +150,29 @@ module "etcd-cert-fetcher" {
   on_calendar = var.cfssl_node_renew_timer
 }
 
+data "template_file" "etcd-defrag" {
+  template = file("${path.module}/resources/etcd-defrag.service")
+}
+
+data "ignition_systemd_unit" "etcd-defrag" {
+  name    = "etcd-defrag.service"
+  enabled = false # not enabled because this service is started by etcd-defrag.timer
+  content = data.template_file.etcd-defrag.rendered
+}
+
+data "template_file" "etcd-defrag-timer" {
+  template = file("${path.module}/resources/etcd-defrag.timer")
+
+  vars = {
+    on_calendar = "monthly"
+  }
+}
+
+data "ignition_systemd_unit" "etcd-defrag-timer" {
+  name    = "etcd-defrag.timer"
+  content = data.template_file.etcd-defrag-timer.rendered
+}
+
 data "ignition_config" "etcd" {
   count = length(var.etcd_addresses)
 
@@ -178,6 +201,8 @@ data "ignition_config" "etcd" {
       data.ignition_systemd_unit.node-exporter.rendered,
       element(data.ignition_systemd_unit.etcd-member.*.rendered, count.index),
       element(data.ignition_systemd_unit.etcd-disk-mounter.*.rendered, count.index),
+      data.ignition_systemd_unit.etcd-defrag.rendered,
+      data.ignition_systemd_unit.etcd-defrag-timer.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
     ],
     module.etcd-cert-fetcher.systemd_units,

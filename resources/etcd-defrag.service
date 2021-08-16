@@ -1,0 +1,12 @@
+[Unit]
+Description=Run etcdctl defrag
+Documentation=https://etcd.io/docs/latest/op-guide/maintenance/#defragmentation
+After=etcd-member.service
+Requires=etcd-member.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/etcdctl-wrapper defrag
+
+[Install]
+WantedBy=multi-user.target

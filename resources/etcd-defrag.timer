@@ -1,0 +1,9 @@
+[Unit]
+Description=Run etcd-defrag.service periodically
+
+[Timer]
+OnCalendar=${on_calendar}
+RandomizedDelaySec=60min
+
+[Install]
+WantedBy=timers.target
