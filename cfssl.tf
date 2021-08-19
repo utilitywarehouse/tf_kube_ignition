@@ -169,8 +169,7 @@ data "template_file" "cfssl-nginx" {
   template = file("${path.module}/resources/cfssl-nginx.service")
 
   vars = {
-    nginx_image_url = "nginx"
-    nginx_image_tag = "1.17-alpine"
+    nginx_image = var.nginx_image
   }
 }
 
