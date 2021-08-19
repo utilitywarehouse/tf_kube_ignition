@@ -209,6 +209,11 @@ variable "crictl_version" {
   default     = "v1.19.0"
 }
 
+variable "nginx_image" {
+  description = "https://github.com/nginx/nginx/releases"
+  default     = "nginx:1.21-alpine"
+}
+
 variable "crictl_verification" {
   description = "Hash to verify crictl release tar.gz"
   default     = "sha512-fbbb34a1667bcf94df911a92ab6b70a9d2b34da967244a222f288bf0135c587cbfdcc89deedc5afd1823e109921df9caaa4e9ff9cc39e55a9b8cdea8eb6ebe72"

@@ -15,7 +15,7 @@ ExecStart=/bin/sh -c "\
       -v /etc/cfssl/sk-nginx.conf:/etc/nginx/nginx.conf \
       -v /etc/cfssl/sk-nginx.htpasswd:/etc/nginx/nginx.htpasswd \
       -p 8889:8889 \
-      ${nginx_image_url}:${nginx_image_tag}"
+      ${nginx_image}"
 ExecStop=-/bin/sh -c 'docker stop -t 3 "$(docker ps -q --filter=name=%p_)"'
 Restart=on-failure
 RestartSec=60
