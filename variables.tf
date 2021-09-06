@@ -42,6 +42,11 @@ variable "etcd_image_tag" {
   default     = "v3.5.0"
 }
 
+variable "etcd_data_dir" {
+  description = "Directory where etcd data is stored"
+  default     = "/var/lib/etcd"
+}
+
 variable "node_exporter_image_url" {
   description = "Where to get the node_exporter image from."
   default     = "quay.io/prometheus/node-exporter"

@@ -108,7 +108,7 @@ data "template_file" "etcd-disk-mounter" {
     filesystem  = "ext4"
     user        = "etcd"
     group       = "etcd"
-    mountpoint  = "/var/lib/etcd"
+    mountpoint  = var.etcd_data_dir
   }
 }
 
@@ -135,6 +135,7 @@ data "template_file" "etcd-member" {
     index                = count.index
     etcd_initial_cluster = join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))
     private_ipv4         = var.etcd_addresses[count.index]
+    etcd_data_dir        = var.etcd_data_dir
   }
 }
 
@@ -173,6 +174,22 @@ data "ignition_systemd_unit" "etcd-defrag-timer" {
   content = data.template_file.etcd-defrag-timer.rendered
 }
 
+data "ignition_file" "etcd-restore" {
+  count      = length(var.etcd_addresses)
+  path       = "/opt/bin/etcd-restore"
+  mode       = 493
+  filesystem = "root"
+
+  content {
+    content = templatefile("${path.module}/resources/etcd-restore.template", {
+      DATA_DIR                    = var.etcd_data_dir
+      MEMBER_NAME                 = "member${count.index}"
+      INITIAL_CLUSTER             = join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))
+      INITIAL_ADVERTISE_PEER_URLS = "https://${var.etcd_addresses[count.index]}:2380"
+    })
+  }
+}
+
 data "ignition_config" "etcd" {
   count = length(var.etcd_addresses)
 
@@ -189,6 +206,7 @@ data "ignition_config" "etcd" {
       element(data.ignition_file.etcdctl-wrapper.*.rendered, count.index),
       data.ignition_file.format-and-mount.rendered,
       data.ignition_file.docker-config.rendered,
+      element(data.ignition_file.etcd-restore.*.rendered, count.index),
     ],
     var.etcd_additional_files
   )
