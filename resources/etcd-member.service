@@ -18,7 +18,7 @@ LimitNOFILE=40000
 User=etcd
 Group=etcd
 
-Environment="ETCD_DATA_DIR=/var/lib/etcd"
+Environment="ETCD_DATA_DIR=${etcd_data_dir}"
 Environment="ETCD_NAME=member${index}"
 Environment="ETCD_INITIAL_CLUSTER=${etcd_initial_cluster}"
 Environment="ETCD_LISTEN_PEER_URLS=https://${private_ipv4}:2380"
@@ -41,6 +41,13 @@ ExecStartPre=-+/bin/sh -c "\
   tar --strip-components=1 -C /opt/bin \
     -xzf /opt/bin/etcd.tar.gz etcd-${etcd_version}-linux-amd64/etcd && \
   chown etcd:etcd /opt/bin/etcd"
+
+ExecStartPre=-+/bin/sh -c "\
+  test ! -f /opt/bin/etcdutl && \
+  test -f /opt/bin/etcd.tar.gz && \
+  tar --strip-components=1 -C /opt/bin \
+    -xzf /opt/bin/etcd.tar.gz etcd-${etcd_version}-linux-amd64/etcdutl && \
+  chown etcd:etcd /opt/bin/etcdutl"
 
 ExecStart=/opt/bin/etcd
 
