@@ -437,7 +437,6 @@ data "ignition_config" "master" {
       data.ignition_file.crictl.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.docker_daemon_json.rendered,
-      data.ignition_file.fstrim_dropin.rendered,
       data.ignition_file.kube-apiserver.rendered,
       data.ignition_file.kube-controller-manager.rendered,
       data.ignition_file.kube-scheduler-config.rendered,
@@ -464,6 +463,7 @@ data "ignition_config" "master" {
     [
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.fstrim_dropin.rendered,
       data.ignition_systemd_unit.locksmithd_master.rendered,
       data.ignition_systemd_unit.master-kubelet.rendered,
       data.ignition_systemd_unit.prepare-crictl.rendered,
