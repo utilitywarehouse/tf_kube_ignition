@@ -65,6 +65,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.fstrim_dropin.rendered,
+      data.ignition_systemd_unit.fstrim_timer.rendered,
       data.ignition_systemd_unit.locksmithd_worker.rendered,
       data.ignition_systemd_unit.prepare-crictl.rendered,
       data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
