@@ -187,3 +187,12 @@ data "ignition_file" "bashrc" {
     content = file("${path.module}/resources/bashrc")
   }
 }
+
+data "ignition_systemd_unit" "fstrim_dropin" {
+  name = "fstrim.service"
+
+  dropin {
+    name    = "10-all_mounted_fs.conf"
+    content = file("${path.module}/resources/fstrim.conf")
+  }
+}

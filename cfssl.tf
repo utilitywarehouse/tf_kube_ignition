@@ -190,34 +190,35 @@ data "ignition_config" "cfssl" {
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
-      data.ignition_file.cfssl.rendered,
-      data.ignition_file.cfssljson.rendered,
-      data.ignition_file.cfssl-server-config.rendered,
       data.ignition_file.cfssl-ca-csr.rendered,
       data.ignition_file.cfssl-init-ca.rendered,
-      data.ignition_file.cfssl-sk-csr.rendered,
       data.ignition_file.cfssl-init-proxy-pki.rendered,
+      data.ignition_file.cfssl-nginx-auth.rendered,
+      data.ignition_file.cfssl-nginx-conf.rendered,
       data.ignition_file.cfssl-proxy-ca-csr-json.rendered,
       data.ignition_file.cfssl-proxy-csr-json.rendered,
-      data.ignition_file.cfssl-nginx-conf.rendered,
-      data.ignition_file.cfssl-nginx-auth.rendered,
+      data.ignition_file.cfssl-server-config.rendered,
+      data.ignition_file.cfssl-sk-csr.rendered,
+      data.ignition_file.cfssl.rendered,
+      data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
+      data.ignition_file.fstrim_dropin.rendered,
     ],
     var.cfssl_additional_files
   )
 
   systemd = concat(
     [
-      data.ignition_systemd_unit.update-engine.rendered,
-      data.ignition_systemd_unit.locksmithd_cfssl.rendered,
-      data.ignition_systemd_unit.docker-opts-dropin.rendered,
-      data.ignition_systemd_unit.node-exporter.rendered,
-      data.ignition_systemd_unit.cfssl.rendered,
-      data.ignition_systemd_unit.cfssl-nginx.rendered,
       data.ignition_systemd_unit.cfssl-disk-mounter.rendered,
+      data.ignition_systemd_unit.cfssl-nginx.rendered,
+      data.ignition_systemd_unit.cfssl.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
+      data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.locksmithd_cfssl.rendered,
+      data.ignition_systemd_unit.node-exporter.rendered,
+      data.ignition_systemd_unit.update-engine.rendered,
     ],
     module.cfssl-restarter.systemd_units,
     var.cfssl_additional_systemd_units
