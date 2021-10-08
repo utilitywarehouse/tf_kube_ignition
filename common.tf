@@ -196,3 +196,7 @@ data "ignition_systemd_unit" "fstrim_dropin" {
     content = file("${path.module}/resources/fstrim.conf")
   }
 }
+
+data "ignition_systemd_unit" "fstrim_timer" {
+  name = "fstrim.timer"
+}
