@@ -200,3 +200,11 @@ data "ignition_systemd_unit" "fstrim_dropin" {
 data "ignition_systemd_unit" "fstrim_timer" {
   name = "fstrim.timer"
 }
+
+data "ignition_file" "kubernetes-accounting-config" {
+  filesystem = "root"
+  path       = "/etc/systemd/system.conf.d/kubernetes-accounting.conf"
+  content {
+    content = file("${path.module}/resources/kubernetes-accounting.conf")
+  }
+}
