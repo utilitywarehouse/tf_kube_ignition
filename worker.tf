@@ -50,7 +50,7 @@ data "ignition_config" "worker" {
       data.ignition_file.docker_daemon_json.rendered,
       data.ignition_file.kubelet-docker-config.rendered,
       data.ignition_file.kubelet.rendered,
-      data.ignition_file.kubernetes-accounting-config.rendered,
+      data.ignition_file.kubernetes_accounting_config.rendered,
       data.ignition_file.node-cfssl-new-cert.rendered,
       data.ignition_file.node-kubeconfig.rendered,
       data.ignition_file.node-kubelet-cfssl-new-cert.rendered,

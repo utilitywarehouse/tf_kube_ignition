@@ -444,7 +444,7 @@ data "ignition_config" "master" {
       data.ignition_file.kubelet-docker-config.rendered,
       data.ignition_file.kubelet-kubeconfig.rendered,
       data.ignition_file.kubelet.rendered,
-      data.ignition_file.kubernetes-accounting-config.rendered,
+      data.ignition_file.kubernetes_accounting_config.rendered,
       data.ignition_file.master-cfssl-keys-and-certs-get.rendered,
       data.ignition_file.master-cfssl-new-apiserver-cert.rendered,
       data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.rendered,
