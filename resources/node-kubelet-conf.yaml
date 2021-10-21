@@ -21,8 +21,8 @@ tlsPrivateKeyFile: "/etc/kubernetes/ssl/kubelet-key.pem"
 # Resource allocation
 cpuManagerPolicy: "static"
 systemReserved:
-  cpu: "500m"
-  memory: "1Gi"
+  cpu: "1000m"
+  memory: "2Gi"
 evictionHard:
   memory.available: "1Gi"
   nodefs.available: "2Gi"
