@@ -18,6 +18,7 @@ ExecStart=/opt/bin/cfssl-new-kubelet-cert
 #  https://github.com/kubernetes/kubernetes/issues/46287
 ExecStart=/usr/bin/systemctl try-restart kubelet.service
 Restart=on-failure
+RestartSec=10
 [Install]
 WantedBy=multi-user.target
 EOS
