@@ -204,6 +204,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.containerd-config.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
+      data.ignition_file.sysctl_kernel_vars.rendered,
     ],
     var.cfssl_additional_files
   )
