@@ -1,6 +1,5 @@
 # adapted from: https://github.com/kinvolk/coreos-overlay/blob/main/app-emulation/containerd/files/config.toml
 
-# UW: switch to version 2 syntax
 version = 2
 
 # persistent data location
@@ -11,25 +10,30 @@ state = "/run/containerd"
 subreaper = true
 # set containerd's OOM score
 oom_score = -999
-# CRI plugin listens on a TCP port by default
 disabled_plugins = []
 
 # grpc configuration
 [grpc]
-  address = "/run/containerd/containerd.sock"
-  # socket uid
-  uid = 0
-  # socket gid
-  gid = 0
+address = "/run/containerd/containerd.sock"
+# socket uid
+uid = 0
+# socket gid
+gid = 0
 
 [plugins."io.containerd.runtime.v1.linux"]
-  # shim binary name/path
-  shim = "containerd-shim"
-  # runtime binary name/path
-  runtime = "runc"
-  # do not use a shim when starting containers, saves on memory but
-  # live restore is not supported
-  no_shim = false
+# shim binary name/path
+shim = "containerd-shim"
+# runtime binary name/path
+runtime = "runc"
+# do not use a shim when starting containers, saves on memory but
+# live restore is not supported
+no_shim = false
+
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+# setting runc.options unsets parent settings
+runtime_type = "io.containerd.runc.v2"
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+SystemdCgroup = true
 
 [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
   endpoint = ["${dockerhub_mirror_endpoint}"]
