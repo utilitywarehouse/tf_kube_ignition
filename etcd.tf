@@ -218,8 +218,6 @@ data "ignition_config" "etcd" {
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.etcd-defrag-timer.rendered,
       data.ignition_systemd_unit.etcd-defrag.rendered,
-      data.ignition_systemd_unit.fstrim_dropin.rendered,
-      data.ignition_systemd_unit.fstrim_timer.rendered,
       data.ignition_systemd_unit.node-exporter.rendered,
       data.ignition_systemd_unit.update-engine.rendered,
       element(data.ignition_systemd_unit.etcd-disk-mounter.*.rendered, count.index),

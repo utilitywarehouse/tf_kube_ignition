@@ -188,19 +188,6 @@ data "ignition_file" "bashrc" {
   }
 }
 
-data "ignition_systemd_unit" "fstrim_dropin" {
-  name = "fstrim.service"
-
-  dropin {
-    name    = "10-all_mounted_fs.conf"
-    content = file("${path.module}/resources/fstrim.conf")
-  }
-}
-
-data "ignition_systemd_unit" "fstrim_timer" {
-  name = "fstrim.timer"
-}
-
 data "ignition_file" "kubernetes_accounting_config" {
   filesystem = "root"
   path       = "/etc/systemd/system.conf.d/kubernetes-accounting.conf"
