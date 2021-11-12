@@ -79,8 +79,10 @@ data "template_file" "node-kubelet-conf" {
   template = file("${path.module}/resources/node-kubelet-conf.yaml")
 
   vars = {
-    cluster_dns   = local.cluster_dns_yaml
-    feature_gates = local.feature_gates_yaml_fragment
+    cluster_dns            = local.cluster_dns_yaml
+    feature_gates          = local.feature_gates_yaml_fragment
+    system_reserved_cpu    = var.system_reserved_cpu
+    system_reserved_memory = var.system_reserved_memory
   }
 }
 

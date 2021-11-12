@@ -270,3 +270,13 @@ locals {
   #
   cluster_dns_yaml = join("", formatlist("\n  - \"%s\"", var.cluster_dns))
 }
+
+variable "system_reserved_cpu" {
+  description = "Passed to nodes kubelet config as systemReserved cpu value"
+  default     = "1000m"
+}
+
+variable "system_reserved_memory" {
+  description = "Passed to nodes kubelet config as systemReserved memory value"
+  default     = "2Gi"
+}
