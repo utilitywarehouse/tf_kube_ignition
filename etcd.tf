@@ -204,6 +204,7 @@ data "ignition_config" "etcd" {
       data.ignition_file.etcd-prom-machine-role.rendered,
       data.ignition_file.etcd.rendered,
       data.ignition_file.format-and-mount.rendered,
+      data.ignition_file.sysctl_kernel_vars.rendered,
       element(data.ignition_file.etcd-cfssl-new-cert.*.rendered, count.index),
       element(data.ignition_file.etcd-restore.*.rendered, count.index),
       element(data.ignition_file.etcdctl-wrapper.*.rendered, count.index),

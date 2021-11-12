@@ -57,6 +57,7 @@ data "ignition_config" "worker" {
       data.ignition_file.node-kubelet-conf.rendered,
       data.ignition_file.node-sysctl-vm.rendered,
       data.ignition_file.prometheus-ro-rootfs.rendered,
+      data.ignition_file.sysctl_kernel_vars.rendered,
     ],
     var.worker_additional_files
   )

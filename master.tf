@@ -455,6 +455,7 @@ data "ignition_config" "master" {
       data.ignition_file.master-kubelet-conf.rendered,
       data.ignition_file.master-prom-machine-role.rendered,
       data.ignition_file.scheduler-kubeconfig.rendered,
+      data.ignition_file.sysctl_kernel_vars.rendered,
     ],
     var.master_additional_files,
     [local.kube_controller_additional_config]

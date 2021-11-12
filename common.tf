@@ -208,3 +208,22 @@ data "ignition_file" "kubernetes_accounting_config" {
     content = file("${path.module}/resources/kubernetes-accounting.conf")
   }
 }
+
+# Updating to flatcar 2983.2.0 surfaced an issue where inotify resources are
+# exhausted on worker nodes. Increasing inotify watchers and instances was
+# tested to mitigate this issue.
+# For reference, AKS clusters reported similar behaviour and solution:
+# https://github.com/Azure/AKS/issues/772
+# https://github.com/Azure/aks-engine/pull/1801
+data "ignition_file" "sysctl_kernel_vars" {
+  mode       = 420
+  filesystem = "root"
+  path       = "/etc/sysctl.d/kernel.conf"
+
+  content {
+    content = <<EOS
+fs.inotify.max_user_watches=1048576
+fs.inotify.max_user_instances=1024
+EOS
+  }
+}
