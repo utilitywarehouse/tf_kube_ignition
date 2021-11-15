@@ -96,17 +96,6 @@ data "ignition_file" "node-kubelet-conf" {
   }
 }
 
-
-data "ignition_file" "node-sysctl-vm" {
-  mode       = 420
-  filesystem = "root"
-  path       = "/etc/sysctl.d/vm.conf"
-
-  content {
-    content = "vm.max_map_count=262144"
-  }
-}
-
 // Common prometheus text-collector metrics for nodes
 data "template_file" "prometheus-tmpfs-dir" {
   template = file("${path.module}/resources/prometheus-tmpfs-dir.service")
