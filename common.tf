@@ -222,8 +222,6 @@ data "ignition_file" "sysctl_kernel_vars" {
 
   content {
     content = <<EOS
-fs.inotify.max_user_watches=1048576
-fs.inotify.max_user_instances=8192
 vm.max_map_count=262144
 EOS
   }
