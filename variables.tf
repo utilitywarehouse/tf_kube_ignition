@@ -243,6 +243,28 @@ variable "admission_plugins" {
   default     = "NodeRestriction"
 }
 
+variable "system_reserved_cpu" {
+  description = "Passed to nodes kubelet config as systemReserved cpu value"
+  default     = "1000m"
+}
+
+variable "system_reserved_memory" {
+  description = "Passed to nodes kubelet config as systemReserved memory value"
+  default     = "2Gi"
+}
+
+variable "kubelet_cgroup_v2_runtime_enabled" {
+  description = "Enable systemd cgroups v2 runtime"
+  default     = false
+  type        = bool
+}
+
+variable "containerd_no_shim" {
+  description = "Do not user containerd shim, only used for live restore which we don't use"
+  default     = "false"
+  type        = string
+}
+
 locals {
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
@@ -269,14 +291,4 @@ locals {
   #    - "10.3.0.10"
   #
   cluster_dns_yaml = join("", formatlist("\n  - \"%s\"", var.cluster_dns))
-}
-
-variable "system_reserved_cpu" {
-  description = "Passed to nodes kubelet config as systemReserved cpu value"
-  default     = "1000m"
-}
-
-variable "system_reserved_memory" {
-  description = "Passed to nodes kubelet config as systemReserved memory value"
-  default     = "2Gi"
 }

@@ -231,8 +231,9 @@ data "template_file" "master-kubelet-conf" {
   template = file("${path.module}/resources/master-kubelet-conf.yaml")
 
   vars = {
-    cluster_dns   = local.cluster_dns_yaml
-    feature_gates = local.feature_gates_yaml_fragment
+    cluster_dns                       = local.cluster_dns_yaml
+    feature_gates                     = local.feature_gates_yaml_fragment
+    kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
   }
 }
 
