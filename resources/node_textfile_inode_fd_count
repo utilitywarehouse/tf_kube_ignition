@@ -1,0 +1,16 @@
+#!/bin/sh
+
+textfile_collector_dir=/etc/prom-text-collectors
+metric_name=node_textfile_inotify_fd_count
+
+metric_value=$(find /proc/*/fd -lname anon_inode:inotify | cut -d/ -f3 | xargs -I '{}' -- ps --no-headers -o '%p %U %c %a %P' -p '{}' | uniq -c | sort -nr | grep root | awk '{s+=$1}END{print s}')
+
+# Write out metrics to a temporary file.
+cat << EOF > "${textfile_collector_dir}/${metric_name}.prom.$$"
+${metric_name} ${metric_value}
+EOF
+
+# Rename the temporary file atomically.
+# This avoids the node exporter seeing half a file.
+mv "${textfile_collector_dir}/${metric_name}.prom.$$" \
+  "${textfile_collector_dir}/${metric_name}.prom"

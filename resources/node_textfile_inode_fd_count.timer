@@ -1,0 +1,10 @@
+[Unit]
+Description=Textfile collector timer to export the count of inotify fd
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=30
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
