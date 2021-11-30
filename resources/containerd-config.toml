@@ -26,7 +26,7 @@ shim = "containerd-shim"
 runtime = "runc"
 # do not use a shim when starting containers, saves on memory but
 # live restore is not supported
-no_shim = "${containerd_no_shim}"
+no_shim = ${containerd_no_shim}
 
 %{ if kubelet_cgroup_v2_runtime_enabled }
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]

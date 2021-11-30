@@ -261,8 +261,8 @@ variable "kubelet_cgroup_v2_runtime_enabled" {
 
 variable "containerd_no_shim" {
   description = "Do not user containerd shim, only used for live restore which we don't use"
-  default     = "false"
-  type        = string
+  default     = false
+  type        = bool
 }
 
 locals {
