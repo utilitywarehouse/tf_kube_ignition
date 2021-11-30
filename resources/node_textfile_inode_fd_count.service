@@ -1,0 +1,6 @@
+[Unit]
+Description=Textfile collector script to export the count of inotify fd
+
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/node_textfile_inode_fd_count

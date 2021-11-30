@@ -204,6 +204,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.containerd-config.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
+      data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
     ],
     var.cfssl_additional_files
@@ -220,6 +221,8 @@ data "ignition_config" "cfssl" {
       data.ignition_systemd_unit.fstrim_timer.rendered,
       data.ignition_systemd_unit.locksmithd_cfssl.rendered,
       data.ignition_systemd_unit.node-exporter.rendered,
+      data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
+      data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       data.ignition_systemd_unit.update-engine.rendered,
     ],
     module.cfssl-restarter.systemd_units,
