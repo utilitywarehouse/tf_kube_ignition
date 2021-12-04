@@ -132,9 +132,11 @@ data "ignition_file" "containerd-config" {
   content {
     content = templatefile("${path.module}/resources/containerd-config.toml",
       {
-        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
-        dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
-        containerd_log_level      = var.containerd_log_level
+        containerd_log_level              = var.containerd_log_level
+        containerd_no_shim                = tostring(var.containerd_no_shim)
+        dockerhub_auth                    = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
+        dockerhub_mirror_endpoint         = var.dockerhub_mirror_endpoint,
+        kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
       }
     )
   }

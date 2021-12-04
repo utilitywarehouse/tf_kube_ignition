@@ -10,6 +10,9 @@ authentication:
     clientCAFile: "/etc/kubernetes/ssl/ca.pem"
 authorization:
   mode: AlwaysAllow
+%{ if kubelet_cgroup_v2_runtime_enabled }
+cgroupDriver: systemd
+%{ endif ~}
 clusterDNS:${cluster_dns}
 clusterDomain: "cluster.local"
 ${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
