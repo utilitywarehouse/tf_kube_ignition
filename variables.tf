@@ -54,7 +54,7 @@ variable "node_exporter_image_url" {
 
 variable "node_exporter_image_tag" {
   description = "The version of the node_exporter image to use."
-  default     = "v1.2.2"
+  default     = "v1.3.1"
 }
 
 variable "kubernetes_version" {
