@@ -11,24 +11,27 @@ spec:
       image: k8s.gcr.io/kube-controller-manager:${kubernetes_version}
       command:
         - kube-controller-manager
+        ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
+        ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
+        ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
+        - --allocate-node-cidrs=true
+        - --authentication-kubeconfig=/etc/kubernetes/config/controller-manager.conf
+        - --authorization-kubeconfig=/etc/kubernetes/config/controller-manager.conf
+        - --cluster-cidr=${pod_network}
+        - --configure-cloud-routes=false
         - --kubeconfig=/etc/kubernetes/config/controller-manager.conf
         - --leader-elect=true
-        - --use-service-account-credentials
-        - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
-        - --root-ca-file=/etc/kubernetes/ssl/ca.pem
-        ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
-        ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
-        - --configure-cloud-routes=false
-        - --allocate-node-cidrs=true
-        - --cluster-cidr=${pod_network}
         - --node-monitor-grace-period=120s
-        ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
+        - --root-ca-file=/etc/kubernetes/ssl/ca.pem
+        - --service-account-private-key-file=/etc/kubernetes/ssl/signing-key.pem
+        - --use-service-account-credentials
         - --v=0
       livenessProbe:
         httpGet:
           host: 127.0.0.1
           path: /healthz
-          port: 10252
+          port: 10257
+          scheme: HTTPS
         initialDelaySeconds: 15
         timeoutSeconds: 15
       volumeMounts:

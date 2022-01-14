@@ -12,8 +12,10 @@ spec:
       image: k8s.gcr.io/kube-scheduler:${kubernetes_version}
       command:
         - kube-scheduler
-        - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
         ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
+        - --authentication-kubeconfig=/etc/kubernetes/config/scheduler.conf
+        - --authorization-kubeconfig=/etc/kubernetes/config/scheduler.conf
+        - --config=/etc/kubernetes/config/kube-scheduler-config.yaml
         - --v=0
       livenessProbe:
         httpGet:
