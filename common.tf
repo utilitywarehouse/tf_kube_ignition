@@ -25,12 +25,20 @@ data "ignition_file" "cfssljson" {
   }
 }
 
+data "template_file" "docker_opts_dropin" {
+  template = file("${path.module}/resources/docker-dropin.conf")
+
+  vars = {
+    use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
+  }
+}
+
 data "ignition_systemd_unit" "docker-opts-dropin" {
   name = "docker.service"
 
   dropin {
     name    = "10-custom-options.conf"
-    content = file("${path.module}/resources/docker-dropin.conf")
+    content = data.template_file.docker_opts_dropin.rendered
   }
 }
 
