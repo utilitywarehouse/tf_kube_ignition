@@ -1,7 +1,12 @@
 [Unit]
 Description=Kubernetes Kubelet
+%{ if use_deprecated_docker_runtime ~}
+Requires=docker.service
+After=docker.service
+%{ else ~}
 Requires=containerd.service
 After=containerd.service
+%{ endif ~}
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
@@ -17,8 +22,12 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
 # args below `--v=0` are deprecated
 ExecStart=${kubelet_binary_path} \
   --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
+%{ if use_deprecated_docker_runtime ~}
+  --container-runtime=docker \
+%{ else ~}
   --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
   --container-runtime=remote \
+%{ endif ~}
   --exit-on-lock-contention \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \

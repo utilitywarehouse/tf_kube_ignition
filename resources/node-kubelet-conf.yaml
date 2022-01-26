@@ -10,7 +10,7 @@ authentication:
     clientCAFile: "/etc/kubernetes/ssl/ca.pem"
 authorization:
   mode: AlwaysAllow
-%{ if kubelet_cgroup_v2_runtime_enabled }
+%{ if (kubelet_cgroup_v2_runtime_enabled || use_deprecated_docker_runtime)}
 cgroupDriver: systemd
 %{ endif ~}
 clusterDNS:${cluster_dns}

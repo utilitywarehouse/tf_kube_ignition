@@ -7,11 +7,12 @@ data "template_file" "worker-kubelet" {
   template = file("${path.module}/resources/node-kubelet.service")
 
   vars = {
-    kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = var.cloud_provider
-    get_hostname        = var.node_name_command[var.cloud_provider]
-    labels              = "role=worker"
-    taints              = ""
+    kubelet_binary_path           = "/opt/bin/kubelet"
+    cloud_provider                = var.cloud_provider
+    get_hostname                  = var.node_name_command[var.cloud_provider]
+    labels                        = "role=worker"
+    taints                        = ""
+    use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
   }
 }
 

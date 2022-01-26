@@ -4,8 +4,9 @@ data "ignition_systemd_unit" "locksmithd_master" {
 }
 
 module "cert-refresh-master" {
-  source      = "./modules/cert-refresh-master"
-  on_calendar = var.cfssl_node_renew_timer
+  source                        = "./modules/cert-refresh-master"
+  on_calendar                   = var.cfssl_node_renew_timer
+  use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
 }
 
 // Node certificate for kubelet to use as part of system:master-nodes. We need
@@ -216,9 +217,10 @@ data "template_file" "master-kubelet" {
   template = file("${path.module}/resources/master-kubelet.service")
 
   vars = {
-    kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = var.cloud_provider
-    get_hostname        = var.node_name_command[var.cloud_provider]
+    kubelet_binary_path           = "/opt/bin/kubelet"
+    cloud_provider                = var.cloud_provider
+    get_hostname                  = var.node_name_command[var.cloud_provider]
+    use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
   }
 }
 
@@ -234,6 +236,7 @@ data "template_file" "master-kubelet-conf" {
     cluster_dns                       = local.cluster_dns_yaml
     feature_gates                     = local.feature_gates_yaml_fragment
     kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
+    use_deprecated_docker_runtime     = var.use_deprecated_docker_runtime
   }
 }
 

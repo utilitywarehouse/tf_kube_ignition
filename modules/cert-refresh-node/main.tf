@@ -2,13 +2,19 @@ variable "on_calendar" {
   type = string
 }
 
+variable "use_deprecated_docker_runtime" {
+  description = "Use legacy docker container runtime"
+  default     = false
+  type        = bool
+}
+
 data "ignition_systemd_unit" "cert-refresh" {
   name = "cert-refresh.service"
 
   content = <<EOS
 [Unit]
 Description=Fetch new certificates from cfssl server and restart components to reload certs
-Requires=containerd.service
+${var.use_deprecated_docker_runtime ? "Requires=docker.service" : "Requires=containerd.service" }
 After=network-online.target
 [Service]
 Type=oneshot
