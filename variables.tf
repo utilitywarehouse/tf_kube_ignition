@@ -265,6 +265,12 @@ variable "containerd_no_shim" {
   type        = bool
 }
 
+variable "use_deprecated_docker_runtime" {
+  description = "Use legacy docker container runtime"
+  default     = false
+  type        = bool
+}
+
 locals {
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`

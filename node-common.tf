@@ -84,6 +84,7 @@ data "template_file" "node-kubelet-conf" {
     kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
     system_reserved_cpu               = var.system_reserved_cpu
     system_reserved_memory            = var.system_reserved_memory
+    use_deprecated_docker_runtime     = var.use_deprecated_docker_runtime
   }
 }
 
@@ -138,6 +139,7 @@ data "ignition_file" "prometheus-ro-rootfs" {
 }
 
 module "cert-refresh-node" {
-  source      = "./modules/cert-refresh-node"
-  on_calendar = var.cfssl_node_renew_timer
+  source                        = "./modules/cert-refresh-node"
+  on_calendar                   = var.cfssl_node_renew_timer
+  use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
 }
