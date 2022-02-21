@@ -217,8 +217,6 @@ data "ignition_config" "cfssl" {
       data.ignition_systemd_unit.cfssl.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
-      data.ignition_systemd_unit.fstrim_dropin.rendered,
-      data.ignition_systemd_unit.fstrim_timer.rendered,
       data.ignition_systemd_unit.locksmithd_cfssl.rendered,
       data.ignition_systemd_unit.node-exporter.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
