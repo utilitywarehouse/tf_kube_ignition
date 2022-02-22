@@ -150,6 +150,13 @@ variable "master_additional_files" {
   type        = list(string)
 }
 
+variable "master_additional_labels" {
+  description = "List of labels to append to `role=master` for master nodes. Labels are expected in <key=label> format by kubelet."
+  default     = []
+  type        = list(string)
+}
+
+
 variable "worker_additional_systemd_units" {
   description = "Additional systemd units to include in the igntion config data for worker nodes."
   default     = []
@@ -158,6 +165,12 @@ variable "worker_additional_systemd_units" {
 
 variable "worker_additional_files" {
   description = "Additional files to include in the igntion config data for worker nodes."
+  default     = []
+  type        = list(string)
+}
+
+variable "worker_additional_labels" {
+  description = "List of labels to append to `role=worker` for worker nodes. Labels are expected in <key=label> format by kubelet."
   default     = []
   type        = list(string)
 }

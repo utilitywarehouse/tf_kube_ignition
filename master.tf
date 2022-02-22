@@ -221,6 +221,7 @@ data "template_file" "master-kubelet" {
     cloud_provider                = var.cloud_provider
     get_hostname                  = var.node_name_command[var.cloud_provider]
     use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
+    labels                        = join(",", concat(["role=master"], var.master_additional_labels))
   }
 }
 

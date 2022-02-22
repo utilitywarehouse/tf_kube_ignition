@@ -10,7 +10,7 @@ data "template_file" "worker-kubelet" {
     kubelet_binary_path           = "/opt/bin/kubelet"
     cloud_provider                = var.cloud_provider
     get_hostname                  = var.node_name_command[var.cloud_provider]
-    labels                        = "role=worker"
+    labels                        = join(",", concat(["role=worker"], var.worker_additional_labels))
     taints                        = ""
     use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
   }

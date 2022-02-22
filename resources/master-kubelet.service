@@ -36,7 +36,7 @@ ExecStart=${kubelet_binary_path} \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --lock-file=/var/run/lock/kubelet.lock \
-  --node-labels=role=master \
+  --node-labels=${labels} \
   --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
   --v=0 \
 %{ if cloud_provider != "" }  --cloud-provider=${cloud_provider} \
