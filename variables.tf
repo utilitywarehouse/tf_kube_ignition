@@ -152,8 +152,14 @@ variable "master_additional_files" {
 
 variable "master_additional_labels" {
   description = "List of labels to append to `role=master` for master nodes. Labels are expected in <key=label> format by kubelet."
-  default     = []
-  type        = list(string)
+  type        = map(string)
+  # example default labels:
+  # ```
+  # default = {
+  #   "key"   = "value"
+  # }
+  # ```
+  default = {}
 }
 
 
@@ -171,8 +177,14 @@ variable "worker_additional_files" {
 
 variable "worker_additional_labels" {
   description = "List of labels to append to `role=worker` for worker nodes. Labels are expected in <key=label> format by kubelet."
-  default     = []
-  type        = list(string)
+  type        = map(string)
+  # example default labels:
+  # ```
+  # default = {
+  #   "key"   = "value"
+  # }
+  # ```
+  default = {}
 }
 
 variable "cfssl_ca_cn" {
@@ -310,4 +322,8 @@ locals {
   #    - "10.3.0.10"
   #
   cluster_dns_yaml = join("", formatlist("\n  - \"%s\"", var.cluster_dns))
+
+  # Kubelet labels
+  master_kubelet_labels = join(",", concat(["role=master"], formatlist("%s=%s", keys(var.master_additional_labels), values(var.master_additional_labels))))
+  worker_kubelet_labels = join(",", concat(["role=worker"], formatlist("%s=%s", keys(var.worker_additional_labels), values(var.worker_additional_labels))))
 }
