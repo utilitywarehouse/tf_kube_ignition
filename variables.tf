@@ -151,15 +151,9 @@ variable "master_additional_files" {
 }
 
 variable "master_additional_labels" {
-  description = "List of labels to append to `role=master` for master nodes. Labels are expected in <key=label> format by kubelet."
+  description = "Map of additional labels to append to role=master in the respective master nodes kubelet flag."
   type        = map(string)
-  # example default labels:
-  # ```
-  # default = {
-  #   "key"   = "value"
-  # }
-  # ```
-  default = {}
+  default     = {}
 }
 
 
@@ -176,15 +170,9 @@ variable "worker_additional_files" {
 }
 
 variable "worker_additional_labels" {
-  description = "List of labels to append to `role=worker` for worker nodes. Labels are expected in <key=label> format by kubelet."
+  description = "Map of additional labels to append to role=worker in the respective worker nodes kubelet flag."
   type        = map(string)
-  # example default labels:
-  # ```
-  # default = {
-  #   "key"   = "value"
-  # }
-  # ```
-  default = {}
+  default     = {}
 }
 
 variable "cfssl_ca_cn" {
