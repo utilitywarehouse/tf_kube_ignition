@@ -362,7 +362,7 @@ data "template_file" "kube-controller-manager" {
     cloud_config              = var.kube_controller_cloud_config
     pod_network               = var.pod_network
     feature_gates             = local.feature_gates_csv
-    pre_1_22_healthcheck_port = locals.pre_1_22_healthcheck_port
+    pre_1_22_healthcheck_port = local.pre_1_22_healthcheck_port
   }
 }
 
