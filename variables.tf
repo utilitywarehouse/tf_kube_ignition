@@ -314,4 +314,7 @@ locals {
   # Kubelet labels
   master_kubelet_labels = join(",", concat(["role=master"], formatlist("%s=%s", keys(var.master_additional_labels), values(var.master_additional_labels))))
   worker_kubelet_labels = join(",", concat(["role=worker"], formatlist("%s=%s", keys(var.worker_additional_labels), values(var.worker_additional_labels))))
+
+  # 1.22 controller-manager healthcheck port
+  pre_1_22_healthcheck_port = split(".", var.kubernetes_version)[1] <= 21
 }

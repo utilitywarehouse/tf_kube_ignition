@@ -30,8 +30,12 @@ spec:
         httpGet:
           host: 127.0.0.1
           path: /healthz
+%{if pre_1_22_healthcheck_port}
+          port: 10252
+%{else}
           port: 10257
           scheme: HTTPS
+%{endif}
         initialDelaySeconds: 15
         timeoutSeconds: 15
       volumeMounts:

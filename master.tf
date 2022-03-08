@@ -357,11 +357,12 @@ data "template_file" "kube-controller-manager" {
   template = file("${path.module}/resources/kube-controller-manager.yaml")
 
   vars = {
-    kubernetes_version = var.kubernetes_version
-    cloud_provider     = var.cloud_provider
-    cloud_config       = var.kube_controller_cloud_config
-    pod_network        = var.pod_network
-    feature_gates      = local.feature_gates_csv
+    kubernetes_version        = var.kubernetes_version
+    cloud_provider            = var.cloud_provider
+    cloud_config              = var.kube_controller_cloud_config
+    pod_network               = var.pod_network
+    feature_gates             = local.feature_gates_csv
+    pre_1_22_healthcheck_port = locals.pre_1_22_healthcheck_port
   }
 }
 
