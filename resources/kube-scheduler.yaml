@@ -20,8 +20,9 @@ spec:
       livenessProbe:
         httpGet:
           host: 127.0.0.1
+          scheme: HTTPS
           path: /healthz
-          port: 10251
+          port: 10259
         initialDelaySeconds: 15
         timeoutSeconds: 15
       volumeMounts:
