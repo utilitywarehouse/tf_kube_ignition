@@ -212,6 +212,8 @@ data "ignition_file" "kubernetes_accounting_config" {
 # https://github.com/giantswarm/k8scloudconfig/blob/master/files/conf/hardening.conf
 # Same approach also mentioned here:
 # https://github.com/kubernetes/kubernetes/issues/64315#issuecomment-904103310
+# vm.max_map_count=393216 adjusted for partner kafkas, which exceeded the
+# previous limit.
 data "ignition_file" "sysctl_kernel_vars" {
   mode       = 420
   filesystem = "root"
@@ -221,7 +223,7 @@ data "ignition_file" "sysctl_kernel_vars" {
     content = <<EOS
 fs.inotify.max_user_watches=1048576
 fs.inotify.max_user_instances=8192
-vm.max_map_count=262144
+vm.max_map_count=393216
 user.max_user_namespaces=0
 EOS
   }
