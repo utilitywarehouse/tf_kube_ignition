@@ -18,7 +18,6 @@ data "template_file" "node-cfssl-new-cert" {
 
 data "ignition_file" "node-cfssl-new-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-cert"
 
   content {
@@ -46,7 +45,6 @@ data "template_file" "node-kubelet-cfssl-new-cert" {
 
 data "ignition_file" "node-kubelet-cfssl-new-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
@@ -66,7 +64,6 @@ data "template_file" "node-kubeconfig" {
 
 data "ignition_file" "node-kubeconfig" {
   mode       = 420
-  filesystem = "root"
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
@@ -90,7 +87,6 @@ data "template_file" "node-kubelet-conf" {
 
 data "ignition_file" "node-kubelet-conf" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/node-kubelet-conf.yaml"
 
   content {
@@ -130,7 +126,6 @@ data "ignition_systemd_unit" "prometheus-ro-rootfs-timer" {
 
 data "ignition_file" "prometheus-ro-rootfs" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/prometheus-ro-rootfs"
 
   content {

@@ -23,6 +23,16 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
+variable "omit_locksmithd_service" {
+  description = "Whether to omit locksmithd service from ignition. It should be used when passing locksmithd service as additional config to avoid ignition failures"
+  default     = false
+}
+
+variable "omit_update_engine_service" {
+  description = "Whether to omit update-engine service from ignition. It should be used when passing update-engine service as additional config to avoid ignition failures"
+  default     = false
+}
+
 variable "containerd_log_level" {
   description = "Log level for the containerd daemon (debug, info, warn, error, fatal, panic)"
   default     = "warn"
