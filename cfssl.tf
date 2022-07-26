@@ -28,7 +28,6 @@ data "template_file" "cfssl-client-config" {
 
 data "ignition_file" "cfssl-client-config" {
   mode       = 384
-  filesystem = "root"
   path       = "/etc/cfssl/config.json"
 
   content {
@@ -56,7 +55,6 @@ data "ignition_systemd_unit" "cfssl-disk-mounter" {
 
 data "ignition_file" "cfssl-ca-csr" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/cfssl/ca-csr.json"
 
   content {
@@ -68,7 +66,6 @@ EOS
 
 data "ignition_file" "cfssl-init-ca" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-init-ca"
 
   content {
@@ -78,7 +75,6 @@ data "ignition_file" "cfssl-init-ca" {
 
 data "ignition_file" "cfssl-init-proxy-pki" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-init-proxy-pki"
 
   content {
@@ -88,7 +84,6 @@ data "ignition_file" "cfssl-init-proxy-pki" {
 
 data "ignition_file" "cfssl-proxy-ca-csr-json" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/cfssl/proxy-ca-csr.json"
 
   content {
@@ -98,7 +93,6 @@ data "ignition_file" "cfssl-proxy-ca-csr-json" {
 
 data "ignition_file" "cfssl-proxy-csr-json" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/cfssl/proxy-csr.json"
 
   content {
@@ -118,7 +112,6 @@ data "template_file" "cfssl-server-config" {
 
 data "ignition_file" "cfssl-server-config" {
   mode       = 384
-  filesystem = "root"
   path       = "/etc/cfssl/config.json"
 
   content {
@@ -133,7 +126,6 @@ data "ignition_systemd_unit" "cfssl" {
 
 data "ignition_file" "cfssl-sk-csr" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/cfssl/sk-csr.json"
 
   content {
@@ -145,7 +137,6 @@ EOS
 
 data "ignition_file" "cfssl-nginx-conf" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/cfssl/sk-nginx.conf"
 
   content {
@@ -155,7 +146,6 @@ data "ignition_file" "cfssl-nginx-conf" {
 
 data "ignition_file" "cfssl-nginx-auth" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/cfssl/sk-nginx.htpasswd"
 
   // it's okay to use PLAIN below since the only thing that this password
@@ -217,11 +207,11 @@ data "ignition_config" "cfssl" {
       data.ignition_systemd_unit.cfssl.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
-      data.ignition_systemd_unit.locksmithd_cfssl.rendered,
       data.ignition_systemd_unit.node-exporter.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
-      data.ignition_systemd_unit.update-engine.rendered,
+      !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_cfssl.rendered : "",
+      !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
     ],
     module.cfssl-restarter.systemd_units,
     var.cfssl_additional_systemd_units

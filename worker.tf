@@ -67,7 +67,6 @@ data "ignition_config" "worker" {
     [
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
-      data.ignition_systemd_unit.locksmithd_worker.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       data.ignition_systemd_unit.prepare-crictl.rendered,
@@ -75,8 +74,9 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
       data.ignition_systemd_unit.prometheus-ro-rootfs.rendered,
       data.ignition_systemd_unit.prometheus-tmpfs-dir.rendered,
-      data.ignition_systemd_unit.update-engine.rendered,
       data.ignition_systemd_unit.worker-kubelet.rendered,
+      !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_worker.rendered : "",
+      !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units

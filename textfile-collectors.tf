@@ -11,7 +11,6 @@ data "ignition_systemd_unit" "node_textfile_inode_fd_count_timer" {
 
 data "ignition_file" "node_textfile_inode_fd_count" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/node_textfile_inode_fd_count"
 
   content {

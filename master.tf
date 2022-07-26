@@ -33,7 +33,6 @@ data "template_file" "master-node-cfssl-new-cert" {
 
 data "ignition_file" "master-cfssl-new-node-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-node-cert"
 
   content {
@@ -61,7 +60,6 @@ data "template_file" "master-kubelet-cfssl-new-cert" {
 
 data "ignition_file" "master-kubelet-cfssl-new-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
@@ -102,7 +100,6 @@ data "template_file" "master-apiserver-cfssl-new-cert" {
 
 data "ignition_file" "master-cfssl-new-apiserver-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-apiserver-cert"
 
   content {
@@ -130,7 +127,6 @@ data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
 
 data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
 
   content {
@@ -158,7 +154,6 @@ data "template_file" "master-scheduler-cfssl-new-cert" {
 
 data "ignition_file" "master-cfssl-new-scheduler-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-scheduler-cert"
 
   content {
@@ -186,7 +181,6 @@ data "template_file" "master-controller-manager-cfssl-new-cert" {
 
 data "ignition_file" "master-cfssl-new-controller-manager-cert" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-controller-manager-cert"
 
   content {
@@ -205,7 +199,6 @@ data "template_file" "master-cfssl-keys-and-certs-get" {
 
 data "ignition_file" "master-cfssl-keys-and-certs-get" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-keys-and-certs-get"
 
   content {
@@ -243,7 +236,6 @@ data "template_file" "master-kubelet-conf" {
 
 data "ignition_file" "master-kubelet-conf" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/master-kubelet-conf.yaml"
 
   content {
@@ -261,7 +253,6 @@ data "template_file" "master-kubeconfig" {
 
 data "ignition_file" "kubelet-kubeconfig" {
   mode       = 420
-  filesystem = "root"
   path       = "/var/lib/kubelet/kubeconfig"
 
   content {
@@ -279,7 +270,6 @@ data "template_file" "scheduler-kubeconfig" {
 
 data "ignition_file" "scheduler-kubeconfig" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/scheduler.conf"
 
   content {
@@ -297,7 +287,6 @@ data "template_file" "controller-manager-kubeconfig" {
 
 data "ignition_file" "controller-manager-kubeconfig" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/controller-manager.conf"
 
   content {
@@ -331,7 +320,6 @@ data "template_file" "kube-apiserver" {
 
 data "ignition_file" "kube-apiserver" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-apiserver.yaml"
 
   content {
@@ -345,7 +333,6 @@ data "template_file" "audit-policy" {
 
 data "ignition_file" "audit-policy" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/audit-policy.yaml"
 
   content {
@@ -367,7 +354,6 @@ data "template_file" "kube-controller-manager" {
 
 data "ignition_file" "kube-controller-manager" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
 
   content {
@@ -377,7 +363,6 @@ data "ignition_file" "kube-controller-manager" {
 
 data "ignition_file" "kube-controller-conf" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/cloud_provider/cloud.conf"
 
   content {
@@ -396,7 +381,6 @@ data "template_file" "kube-scheduler" {
 
 data "ignition_file" "kube-scheduler" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/manifests/kube-scheduler.yaml"
 
   content {
@@ -406,7 +390,6 @@ data "ignition_file" "kube-scheduler" {
 
 data "ignition_file" "kube-scheduler-config" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/kubernetes/config/kube-scheduler-config.yaml"
 
   content {
@@ -416,7 +399,6 @@ data "ignition_file" "kube-scheduler-config" {
 
 data "ignition_file" "master-prom-machine-role" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/prom-text-collectors/machine_role.prom"
 
   content {
@@ -471,12 +453,12 @@ data "ignition_config" "master" {
     [
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
-      data.ignition_systemd_unit.locksmithd_master.rendered,
       data.ignition_systemd_unit.master-kubelet.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       data.ignition_systemd_unit.prepare-crictl.rendered,
-      data.ignition_systemd_unit.update-engine.rendered,
+      !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_master.rendered : "",
+      !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
     ],
     module.cert-refresh-master.systemd_units,
     var.master_additional_systemd_units,

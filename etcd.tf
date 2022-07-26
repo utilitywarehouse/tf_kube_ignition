@@ -42,7 +42,6 @@ data "template_file" "etcd-cfssl-new-cert" {
 
 data "ignition_file" "etcd" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/etcd.tar.gz"
 
   source {
@@ -53,7 +52,6 @@ data "ignition_file" "etcd" {
 data "ignition_file" "etcd-cfssl-new-cert" {
   count      = length(var.etcd_addresses)
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/cfssl-new-cert"
 
   content {
@@ -66,7 +64,6 @@ data "ignition_file" "etcd-cfssl-new-cert" {
 
 data "ignition_file" "etcd-prom-machine-role" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/prom-text-collectors/machine_role.prom"
 
   content {
@@ -88,7 +85,6 @@ data "template_file" "etcdctl-wrapper" {
 data "ignition_file" "etcdctl-wrapper" {
   count      = length(var.etcd_addresses)
   mode       = 493
-  filesystem = "root"
   uid        = 500
   gid        = 500
   path       = "/opt/bin/etcdctl-wrapper"
@@ -178,7 +174,6 @@ data "ignition_file" "etcd-restore" {
   count      = length(var.etcd_addresses)
   path       = "/opt/bin/etcd-restore"
   mode       = 493
-  filesystem = "root"
 
   content {
     content = templatefile("${path.module}/resources/etcd-restore.template", {
@@ -222,10 +217,10 @@ data "ignition_config" "etcd" {
       data.ignition_systemd_unit.node-exporter.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
-      data.ignition_systemd_unit.update-engine.rendered,
       element(data.ignition_systemd_unit.etcd-disk-mounter.*.rendered, count.index),
       element(data.ignition_systemd_unit.etcd-member.*.rendered, count.index),
-      element(data.ignition_systemd_unit.locksmithd_etcd.*.rendered, count.index),
+      !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
+      !var.omit_locksmithd_service ? element(data.ignition_systemd_unit.locksmithd_etcd.*.rendered, count.index) : "",
     ],
     module.etcd-cert-fetcher.systemd_units,
     var.etcd_additional_systemd_units

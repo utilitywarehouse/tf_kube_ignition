@@ -4,7 +4,6 @@ data "ignition_systemd_unit" "update-engine" {
 }
 
 data "ignition_file" "cfssl" {
-  filesystem = "root"
   path       = "/opt/bin/cfssl"
   mode       = 493
 
@@ -15,7 +14,6 @@ data "ignition_file" "cfssl" {
 }
 
 data "ignition_file" "cfssljson" {
-  filesystem = "root"
   path       = "/opt/bin/cfssljson"
   mode       = 493
 
@@ -59,7 +57,6 @@ data "ignition_systemd_unit" "node-exporter" {
 
 data "ignition_file" "format-and-mount" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/format-and-mount"
 
   content {
@@ -69,7 +66,6 @@ data "ignition_file" "format-and-mount" {
 
 data "ignition_file" "kubelet" {
   mode       = 493
-  filesystem = "root"
   path       = "/opt/bin/kubelet"
 
   source {
@@ -79,13 +75,11 @@ data "ignition_file" "kubelet" {
 
 # Dir used by systemd to store logs in disk instead of memory
 data "ignition_directory" "journald" {
-  filesystem = "root"
   path       = "/var/log/journal"
 }
 
 data "ignition_file" "docker_daemon_json" {
   mode       = 493
-  filesystem = "root"
   path       = "/etc/docker/daemon.json"
 
   content {
@@ -99,7 +93,6 @@ data "ignition_file" "docker_daemon_json" {
 
 data "ignition_file" "docker-config" {
   mode       = 384
-  filesystem = "root"
   path       = "/root/.docker/config.json"
 
   content {
@@ -117,7 +110,6 @@ data "ignition_file" "docker-config" {
 
 data "ignition_file" "kubelet-docker-config" {
   mode       = 384
-  filesystem = "root"
   path       = "/var/lib/kubelet/config.json"
 
   content {
@@ -134,7 +126,6 @@ data "ignition_file" "kubelet-docker-config" {
 }
 
 data "ignition_file" "containerd-config" {
-  filesystem = "root"
   path       = "/etc/containerd/config.toml"
   mode       = 384
   content {
@@ -161,7 +152,6 @@ data "ignition_systemd_unit" "containerd-dropin" {
 
 data "ignition_file" "crictl" {
   mode       = 420
-  filesystem = "root"
   path       = "/opt/crictl.tar.gz"
 
   source {
@@ -177,7 +167,6 @@ data "ignition_systemd_unit" "prepare-crictl" {
 }
 
 data "ignition_file" "crictl-config" {
-  filesystem = "root"
   path       = "/etc/crictl.yaml"
   mode       = 384
 
@@ -187,9 +176,9 @@ data "ignition_file" "crictl-config" {
 }
 
 data "ignition_file" "bashrc" {
-  filesystem = "root"
   path       = "/home/core/.bashrc"
   mode       = 420
+  overwrite  = true
   uid        = 500 # core
   gid        = 500 # core
 
@@ -199,7 +188,6 @@ data "ignition_file" "bashrc" {
 }
 
 data "ignition_file" "kubernetes_accounting_config" {
-  filesystem = "root"
   path       = "/etc/systemd/system.conf.d/kubernetes-accounting.conf"
   content {
     content = file("${path.module}/resources/kubernetes-accounting.conf")
@@ -217,7 +205,6 @@ data "ignition_file" "kubernetes_accounting_config" {
 # previous limit.
 data "ignition_file" "sysctl_kernel_vars" {
   mode       = 420
-  filesystem = "root"
   path       = "/etc/sysctl.d/kernel.conf"
 
   content {
