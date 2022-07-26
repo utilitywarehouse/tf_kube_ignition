@@ -20,6 +20,10 @@ serializeImagePulls: false
 staticPodPath: "/etc/kubernetes/manifests"
 tlsCertFile: "/etc/kubernetes/ssl/kubelet.pem"
 tlsPrivateKeyFile: "/etc/kubernetes/ssl/kubelet-key.pem"
+# Point kubelet to the "real" resolv.conf to avoid loopback addresses that will
+# be detected as a loop via CoreDNS https://coredns.io/plugins/loop/#troubleshooting
+# Flatcar discussion around the issue: https://github.com/flatcar-linux/Flatcar/issues/285
+resolvConf: "/run/systemd/resolve/resolv.conf"
 
 # Resource allocation
 cpuManagerPolicy: "static"
