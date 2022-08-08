@@ -27,8 +27,10 @@ ExecStart=/opt/bin/cfssl-new-scheduler-cert
 ExecStart=/opt/bin/cfssl-new-controller-manager-cert
 # Hack to reload certs on control plane tier
 #  https://github.com/kubernetes/kubernetes/issues/46287
-ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-controller-manager" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-controller-manager)"}"
 ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-apiserver)" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-apiserver)"}"
+# Wait for apiserver to be ready before rolling the rest components. This can prevent components from spinning if apiserver is not ready. Die if this takes more than 2 minutes.
+ExecStart=/usr/bin/timeout 120 /bin/sh -c 'while [[ "$(curl --insecure -s https://localhost:443/readyz)" != "ok" ]]; do echo "apiserver not ready, waiting.."; sleep 1; done'
+ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-controller-manager" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-controller-manager)"}"
 ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-scheduler)" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-scheduler)"}"
 ExecStart=/usr/bin/systemctl try-restart kubelet.service
 Restart=on-failure
