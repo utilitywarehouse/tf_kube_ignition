@@ -39,7 +39,7 @@ variable "etcd_image_url" {
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.5.0"
+  default     = "v3.5.4"
 }
 
 variable "etcd_data_dir" {
@@ -222,14 +222,14 @@ variable "dockerhub_password" {
   description = "Docker Hub password"
 }
 
+variable "nginx_image" {
+  description = "https://github.com/nginx/nginx/releases"
+  default     = "nginx:1.23-alpine"
+}
+
 variable "crictl_version" {
   description = "The version of the crictl release to install"
   default     = "v1.19.0"
-}
-
-variable "nginx_image" {
-  description = "https://github.com/nginx/nginx/releases"
-  default     = "nginx:1.21-alpine"
 }
 
 variable "crictl_verification" {
