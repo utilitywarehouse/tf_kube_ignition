@@ -41,8 +41,8 @@ data "template_file" "etcd-cfssl-new-cert" {
 }
 
 data "ignition_file" "etcd" {
-  mode       = 493
-  path       = "/opt/bin/etcd.tar.gz"
+  mode = 493
+  path = "/opt/bin/etcd.tar.gz"
 
   source {
     source = "https://storage.googleapis.com/etcd/${var.etcd_image_tag}/etcd-${var.etcd_image_tag}-linux-amd64.tar.gz"
@@ -50,9 +50,9 @@ data "ignition_file" "etcd" {
 }
 
 data "ignition_file" "etcd-cfssl-new-cert" {
-  count      = length(var.etcd_addresses)
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-cert"
+  count = length(var.etcd_addresses)
+  mode  = 493
+  path  = "/opt/bin/cfssl-new-cert"
 
   content {
     content = element(
@@ -63,8 +63,8 @@ data "ignition_file" "etcd-cfssl-new-cert" {
 }
 
 data "ignition_file" "etcd-prom-machine-role" {
-  mode       = 420
-  path       = "/etc/prom-text-collectors/machine_role.prom"
+  mode = 420
+  path = "/etc/prom-text-collectors/machine_role.prom"
 
   content {
     content = "machine_role{role=\"etcd\"} 1\n"
@@ -83,11 +83,11 @@ data "template_file" "etcdctl-wrapper" {
 }
 
 data "ignition_file" "etcdctl-wrapper" {
-  count      = length(var.etcd_addresses)
-  mode       = 493
-  uid        = 500
-  gid        = 500
-  path       = "/opt/bin/etcdctl-wrapper"
+  count = length(var.etcd_addresses)
+  mode  = 493
+  uid   = 500
+  gid   = 500
+  path  = "/opt/bin/etcdctl-wrapper"
 
   content {
     content = element(data.template_file.etcdctl-wrapper.*.rendered, count.index)
@@ -161,7 +161,7 @@ data "template_file" "etcd-defrag-timer" {
   template = file("${path.module}/resources/etcd-defrag.timer")
 
   vars = {
-    on_calendar = "monthly"
+    on_calendar = "daily"
   }
 }
 
@@ -171,9 +171,9 @@ data "ignition_systemd_unit" "etcd-defrag-timer" {
 }
 
 data "ignition_file" "etcd-restore" {
-  count      = length(var.etcd_addresses)
-  path       = "/opt/bin/etcd-restore"
-  mode       = 493
+  count = length(var.etcd_addresses)
+  path  = "/opt/bin/etcd-restore"
+  mode  = 493
 
   content {
     content = templatefile("${path.module}/resources/etcd-restore.template", {
