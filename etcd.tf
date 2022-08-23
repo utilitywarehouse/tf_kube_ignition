@@ -161,7 +161,7 @@ data "template_file" "etcd-defrag-timer" {
   template = file("${path.module}/resources/etcd-defrag.timer")
 
   vars = {
-    on_calendar = "monthly"
+    on_calendar = "daily"
   }
 }
 
