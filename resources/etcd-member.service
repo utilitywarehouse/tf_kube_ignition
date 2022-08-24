@@ -2,7 +2,7 @@
 
 [Unit]
 Description=etcd (System Application Container)
-Documentation=https://github.com/coreos/etcd
+Documentation=https://github.com/etcd-io/etcd/
 Wants=network-online.target network.target
 Requires=disk-mounter.service cert-fetch.service
 After=network-online.target disk-mounter.service cert-fetch.service
