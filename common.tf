@@ -4,8 +4,8 @@ data "ignition_systemd_unit" "update-engine" {
 }
 
 data "ignition_file" "cfssl" {
-  path       = "/opt/bin/cfssl"
-  mode       = 493
+  path = "/opt/bin/cfssl"
+  mode = 493
 
   source {
     source       = "https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64"
@@ -14,8 +14,8 @@ data "ignition_file" "cfssl" {
 }
 
 data "ignition_file" "cfssljson" {
-  path       = "/opt/bin/cfssljson"
-  mode       = 493
+  path = "/opt/bin/cfssljson"
+  mode = 493
 
   source {
     source       = "https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64"
@@ -25,10 +25,6 @@ data "ignition_file" "cfssljson" {
 
 data "template_file" "docker_opts_dropin" {
   template = file("${path.module}/resources/docker-dropin.conf")
-
-  vars = {
-    use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
-  }
 }
 
 data "ignition_systemd_unit" "docker-opts-dropin" {
@@ -56,8 +52,8 @@ data "ignition_systemd_unit" "node-exporter" {
 }
 
 data "ignition_file" "format-and-mount" {
-  mode       = 493
-  path       = "/opt/bin/format-and-mount"
+  mode = 493
+  path = "/opt/bin/format-and-mount"
 
   content {
     content = file("${path.module}/resources/format-and-mount")
@@ -65,8 +61,8 @@ data "ignition_file" "format-and-mount" {
 }
 
 data "ignition_file" "kubelet" {
-  mode       = 493
-  path       = "/opt/bin/kubelet"
+  mode = 493
+  path = "/opt/bin/kubelet"
 
   source {
     source = "https://storage.googleapis.com/kubernetes-release/release/${var.kubernetes_version}/bin/linux/amd64/kubelet"
@@ -75,12 +71,12 @@ data "ignition_file" "kubelet" {
 
 # Dir used by systemd to store logs in disk instead of memory
 data "ignition_directory" "journald" {
-  path       = "/var/log/journal"
+  path = "/var/log/journal"
 }
 
 data "ignition_file" "docker_daemon_json" {
-  mode       = 493
-  path       = "/etc/docker/daemon.json"
+  mode = 493
+  path = "/etc/docker/daemon.json"
 
   content {
     content = templatefile("${path.module}/resources/docker_daemon.json",
@@ -92,8 +88,8 @@ data "ignition_file" "docker_daemon_json" {
 }
 
 data "ignition_file" "docker-config" {
-  mode       = 384
-  path       = "/root/.docker/config.json"
+  mode = 384
+  path = "/root/.docker/config.json"
 
   content {
     content = jsonencode(
@@ -109,8 +105,8 @@ data "ignition_file" "docker-config" {
 }
 
 data "ignition_file" "kubelet-docker-config" {
-  mode       = 384
-  path       = "/var/lib/kubelet/config.json"
+  mode = 384
+  path = "/var/lib/kubelet/config.json"
 
   content {
     content = jsonencode(
@@ -126,16 +122,15 @@ data "ignition_file" "kubelet-docker-config" {
 }
 
 data "ignition_file" "containerd-config" {
-  path       = "/etc/containerd/config.toml"
-  mode       = 384
+  path = "/etc/containerd/config.toml"
+  mode = 384
   content {
     content = templatefile("${path.module}/resources/containerd-config.toml",
       {
-        containerd_log_level              = var.containerd_log_level
-        containerd_no_shim                = tostring(var.containerd_no_shim)
-        dockerhub_auth                    = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
-        dockerhub_mirror_endpoint         = var.dockerhub_mirror_endpoint,
-        kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
+        containerd_log_level      = var.containerd_log_level
+        containerd_no_shim        = tostring(var.containerd_no_shim)
+        dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
       }
     )
   }
@@ -151,8 +146,8 @@ data "ignition_systemd_unit" "containerd-dropin" {
 }
 
 data "ignition_file" "crictl" {
-  mode       = 420
-  path       = "/opt/crictl.tar.gz"
+  mode = 420
+  path = "/opt/crictl.tar.gz"
 
   source {
     source       = "https://github.com/kubernetes-sigs/cri-tools/releases/download/${var.crictl_version}/crictl-${var.crictl_version}-linux-amd64.tar.gz"
@@ -167,8 +162,8 @@ data "ignition_systemd_unit" "prepare-crictl" {
 }
 
 data "ignition_file" "crictl-config" {
-  path       = "/etc/crictl.yaml"
-  mode       = 384
+  path = "/etc/crictl.yaml"
+  mode = 384
 
   content {
     content = file("${path.module}/resources/crictl.yaml")
@@ -176,11 +171,11 @@ data "ignition_file" "crictl-config" {
 }
 
 data "ignition_file" "bashrc" {
-  path       = "/home/core/.bashrc"
-  mode       = 420
-  overwrite  = true
-  uid        = 500 # core
-  gid        = 500 # core
+  path      = "/home/core/.bashrc"
+  mode      = 420
+  overwrite = true
+  uid       = 500 # core
+  gid       = 500 # core
 
   content {
     content = file("${path.module}/resources/bashrc")
@@ -188,7 +183,7 @@ data "ignition_file" "bashrc" {
 }
 
 data "ignition_file" "kubernetes_accounting_config" {
-  path       = "/etc/systemd/system.conf.d/kubernetes-accounting.conf"
+  path = "/etc/systemd/system.conf.d/kubernetes-accounting.conf"
   content {
     content = file("${path.module}/resources/kubernetes-accounting.conf")
   }
@@ -204,8 +199,8 @@ data "ignition_file" "kubernetes_accounting_config" {
 # vm.max_map_count=524288 adjusted for partner kafkas, which exceeded the
 # previous limit.
 data "ignition_file" "sysctl_kernel_vars" {
-  mode       = 420
-  path       = "/etc/sysctl.d/kernel.conf"
+  mode = 420
+  path = "/etc/sysctl.d/kernel.conf"
 
   content {
     content = <<EOS

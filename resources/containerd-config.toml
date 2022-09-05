@@ -28,13 +28,15 @@ runtime = "runc"
 # live restore is not supported
 no_shim = ${containerd_no_shim}
 
-%{ if kubelet_cgroup_v2_runtime_enabled }
+[plugins."io.containerd.grpc.v1.cri"]
+# enable SELinux labeling
+enable_selinux = true
+
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
 # setting runc.options unsets parent settings
 runtime_type = "io.containerd.runc.v2"
 [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
 SystemdCgroup = true
-%{ endif ~}
 
 # UW config
 [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]

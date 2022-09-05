@@ -69,7 +69,7 @@ variable "node_exporter_image_tag" {
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify k8s.gcr.io docker image version and Kubernetes binaries"
-  default     = "v1.23.6"
+  default     = "v1.24.4"
 }
 
 variable "cluster_dns" {
@@ -276,20 +276,8 @@ variable "system_reserved_memory" {
   default     = "2Gi"
 }
 
-variable "kubelet_cgroup_v2_runtime_enabled" {
-  description = "Enable systemd cgroups v2 runtime"
-  default     = false
-  type        = bool
-}
-
 variable "containerd_no_shim" {
   description = "Do not user containerd shim, only used for live restore which we don't use"
-  default     = false
-  type        = bool
-}
-
-variable "use_deprecated_docker_runtime" {
-  description = "Use legacy docker container runtime"
   default     = false
   type        = bool
 }

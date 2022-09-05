@@ -1,12 +1,7 @@
 [Unit]
 Description=Kubernetes Kubelet
-%{ if use_deprecated_docker_runtime ~}
-Requires=docker.service
-After=docker.service
-%{ else ~}
 Requires=containerd.service
 After=containerd.service
-%{ endif ~}
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
@@ -19,31 +14,18 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
 ExecStartPre=/usr/bin/mkdir -p /var/run/calico
 ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
-# args below `--v=0` are deprecated
-#  Flag --cloud-provider has been deprecated, will be removed in 1.23, in favor of removing cloud provider code from Kubelet.
-#  Flag --cni-bin-dir has been deprecated, will be removed along with dockershim.
-#  Flag --cni-conf-dir has been deprecated, will be removed along with dockershim.
-#  Flag --network-plugin has been deprecated, will be removed along with dockershim.
 ExecStart=${kubelet_binary_path} \
   --config=/etc/kubernetes/config/master-kubelet-conf.yaml \
-%{ if use_deprecated_docker_runtime ~}
-  --container-runtime=docker \
-%{ else ~}
   --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
-  --container-runtime=remote \
-%{ endif ~}
   --exit-on-lock-contention \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --lock-file=/var/run/lock/kubelet.lock \
   --node-labels=${labels} \
   --register-with-taints=node-role.kubernetes.io/master=:NoSchedule \
-  --v=0 \
 %{ if cloud_provider != "" }  --cloud-provider=${cloud_provider} \
 %{ endif ~}
-  --cni-bin-dir=/opt/cni/bin \
-  --cni-conf-dir=/etc/cni/net.d \
-  --network-plugin=cni
+  --v=0
 Restart=always
 RestartSec=10
 [Install]

@@ -17,8 +17,8 @@ data "template_file" "node-cfssl-new-cert" {
 }
 
 data "ignition_file" "node-cfssl-new-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-cert"
 
   content {
     content = data.template_file.node-cfssl-new-cert.rendered
@@ -44,8 +44,8 @@ data "template_file" "node-kubelet-cfssl-new-cert" {
 }
 
 data "ignition_file" "node-kubelet-cfssl-new-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-kubelet-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
     content = data.template_file.node-kubelet-cfssl-new-cert.rendered
@@ -63,8 +63,8 @@ data "template_file" "node-kubeconfig" {
 }
 
 data "ignition_file" "node-kubeconfig" {
-  mode       = 420
-  path       = "/var/lib/kubelet/kubeconfig"
+  mode = 420
+  path = "/var/lib/kubelet/kubeconfig"
 
   content {
     content = data.template_file.node-kubeconfig.rendered
@@ -76,18 +76,16 @@ data "template_file" "node-kubelet-conf" {
   template = file("${path.module}/resources/node-kubelet-conf.yaml")
 
   vars = {
-    cluster_dns                       = local.cluster_dns_yaml
-    feature_gates                     = local.feature_gates_yaml_fragment
-    kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
-    system_reserved_cpu               = var.system_reserved_cpu
-    system_reserved_memory            = var.system_reserved_memory
-    use_deprecated_docker_runtime     = var.use_deprecated_docker_runtime
+    cluster_dns            = local.cluster_dns_yaml
+    feature_gates          = local.feature_gates_yaml_fragment
+    system_reserved_cpu    = var.system_reserved_cpu
+    system_reserved_memory = var.system_reserved_memory
   }
 }
 
 data "ignition_file" "node-kubelet-conf" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/node-kubelet-conf.yaml"
+  mode = 420
+  path = "/etc/kubernetes/config/node-kubelet-conf.yaml"
 
   content {
     content = data.template_file.node-kubelet-conf.rendered
@@ -125,8 +123,8 @@ data "ignition_systemd_unit" "prometheus-ro-rootfs-timer" {
 }
 
 data "ignition_file" "prometheus-ro-rootfs" {
-  mode       = 493
-  path       = "/opt/bin/prometheus-ro-rootfs"
+  mode = 493
+  path = "/opt/bin/prometheus-ro-rootfs"
 
   content {
     content = file("${path.module}/resources/prometheus-ro-rootfs")
@@ -134,7 +132,6 @@ data "ignition_file" "prometheus-ro-rootfs" {
 }
 
 module "cert-refresh-node" {
-  source                        = "./modules/cert-refresh-node"
-  on_calendar                   = var.cfssl_node_renew_timer
-  use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
+  source      = "./modules/cert-refresh-node"
+  on_calendar = var.cfssl_node_renew_timer
 }

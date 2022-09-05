@@ -4,9 +4,8 @@ data "ignition_systemd_unit" "locksmithd_master" {
 }
 
 module "cert-refresh-master" {
-  source                        = "./modules/cert-refresh-master"
-  on_calendar                   = var.cfssl_node_renew_timer
-  use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
+  source      = "./modules/cert-refresh-master"
+  on_calendar = var.cfssl_node_renew_timer
 }
 
 // Node certificate for kubelet to use as part of system:master-nodes. We need
@@ -32,8 +31,8 @@ data "template_file" "master-node-cfssl-new-cert" {
 }
 
 data "ignition_file" "master-cfssl-new-node-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-node-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-node-cert"
 
   content {
     content = data.template_file.master-node-cfssl-new-cert.rendered
@@ -59,8 +58,8 @@ data "template_file" "master-kubelet-cfssl-new-cert" {
 }
 
 data "ignition_file" "master-kubelet-cfssl-new-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-kubelet-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
     content = data.template_file.master-kubelet-cfssl-new-cert.rendered
@@ -99,8 +98,8 @@ data "template_file" "master-apiserver-cfssl-new-cert" {
 }
 
 data "ignition_file" "master-cfssl-new-apiserver-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-apiserver-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-apiserver-cert"
 
   content {
     content = data.template_file.master-apiserver-cfssl-new-cert.rendered
@@ -126,8 +125,8 @@ data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
 }
 
 data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
 
   content {
     content = data.template_file.master-apiserver-kubelet-client-cfssl-new-cert.rendered
@@ -153,8 +152,8 @@ data "template_file" "master-scheduler-cfssl-new-cert" {
 }
 
 data "ignition_file" "master-cfssl-new-scheduler-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-scheduler-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-scheduler-cert"
 
   content {
     content = data.template_file.master-scheduler-cfssl-new-cert.rendered
@@ -180,8 +179,8 @@ data "template_file" "master-controller-manager-cfssl-new-cert" {
 }
 
 data "ignition_file" "master-cfssl-new-controller-manager-cert" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-new-controller-manager-cert"
+  mode = 493
+  path = "/opt/bin/cfssl-new-controller-manager-cert"
 
   content {
     content = data.template_file.master-controller-manager-cfssl-new-cert.rendered
@@ -198,8 +197,8 @@ data "template_file" "master-cfssl-keys-and-certs-get" {
 }
 
 data "ignition_file" "master-cfssl-keys-and-certs-get" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-keys-and-certs-get"
+  mode = 493
+  path = "/opt/bin/cfssl-keys-and-certs-get"
 
   content {
     content = data.template_file.master-cfssl-keys-and-certs-get.rendered
@@ -210,11 +209,10 @@ data "template_file" "master-kubelet" {
   template = file("${path.module}/resources/master-kubelet.service")
 
   vars = {
-    kubelet_binary_path           = "/opt/bin/kubelet"
-    cloud_provider                = var.cloud_provider
-    get_hostname                  = var.node_name_command[var.cloud_provider]
-    use_deprecated_docker_runtime = var.use_deprecated_docker_runtime
-    labels                        = local.master_kubelet_labels
+    kubelet_binary_path = "/opt/bin/kubelet"
+    cloud_provider      = var.cloud_provider
+    get_hostname        = var.node_name_command[var.cloud_provider]
+    labels              = local.master_kubelet_labels
   }
 }
 
@@ -227,16 +225,14 @@ data "template_file" "master-kubelet-conf" {
   template = file("${path.module}/resources/master-kubelet-conf.yaml")
 
   vars = {
-    cluster_dns                       = local.cluster_dns_yaml
-    feature_gates                     = local.feature_gates_yaml_fragment
-    kubelet_cgroup_v2_runtime_enabled = var.kubelet_cgroup_v2_runtime_enabled
-    use_deprecated_docker_runtime     = var.use_deprecated_docker_runtime
+    cluster_dns   = local.cluster_dns_yaml
+    feature_gates = local.feature_gates_yaml_fragment
   }
 }
 
 data "ignition_file" "master-kubelet-conf" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/master-kubelet-conf.yaml"
+  mode = 420
+  path = "/etc/kubernetes/config/master-kubelet-conf.yaml"
 
   content {
     content = data.template_file.master-kubelet-conf.rendered
@@ -252,8 +248,8 @@ data "template_file" "master-kubeconfig" {
 }
 
 data "ignition_file" "kubelet-kubeconfig" {
-  mode       = 420
-  path       = "/var/lib/kubelet/kubeconfig"
+  mode = 420
+  path = "/var/lib/kubelet/kubeconfig"
 
   content {
     content = data.template_file.master-kubeconfig.rendered
@@ -269,8 +265,8 @@ data "template_file" "scheduler-kubeconfig" {
 }
 
 data "ignition_file" "scheduler-kubeconfig" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/scheduler.conf"
+  mode = 420
+  path = "/etc/kubernetes/config/scheduler.conf"
 
   content {
     content = data.template_file.scheduler-kubeconfig.rendered
@@ -286,8 +282,8 @@ data "template_file" "controller-manager-kubeconfig" {
 }
 
 data "ignition_file" "controller-manager-kubeconfig" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/controller-manager.conf"
+  mode = 420
+  path = "/etc/kubernetes/config/controller-manager.conf"
 
   content {
     content = data.template_file.controller-manager-kubeconfig.rendered
@@ -319,8 +315,8 @@ data "template_file" "kube-apiserver" {
 }
 
 data "ignition_file" "kube-apiserver" {
-  mode       = 420
-  path       = "/etc/kubernetes/manifests/kube-apiserver.yaml"
+  mode = 420
+  path = "/etc/kubernetes/manifests/kube-apiserver.yaml"
 
   content {
     content = data.template_file.kube-apiserver.rendered
@@ -332,8 +328,8 @@ data "template_file" "audit-policy" {
 }
 
 data "ignition_file" "audit-policy" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/audit-policy.yaml"
+  mode = 420
+  path = "/etc/kubernetes/config/audit-policy.yaml"
 
   content {
     content = data.template_file.audit-policy.rendered
@@ -353,8 +349,8 @@ data "template_file" "kube-controller-manager" {
 }
 
 data "ignition_file" "kube-controller-manager" {
-  mode       = 420
-  path       = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+  mode = 420
+  path = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
 
   content {
     content = data.template_file.kube-controller-manager.rendered
@@ -362,8 +358,8 @@ data "ignition_file" "kube-controller-manager" {
 }
 
 data "ignition_file" "kube-controller-conf" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/cloud_provider/cloud.conf"
+  mode = 420
+  path = "/etc/kubernetes/config/cloud_provider/cloud.conf"
 
   content {
     content = var.kube_controller_cloud_config
@@ -380,8 +376,8 @@ data "template_file" "kube-scheduler" {
 }
 
 data "ignition_file" "kube-scheduler" {
-  mode       = 420
-  path       = "/etc/kubernetes/manifests/kube-scheduler.yaml"
+  mode = 420
+  path = "/etc/kubernetes/manifests/kube-scheduler.yaml"
 
   content {
     content = data.template_file.kube-scheduler.rendered
@@ -389,8 +385,8 @@ data "ignition_file" "kube-scheduler" {
 }
 
 data "ignition_file" "kube-scheduler-config" {
-  mode       = 420
-  path       = "/etc/kubernetes/config/kube-scheduler-config.yaml"
+  mode = 420
+  path = "/etc/kubernetes/config/kube-scheduler-config.yaml"
 
   content {
     content = file("${path.module}/resources/kube-scheduler-config.yaml")
@@ -398,8 +394,8 @@ data "ignition_file" "kube-scheduler-config" {
 }
 
 data "ignition_file" "master-prom-machine-role" {
-  mode       = 420
-  path       = "/etc/prom-text-collectors/machine_role.prom"
+  mode = 420
+  path = "/etc/prom-text-collectors/machine_role.prom"
 
   content {
     content = "machine_role{role=\"master\"} 1\n"
