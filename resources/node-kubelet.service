@@ -1,12 +1,7 @@
 [Unit]
 Description=Kubernetes Kubelet
-%{ if use_deprecated_docker_runtime ~}
-Requires=docker.service
-After=docker.service
-%{ else ~}
 Requires=containerd.service
 After=containerd.service
-%{ endif ~}
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
@@ -19,15 +14,9 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
 ExecStartPre=/usr/bin/mkdir -p /var/run/calico
 ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
-# args below `--v=0` are deprecated
 ExecStart=${kubelet_binary_path} \
   --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
-%{ if use_deprecated_docker_runtime ~}
-  --container-runtime=docker \
-%{ else ~}
   --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
-  --container-runtime=remote \
-%{ endif ~}
   --exit-on-lock-contention \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
@@ -35,12 +24,9 @@ ExecStart=${kubelet_binary_path} \
   --node-labels=${labels} \
 %{ if taints != "" }  --register-with-taints=${taints} \
 %{ endif ~}
-  --v=0 \
 %{ if cloud_provider != "" }  --cloud-provider=${cloud_provider} \
 %{ endif ~}
-  --cni-bin-dir=/opt/cni/bin \
-  --cni-conf-dir=/etc/cni/net.d \
-  --network-plugin=cni
+  --v=0
 Restart=always
 RestartSec=10
 [Install]

@@ -2,19 +2,13 @@ variable "on_calendar" {
   type = string
 }
 
-variable "use_deprecated_docker_runtime" {
-  description = "Use legacy docker container runtime"
-  default     = false
-  type        = bool
-}
-
 data "ignition_systemd_unit" "cert-refresh" {
   name = "cert-refresh.service"
 
   content = <<EOS
 [Unit]
 Description=Fetch new certificates from cfssl server and restart components to reload certs
-${var.use_deprecated_docker_runtime ? "Requires=docker.service" : "Requires=containerd.service prepare-crictl.service" }
+Requires=containerd.service prepare-crictl.service
 After=network-online.target
 [Service]
 Type=oneshot
@@ -27,11 +21,11 @@ ExecStart=/opt/bin/cfssl-new-scheduler-cert
 ExecStart=/opt/bin/cfssl-new-controller-manager-cert
 # Hack to reload certs on control plane tier
 #  https://github.com/kubernetes/kubernetes/issues/46287
-ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-apiserver)" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-apiserver)"}"
+ExecStart=-/bin/sh -c "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-apiserver)"
 # Wait for apiserver to be ready before rolling the rest components. This can prevent components from spinning if apiserver is not ready. Die if this takes more than 2 minutes.
 ExecStart=/usr/bin/timeout 120 /bin/sh -c 'while [[ "$(curl --insecure -s https://localhost:443/readyz)" != "ok" ]]; do echo "apiserver not ready, waiting.."; sleep 1; done'
-ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-controller-manager" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-controller-manager)"}"
-ExecStart=-/bin/sh -c "${var.use_deprecated_docker_runtime ? "docker restart $(docker ps -q -f name=k8s_kube-scheduler)" : "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-scheduler)"}"
+ExecStart=-/bin/sh -c "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-controller-manager)"
+ExecStart=-/bin/sh -c "/opt/bin/crictl stop $(/opt/bin/crictl ps -q --label io.kubernetes.container.name=kube-scheduler)"
 ExecStart=/usr/bin/systemctl try-restart kubelet.service
 Restart=on-failure
 RestartSec=10

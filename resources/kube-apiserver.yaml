@@ -33,7 +33,6 @@ spec:
         - --oidc-username-claim=email
         - --oidc-client-id=${oidc_client_id}
         - --authorization-mode=Node,RBAC
-        - --apiserver-count=${master_instance_count}
         - --audit-policy-file=/etc/kubernetes/config/audit-policy.yaml
         - --audit-log-path=/var/log/kube-api-server/audit
         - --audit-log-maxsize=100
