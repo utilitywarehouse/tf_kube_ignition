@@ -8,8 +8,8 @@ data "ignition_file" "cfssl" {
   mode = 493
 
   source {
-    source       = "https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64"
-    verification = "sha512-a3efc1690872be4e71d8edc2f4dbf0085c64e9691eaff0aece176504766ae81176828cd783681634d1262ecc1e079707129261279f98453b654b202feeb4b467"
+    source       = "https://github.com/cloudflare/cfssl/releases/download/v${var.cfssl_version}/cfssl_${var.cfssl_version}_linux_amd64"
+    verification = var.cfssl_binary_sha512
   }
 }
 
@@ -18,8 +18,8 @@ data "ignition_file" "cfssljson" {
   mode = 493
 
   source {
-    source       = "https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64"
-    verification = "sha512-a81592c6876c9a0ed480d64b8347b7da2af7047cdf7522f47e808e64efe8635f94826350b11d129c0b22b224517a6c99622d9ceea86e79c476196c3c9333f3fe"
+    source       = "https://github.com/cloudflare/cfssl/releases/download/v${var.cfssl_version}/cfssljson_${var.cfssl_version}_linux_amd64"
+    verification = var.cfssljson_binary_sha512
   }
 }
 
