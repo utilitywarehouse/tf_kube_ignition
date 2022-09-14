@@ -211,6 +211,18 @@ variable "cfssl_server_address" {
 variable "cfssl_data_volumeid" {
 }
 
+variable "cfssl_version" {
+  default = "1.6.2"
+}
+
+variable "cfssl_binary_sha512" {
+  default = "sha512-fe56ba353efc7ee9e1fd85cf3edbbafd830b2849c846020eb123777a5059b74ad59ce94404999f239875174291ad6e4c316efa2a90d1d67e267b3ae3115f204b"
+}
+
+variable "cfssljson_binary_sha512" {
+  default = "sha512-158562204e12b03bcfe6df92e7874decd0326acb226caf3fa6525b6ced3489b5301355219dc87cab5c6e32da1d6176cd1f9bd03a08b29df8b352a867b56ff311"
+}
+
 variable "etcd_data_volumeids" {
   type = list(string)
 }
