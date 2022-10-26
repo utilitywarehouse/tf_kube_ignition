@@ -39,9 +39,13 @@ runtime_type = "io.containerd.runc.v2"
 SystemdCgroup = true
 
 # UW config
+# This format is deprecated, but its not obvious how you specify auth in the
+# new format with separate config file:
+# https://github.com/containerd/containerd/issues/4950#issuecomment-1233618524
 [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
 endpoint = ["${dockerhub_mirror_endpoint}"]
 [plugins."io.containerd.grpc.v1.cri".registry.configs."registry-1.docker.io".auth]
 auth = "${dockerhub_auth}"
+
 [debug]
 level = "${containerd_log_level}"
