@@ -3,9 +3,18 @@ data "ignition_systemd_unit" "locksmithd_etcd" {
 
   name = "locksmithd.service"
   mask = false == var.enable_container_linux_locksmithd_etcd
+}
 
-  dropin {
-    name = "10-custom-options.conf"
+# Create locksmithd dropin configuration as a separate ignition file. This can
+# be useful in cases one wants to pass a custom locksmithd service instead of
+# the one defined in this module (using `omit_locksmithd_service` variable and
+# additional ignition services as input). A variable is provided to control the
+# creation of the ignition file: `set_etcd_locksmithd_dropin_reboot_config`
+data "ignition_file" "locksmithd_etcd_dropin" {
+  count = length(var.etcd_addresses)
+  path  = "/etc/systemd/system/locksmithd.service.d/10-custom-options.conf"
+  mode  = 420
+  content {
     content = templatefile("${path.module}/resources/locksmithd-dropin.conf",
       {
         # Daily update windows, with a 1h buffer to prevent overlaps
@@ -204,6 +213,7 @@ data "ignition_config" "etcd" {
       element(data.ignition_file.etcd-cfssl-new-cert.*.rendered, count.index),
       element(data.ignition_file.etcd-restore.*.rendered, count.index),
       element(data.ignition_file.etcdctl-wrapper.*.rendered, count.index),
+      var.set_etcd_locksmithd_dropin_reboot_config ? element(data.ignition_file.locksmithd_etcd_dropin.*.rendered, count.index) : "",
     ],
     var.etcd_additional_files
   )

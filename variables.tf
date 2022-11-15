@@ -28,6 +28,11 @@ variable "omit_locksmithd_service" {
   default     = false
 }
 
+variable "set_etcd_locksmithd_dropin_reboot_config" {
+  description = "Whether to create a dropin to configure etcd locksmithd reboot windows"
+  default     = true
+}
+
 variable "omit_update_engine_service" {
   description = "Whether to omit update-engine service from ignition. It should be used when passing update-engine service as additional config to avoid ignition failures"
   default     = false
