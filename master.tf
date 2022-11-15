@@ -402,6 +402,18 @@ data "ignition_file" "master-prom-machine-role" {
   }
 }
 
+data "ignition_file" "master-prom-eviction-threshold" {
+  mode = 420
+  path = "/etc/prom-text-collectors/node_eviction_threshold.prom"
+
+  content {
+    # Default value from
+    # https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1 is
+    # 100Mi == 2^20 * 100 == 104857600
+    content = "node_eviction_threshold 104857600\n"
+  }
+}
+
 locals {
   kube_controller_additional_config = var.kube_controller_cloud_config == "" ? "" : data.ignition_file.kube-controller-conf.rendered
 }
@@ -436,6 +448,7 @@ data "ignition_config" "master" {
       data.ignition_file.master-kubelet-cfssl-new-cert.rendered,
       data.ignition_file.master-kubelet-conf.rendered,
       data.ignition_file.master-prom-machine-role.rendered,
+      data.ignition_file.master-prom-eviction-threshold.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.scheduler-kubeconfig.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
