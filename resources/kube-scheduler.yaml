@@ -9,7 +9,7 @@ spec:
   hostNetwork: true
   containers:
     - name: kube-scheduler
-      image: k8s.gcr.io/kube-scheduler:${kubernetes_version}
+      image: registry.k8s.io/kube-scheduler:${kubernetes_version}
       command:
         - kube-scheduler
         ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
