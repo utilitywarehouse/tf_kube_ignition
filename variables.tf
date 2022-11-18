@@ -68,7 +68,7 @@ variable "node_exporter_image_tag" {
 }
 
 variable "kubernetes_version" {
-  description = "Kubernetes version, used to specify k8s.gcr.io docker image version and Kubernetes binaries"
+  description = "Kubernetes version, used to specify registry.k8s.io docker image version and Kubernetes binaries"
   default     = "v1.24.4"
 }
 

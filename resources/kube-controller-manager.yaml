@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
     - name: kube-controller-manager
-      image: k8s.gcr.io/kube-controller-manager:${kubernetes_version}
+      image: registry.k8s.io/kube-controller-manager:${kubernetes_version}
       command:
         - kube-controller-manager
         ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
