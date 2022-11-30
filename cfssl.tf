@@ -27,8 +27,8 @@ data "template_file" "cfssl-client-config" {
 }
 
 data "ignition_file" "cfssl-client-config" {
-  mode       = 384
-  path       = "/etc/cfssl/config.json"
+  mode = 384
+  path = "/etc/cfssl/config.json"
 
   content {
     content = data.template_file.cfssl-client-config.rendered
@@ -54,8 +54,8 @@ data "ignition_systemd_unit" "cfssl-disk-mounter" {
 }
 
 data "ignition_file" "cfssl-ca-csr" {
-  mode       = 420
-  path       = "/etc/cfssl/ca-csr.json"
+  mode = 420
+  path = "/etc/cfssl/ca-csr.json"
 
   content {
     content = <<EOS
@@ -65,8 +65,8 @@ EOS
 }
 
 data "ignition_file" "cfssl-init-ca" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-init-ca"
+  mode = 493
+  path = "/opt/bin/cfssl-init-ca"
 
   content {
     content = file("${path.module}/resources/cfssl-init-ca.sh")
@@ -74,8 +74,8 @@ data "ignition_file" "cfssl-init-ca" {
 }
 
 data "ignition_file" "cfssl-init-proxy-pki" {
-  mode       = 493
-  path       = "/opt/bin/cfssl-init-proxy-pki"
+  mode = 493
+  path = "/opt/bin/cfssl-init-proxy-pki"
 
   content {
     content = file("${path.module}/resources/cfssl-init-proxy-pki")
@@ -83,8 +83,8 @@ data "ignition_file" "cfssl-init-proxy-pki" {
 }
 
 data "ignition_file" "cfssl-proxy-ca-csr-json" {
-  mode       = 420
-  path       = "/etc/cfssl/proxy-ca-csr.json"
+  mode = 420
+  path = "/etc/cfssl/proxy-ca-csr.json"
 
   content {
     content = file("${path.module}/resources/cfssl-proxy-ca-csr.json")
@@ -92,8 +92,8 @@ data "ignition_file" "cfssl-proxy-ca-csr-json" {
 }
 
 data "ignition_file" "cfssl-proxy-csr-json" {
-  mode       = 420
-  path       = "/etc/cfssl/proxy-csr.json"
+  mode = 420
+  path = "/etc/cfssl/proxy-csr.json"
 
   content {
     content = file("${path.module}/resources/cfssl-proxy-csr.json")
@@ -111,8 +111,8 @@ data "template_file" "cfssl-server-config" {
 }
 
 data "ignition_file" "cfssl-server-config" {
-  mode       = 384
-  path       = "/etc/cfssl/config.json"
+  mode = 384
+  path = "/etc/cfssl/config.json"
 
   content {
     content = data.template_file.cfssl-server-config.rendered
@@ -125,8 +125,8 @@ data "ignition_systemd_unit" "cfssl" {
 }
 
 data "ignition_file" "cfssl-sk-csr" {
-  mode       = 420
-  path       = "/etc/cfssl/sk-csr.json"
+  mode = 420
+  path = "/etc/cfssl/sk-csr.json"
 
   content {
     content = <<EOS
@@ -136,8 +136,8 @@ EOS
 }
 
 data "ignition_file" "cfssl-nginx-conf" {
-  mode       = 420
-  path       = "/etc/cfssl/sk-nginx.conf"
+  mode = 420
+  path = "/etc/cfssl/sk-nginx.conf"
 
   content {
     content = file("${path.module}/resources/cfssl-nginx.conf")
@@ -145,8 +145,8 @@ data "ignition_file" "cfssl-nginx-conf" {
 }
 
 data "ignition_file" "cfssl-nginx-auth" {
-  mode       = 420
-  path       = "/etc/cfssl/sk-nginx.htpasswd"
+  mode = 420
+  path = "/etc/cfssl/sk-nginx.htpasswd"
 
   // it's okay to use PLAIN below since the only thing that this password
   // safeguards is the signing key which is present on the server anyway
@@ -176,6 +176,15 @@ module "cfssl-restarter" {
   on_calendar  = "*-*-* 00:00:00"
 }
 
+data "ignition_file" "cfssl-prom-machine-role" {
+  mode = 420
+  path = "/etc/prom-text-collectors/machine_role.prom"
+
+  content {
+    content = "machine_role{role=\"cfssl\"} 1\n"
+  }
+}
+
 data "ignition_config" "cfssl" {
   files = concat(
     [
@@ -185,6 +194,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.cfssl-init-proxy-pki.rendered,
       data.ignition_file.cfssl-nginx-auth.rendered,
       data.ignition_file.cfssl-nginx-conf.rendered,
+      data.ignition_file.cfssl-prom-machine-role.rendered,
       data.ignition_file.cfssl-proxy-ca-csr-json.rendered,
       data.ignition_file.cfssl-proxy-csr-json.rendered,
       data.ignition_file.cfssl-server-config.rendered,
