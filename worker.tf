@@ -37,6 +37,10 @@ data "ignition_systemd_unit" "prometheus-machine-role-worker" {
 
 // data.ignition_file.worker-prom-machine-role.rendered,
 data "ignition_config" "worker" {
+  filesystems = [
+    var.force_boot_reprovisioning ? data.ignition_filesystem.wiped_root.rendered : "",
+  ]
+
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
@@ -74,6 +78,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.worker-kubelet.rendered,
       !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_worker.rendered : "",
       !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
+      var.force_boot_reprovisioning ? data.ignition_systemd_unit.flatcar_first_boot.rendered : "",
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units

@@ -407,6 +407,10 @@ locals {
 }
 
 data "ignition_config" "master" {
+  filesystems = [
+    var.force_boot_reprovisioning ? data.ignition_filesystem.wiped_root.rendered : "",
+  ]
+
   files = concat(
     [
       data.ignition_file.audit-policy.rendered,
@@ -453,6 +457,7 @@ data "ignition_config" "master" {
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_master.rendered : "",
       !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
+      var.force_boot_reprovisioning ? data.ignition_systemd_unit.flatcar_first_boot.rendered : "",
     ],
     module.cert-refresh-master.systemd_units,
     var.master_additional_systemd_units,

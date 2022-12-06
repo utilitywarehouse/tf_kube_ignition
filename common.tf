@@ -195,3 +195,32 @@ user.max_user_namespaces=0
 EOS
   }
 }
+
+# `touch` /boot/flatcar/first_boot to trigger ignition to run every time
+# https://flatcar-linux.org/docs/latest/provisioning/ignition/boot-process/#reprovisioning
+# Can be useful for case where we want reprovisioning after every boot
+data "ignition_systemd_unit" "flatcar_first_boot" {
+  name    = "ensure-flatcar-first-boot.service"
+  content = <<EOS
+[Unit]
+Description=touch /boot/flatcar/first_boot to trigger new ignition run on reboot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/touch /boot/flatcar/first_boot
+RemainAfterExit=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOS
+}
+
+# Specifies a root filesystem where we wipe the device before filesystem
+# creation. Could be useful when reprovisioning ignition on the same node.
+data "ignition_filesystem" "wiped_root" {
+  device          = "/dev/disk/by-partlabel/ROOT"
+  format          = "ext4"
+  wipe_filesystem = true
+  label           = "ROOT"
+}

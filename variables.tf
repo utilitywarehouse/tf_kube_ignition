@@ -23,6 +23,11 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
+variable "force_boot_reprovisioning" {
+  description = "Force a new Ignition run on every reboot and wipe root filesystem"
+  default     = false
+}
+
 variable "omit_locksmithd_service" {
   description = "Whether to omit locksmithd service from ignition. It should be used when passing locksmithd service as additional config to avoid ignition failures"
   default     = false
