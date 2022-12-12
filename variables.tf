@@ -283,6 +283,16 @@ variable "system_reserved_memory" {
   default     = "2Gi"
 }
 
+variable "eviction_threshold_memory_soft" {
+  description = "Amount of available memory that triggers soft eviction. In bytes to facilitate exporting it as metric"
+  default     = "2147483648" # 2Gi(2^31 bytes)
+}
+
+variable "eviction_threshold_memory_hard" {
+  description = "Amount of available memory that triggers hard eviction. In bytes to facilitate exporting it as metric"
+  default     = "1073741824" # 1Gi(2^30 bytes)
+}
+
 variable "containerd_no_shim" {
   description = "Do not user containerd shim, only used for live restore which we don't use"
   default     = false

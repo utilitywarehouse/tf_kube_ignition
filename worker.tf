@@ -34,6 +34,14 @@ data "ignition_systemd_unit" "prometheus-machine-role-worker" {
   content = data.template_file.prometheus-machine-role-worker.rendered
 }
 
+data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
+  name = "prometheus-eviction-threshold.service"
+  content = templatefile("${path.module}/resources/prometheus-eviction-threshold.service",
+    {
+      value = var.eviction_threshold_memory_soft > var.eviction_threshold_memory_hard ? var.eviction_threshold_memory_soft : var.eviction_threshold_memory_hard
+    }
+  )
+}
 
 // data.ignition_file.worker-prom-machine-role.rendered,
 data "ignition_config" "worker" {
@@ -67,6 +75,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
+      data.ignition_systemd_unit.prometheus-eviction-threshold-worker.rendered,
       data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
       data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
       data.ignition_systemd_unit.prometheus-ro-rootfs.rendered,

@@ -76,10 +76,12 @@ data "template_file" "node-kubelet-conf" {
   template = file("${path.module}/resources/node-kubelet-conf.yaml")
 
   vars = {
-    cluster_dns            = local.cluster_dns_yaml
-    feature_gates          = local.feature_gates_yaml_fragment
-    system_reserved_cpu    = var.system_reserved_cpu
-    system_reserved_memory = var.system_reserved_memory
+    cluster_dns                    = local.cluster_dns_yaml
+    feature_gates                  = local.feature_gates_yaml_fragment
+    system_reserved_cpu            = var.system_reserved_cpu
+    system_reserved_memory         = var.system_reserved_memory
+    eviction_threshold_memory_soft = var.eviction_threshold_memory_soft
+    eviction_threshold_memory_hard = var.eviction_threshold_memory_hard
   }
 }
 
