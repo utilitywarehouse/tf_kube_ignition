@@ -265,7 +265,9 @@ variable "feature_gates" {
   #   "PodShareProcessNamespace"  = "true"
   # }
   # ```
-  default = {}
+  default = {
+    "TopologyAwareHints" : "true"
+  }
 }
 
 variable "admission_plugins" {
