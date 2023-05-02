@@ -121,16 +121,27 @@ data "ignition_file" "kubelet-docker-config" {
   }
 }
 
+data "ignition_file" "containerd_dockerio_hosts_toml" {
+  path = "/etc/containerd/certs.d/docker.io/hosts.toml"
+  mode = 384
+  content {
+    content = templatefile("${path.module}/resources/docker.io_hosts.toml",
+      {
+        dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+      }
+    )
+  }
+}
+
 data "ignition_file" "containerd-config" {
   path = "/etc/containerd/config.toml"
   mode = 384
   content {
     content = templatefile("${path.module}/resources/containerd-config.toml",
       {
-        containerd_log_level      = var.containerd_log_level
-        containerd_no_shim        = tostring(var.containerd_no_shim)
-        dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
-        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+        containerd_log_level = var.containerd_log_level
+        containerd_no_shim   = tostring(var.containerd_no_shim)
       }
     )
   }
