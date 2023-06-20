@@ -300,7 +300,7 @@ variable "containerd_no_shim" {
 }
 
 locals {
-  component_cloud_provider = var.cloud_provider == "aws" ? "external" : var.cloud_provider
+  component_cloud_provider = can(regex("aws|gce", var.cloud_provider)) ? "external" : var.cloud_provider
 
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
