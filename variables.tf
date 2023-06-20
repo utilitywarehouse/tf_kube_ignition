@@ -168,7 +168,9 @@ variable "master_additional_files" {
 variable "master_additional_labels" {
   description = "Map of additional labels to append to role=master in the respective master nodes kubelet flag."
   type        = map(string)
-  default     = {}
+  default     = {
+    kube-controller-manager-mode = "enable-leader-migration" # temporary workaround to help scheduling controllers
+  }
 }
 
 
