@@ -19,6 +19,7 @@ spec:
         - --authorization-kubeconfig=/etc/kubernetes/config/controller-manager.conf
         - --cluster-cidr=${pod_network}
         - --configure-cloud-routes=false
+        - --enable-leader-migration=true
         - --kubeconfig=/etc/kubernetes/config/controller-manager.conf
         - --leader-elect=true
         - --node-monitor-grace-period=120s
