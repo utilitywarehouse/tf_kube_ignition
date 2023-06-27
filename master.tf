@@ -210,7 +210,7 @@ data "template_file" "master-kubelet" {
 
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = var.cloud_provider
+    cloud_provider      = local.component_cloud_provider
     get_hostname        = var.node_name_command[var.cloud_provider]
     labels              = local.master_kubelet_labels
   }
@@ -299,7 +299,6 @@ data "template_file" "kube-apiserver" {
     service_network       = var.service_network
     master_address        = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
     master_instance_count = var.master_instance_count
-    cloud_provider        = var.cloud_provider
     oidc_issuer_url       = var.oidc_issuer_url
     oidc_client_id        = var.oidc_client_id
     feature_gates         = local.feature_gates_csv
@@ -341,7 +340,6 @@ data "template_file" "kube-controller-manager" {
 
   vars = {
     kubernetes_version = var.kubernetes_version
-    cloud_provider     = var.cloud_provider
     cloud_config       = var.kube_controller_cloud_config
     pod_network        = var.pod_network
     feature_gates      = local.feature_gates_csv

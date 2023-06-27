@@ -74,7 +74,7 @@ variable "node_exporter_image_tag" {
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify registry.k8s.io docker image version and Kubernetes binaries"
-  default     = "v1.26.3"
+  default     = "v1.27.2"
 }
 
 variable "cluster_dns" {
@@ -300,6 +300,8 @@ variable "containerd_no_shim" {
 }
 
 locals {
+  component_cloud_provider = can(regex("aws|gce", var.cloud_provider)) ? "external" : var.cloud_provider
+
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
   feature_gates_csv = join(",", formatlist("%s=%s", keys(var.feature_gates), values(var.feature_gates)))
@@ -318,7 +320,7 @@ locals {
   # cluster_dns list formatted for KubeletConfiguration yaml
   #
   # example:
-  #  clusterDNS: ${cluster_dns}
+  #  clusterDNS:${cluster_dns}
   #  ...
   #  clusterDNS:
   #    - "169.254.20.10"

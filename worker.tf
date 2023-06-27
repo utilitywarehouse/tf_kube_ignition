@@ -8,10 +8,9 @@ data "template_file" "worker-kubelet" {
 
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = var.cloud_provider
+    cloud_provider      = local.component_cloud_provider
     get_hostname        = var.node_name_command[var.cloud_provider]
     labels              = local.worker_kubelet_labels
-    taints              = ""
   }
 }
 
