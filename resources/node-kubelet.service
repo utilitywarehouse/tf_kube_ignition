@@ -14,6 +14,8 @@ ExecStartPre=/usr/bin/mkdir -p /var/lib/cni
 ExecStartPre=/usr/bin/mkdir -p /etc/cni/net.d
 ExecStartPre=/usr/bin/mkdir -p /var/run/calico
 ExecStartPre=/usr/bin/mkdir -p /var/lib/calico
+# --cloud-provider flag is required. the deprecation warning is misleading
+# https://kubernetes.io/docs/tasks/administer-cluster/running-cloud-controller
 ExecStart=${kubelet_binary_path} \
   ${cloud_provider == "" ? "" : "--cloud-provider=${cloud_provider}"} \
   --config=/etc/kubernetes/config/node-kubelet-conf.yaml \
