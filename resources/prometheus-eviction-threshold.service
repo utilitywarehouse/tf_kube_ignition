@@ -1,0 +1,10 @@
+[Unit]
+Description=Add the node_eviction_threshold static metric to prometheus
+After=prometheus-tmpfs-dir.service
+Requires=prometheus-tmpfs-dir.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'echo node_eviction_threshold "${value}" > /etc/prom-text-collectors/node_eviction_threshold.prom'
+[Install]
+WantedBy=multi-user.target

@@ -12,7 +12,6 @@ spec:
       command:
         - kube-controller-manager
         ${cloud_config == "" ? "" : "- --cloud-config=/etc/kubernetes/config/cloud_provider/cloud.conf"}
-        ${cloud_provider == "" ? "" : "- --cloud-provider=${cloud_provider}"}
         ${feature_gates == "" ? "" : "- --feature-gates=${feature_gates}"}
         - --allocate-node-cidrs=true
         - --authentication-kubeconfig=/etc/kubernetes/config/controller-manager.conf

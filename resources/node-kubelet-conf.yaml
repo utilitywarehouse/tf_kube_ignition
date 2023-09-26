@@ -15,25 +15,43 @@ cgroupDriver: systemd
 clusterDNS:${cluster_dns}
 clusterDomain: "cluster.local"
 ${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
+containerRuntimeEndpoint: "unix:///run/containerd/containerd.sock"
+cpuManagerPolicy: "static"
 serializeImagePulls: false
 staticPodPath: "/etc/kubernetes/manifests"
 tlsCertFile: "/etc/kubernetes/ssl/kubelet.pem"
 tlsPrivateKeyFile: "/etc/kubernetes/ssl/kubelet-key.pem"
+
 # Point kubelet to the "real" resolv.conf to avoid loopback addresses that will
 # be detected as a loop via CoreDNS https://coredns.io/plugins/loop/#troubleshooting
 # Flatcar discussion around the issue: https://github.com/flatcar-linux/Flatcar/issues/285
 resolvConf: "/run/systemd/resolve/resolv.conf"
 
-# Resource allocation
-cpuManagerPolicy: "static"
+# Resource allocation & Eviction behaviour
+# References:
+#   * https://kubernetes.io/docs/concepts/scheduling-eviction/node-pressure-eviction/
+#   * https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/
+# Relevant Notes:
+#   * "Reserved" values only affect the scheduling capacity, but do not affect
+#     memory pressure and pod eviction triggers
+#   * Allocatable = Node Capacity - Kube Reserved - System Reserved - Hard
+#     Eviction Threshold
+#   * Memory pressure when Available memory < Soft Eviction Threshold
+#   * Available memory = Node Capacity - Memory Working Set(value from
+#     kubelet's `/metrics/resource`)
+#   * Resources reserved as eviction thresholds are only ever used as buffer
+#     while evictions happen, so they are guaranteed unused resources
+#   * Hard evictions have no grace period. Soft evictions have capped max grace
+#     period, so it won't allow beffier pods like databases to gracefully shut
+#     down
 systemReserved:
   cpu: "${system_reserved_cpu}"
   memory: "${system_reserved_memory}"
 evictionHard:
-  memory.available: "1Gi"
+  memory.available: "${eviction_threshold_memory_hard}"
   nodefs.available: "2Gi"
 evictionSoft:
-  memory.available: "2Gi"
+  memory.available: "${eviction_threshold_memory_soft}"
   nodefs.available: "4Gi"
 evictionSoftGracePeriod:
   memory.available: "1m"
