@@ -196,9 +196,9 @@ EOS
   }
 }
 
-# `touch` /boot/flatcar/first_boot to trigger ignition to run every time
+# `touch` /boot/flatcar/first_boot to trigger ignition to run every time:
 # https://flatcar-linux.org/docs/latest/provisioning/ignition/boot-process/#reprovisioning
-# Can be useful for case where we want reprovisioning after every boot
+# Useful when we want to fetch ignition updates during boot.
 data "ignition_systemd_unit" "flatcar_first_boot" {
   name    = "ensure-flatcar-first-boot.service"
   content = <<EOS
@@ -217,8 +217,9 @@ EOS
 }
 
 # Specifies a root filesystem where we wipe the device before filesystem
-# creation. Could be useful when reprovisioning ignition on the same node.
-data "ignition_filesystem" "wiped_root" {
+# creation. When combined with ignition reprovisioning it can give us "fresh"
+# nodes on reboot.
+data "ignition_filesystem" "root_wipe_filesystem" {
   device          = "/dev/disk/by-partlabel/ROOT"
   format          = "ext4"
   wipe_filesystem = true

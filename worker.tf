@@ -45,7 +45,7 @@ data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
 // data.ignition_file.worker-prom-machine-role.rendered,
 data "ignition_config" "worker" {
   filesystems = [
-    var.force_boot_reprovisioning ? data.ignition_filesystem.wiped_root.rendered : "",
+    var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
   ]
 
   files = concat(
