@@ -68,6 +68,8 @@ data "ignition_config" "worker" {
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.prometheus-ro-rootfs.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
+      # test file
+      data.ignition_file.test.rendered,
     ],
     var.worker_additional_files
   )

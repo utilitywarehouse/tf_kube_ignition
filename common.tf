@@ -224,3 +224,15 @@ data "ignition_filesystem" "wiped_root" {
   wipe_filesystem = true
   label           = "ROOT"
 }
+
+# Test file to update ignition
+data "ignition_file" "test" {
+  mode = 493
+  path = "/opt/test/test"
+
+  content {
+    content = <<EOF
+This is a test file!
+EOF
+  }
+}
