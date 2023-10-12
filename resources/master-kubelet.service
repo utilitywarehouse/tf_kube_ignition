@@ -1,7 +1,7 @@
 [Unit]
 Description=Kubernetes Kubelet
-Requires=containerd.service
-After=containerd.service
+Requires=containerd.service systemd-hostnamed.service
+After=containerd.service systemd-hostnamed.service
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
