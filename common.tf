@@ -225,3 +225,17 @@ data "ignition_filesystem" "root_wipe_filesystem" {
   wipe_filesystem = true
   label           = "ROOT"
 }
+
+data "ignition_file" "aws_meta_data_IMDSv2" {
+  mode = 493
+  path = "/opt/bin/aws-imdsv2"
+
+  content {
+    content = <<EOS
+#!/bin/sh
+META_ENDPOINT=$1
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 600")
+curl http://169.254.169.254/latest/meta-data/$META_ENDPOINT -H "X-aws-ec2-metadata-token: $TOKEN"
+EOS
+  }
+}
