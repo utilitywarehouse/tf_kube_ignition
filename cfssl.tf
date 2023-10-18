@@ -188,6 +188,7 @@ data "ignition_file" "cfssl-prom-machine-role" {
 data "ignition_config" "cfssl" {
   files = concat(
     [
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-ca-csr.rendered,
       data.ignition_file.cfssl-init-ca.rendered,

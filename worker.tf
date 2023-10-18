@@ -50,6 +50,7 @@ data "ignition_config" "worker" {
 
   files = concat(
     [
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-client-config.rendered,
       data.ignition_file.cfssl.rendered,
