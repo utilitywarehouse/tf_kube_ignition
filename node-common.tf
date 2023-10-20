@@ -101,36 +101,8 @@ data "template_file" "prometheus-tmpfs-dir" {
 
 data "ignition_systemd_unit" "prometheus-tmpfs-dir" {
   name    = "prometheus-tmpfs-dir.service"
-  enabled = false # not enabled because this service is started by prometheus-ro-rootfs.timer
+  enabled = false # not enabled because this service is started by other services
   content = data.template_file.prometheus-tmpfs-dir.rendered
-}
-
-data "template_file" "prometheus-ro-rootfs" {
-  template = file("${path.module}/resources/prometheus-ro-rootfs.service")
-}
-
-data "ignition_systemd_unit" "prometheus-ro-rootfs" {
-  name    = "prometheus-ro-rootfs.service"
-  enabled = false # not enabled because this service is started by prometheus-ro-rootfs.timer
-  content = data.template_file.prometheus-ro-rootfs.rendered
-}
-
-data "template_file" "prometheus-ro-rootfs-timer" {
-  template = file("${path.module}/resources/prometheus-ro-rootfs.timer")
-}
-
-data "ignition_systemd_unit" "prometheus-ro-rootfs-timer" {
-  name    = "prometheus-ro-rootfs.timer"
-  content = data.template_file.prometheus-ro-rootfs-timer.rendered
-}
-
-data "ignition_file" "prometheus-ro-rootfs" {
-  mode = 493
-  path = "/opt/bin/prometheus-ro-rootfs"
-
-  content {
-    content = file("${path.module}/resources/prometheus-ro-rootfs")
-  }
 }
 
 module "cert-refresh-node" {
