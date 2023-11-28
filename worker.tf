@@ -67,7 +67,6 @@ data "ignition_config" "worker" {
       data.ignition_file.node-kubelet-cfssl-new-cert.rendered,
       data.ignition_file.node-kubelet-conf.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
-      data.ignition_file.prometheus-ro-rootfs.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
     ],
     var.worker_additional_files
@@ -81,8 +80,6 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       data.ignition_systemd_unit.prometheus-eviction-threshold-worker.rendered,
       data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
-      data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
-      data.ignition_systemd_unit.prometheus-ro-rootfs.rendered,
       data.ignition_systemd_unit.prometheus-tmpfs-dir.rendered,
       data.ignition_systemd_unit.worker-kubelet.rendered,
       !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_worker.rendered : "",
