@@ -298,12 +298,6 @@ variable "eviction_threshold_memory_hard" {
   default     = "1073741824" # 1Gi(2^30 bytes)
 }
 
-variable "containerd_no_shim" {
-  description = "Do not user containerd shim, only used for live restore which we don't use"
-  default     = false
-  type        = bool
-}
-
 locals {
   component_cloud_provider = can(regex("aws|gce", var.cloud_provider)) ? "external" : var.cloud_provider
 
