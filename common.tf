@@ -128,7 +128,6 @@ data "ignition_file" "containerd-config" {
     content = templatefile("${path.module}/resources/containerd-config.toml",
       {
         containerd_log_level      = var.containerd_log_level
-        containerd_no_shim        = tostring(var.containerd_no_shim)
         dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
         dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
       }
