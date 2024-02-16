@@ -8,10 +8,9 @@ data "template_file" "worker-kubelet" {
 
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = var.cloud_provider
+    cloud_provider      = local.component_cloud_provider
     get_hostname        = var.node_name_command[var.cloud_provider]
     labels              = local.worker_kubelet_labels
-    taints              = ""
   }
 }
 
@@ -45,8 +44,13 @@ data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
 
 // data.ignition_file.worker-prom-machine-role.rendered,
 data "ignition_config" "worker" {
+  filesystems = [
+    var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
+  ]
+
   files = concat(
     [
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-client-config.rendered,
       data.ignition_file.cfssl.rendered,
@@ -64,7 +68,6 @@ data "ignition_config" "worker" {
       data.ignition_file.node-kubelet-cfssl-new-cert.rendered,
       data.ignition_file.node-kubelet-conf.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
-      data.ignition_file.prometheus-ro-rootfs.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
     ],
     var.worker_additional_files
@@ -78,12 +81,11 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       data.ignition_systemd_unit.prometheus-eviction-threshold-worker.rendered,
       data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
-      data.ignition_systemd_unit.prometheus-ro-rootfs-timer.rendered,
-      data.ignition_systemd_unit.prometheus-ro-rootfs.rendered,
       data.ignition_systemd_unit.prometheus-tmpfs-dir.rendered,
       data.ignition_systemd_unit.worker-kubelet.rendered,
       !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_worker.rendered : "",
       !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
+      var.force_boot_reprovisioning ? data.ignition_systemd_unit.flatcar_first_boot.rendered : "",
     ],
     module.cert-refresh-node.systemd_units,
     var.worker_additional_systemd_units

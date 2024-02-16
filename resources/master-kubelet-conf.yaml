@@ -15,6 +15,12 @@ cgroupDriver: systemd
 clusterDNS:${cluster_dns}
 clusterDomain: "cluster.local"
 ${feature_gates == "" ? "" : "featureGates:\n  ${feature_gates}"}
+containerRuntimeEndpoint: "unix:///run/containerd/containerd.sock"
+registerWithTaints:
+  - key: "node-role.kubernetes.io/master"
+    effect: "NoSchedule"
+  - key: "node-role.kubernetes.io/control-plane"
+    effect: "NoSchedule"
 serializeImagePulls: false
 staticPodPath: "/etc/kubernetes/manifests"
 tlsCertFile: "/etc/kubernetes/ssl/kubelet.pem"

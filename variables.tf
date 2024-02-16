@@ -23,6 +23,11 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
+variable "force_boot_reprovisioning" {
+  description = "Force a new Ignition run on every reboot and wipe root filesystem"
+  default     = false
+}
+
 variable "omit_locksmithd_service" {
   description = "Whether to omit locksmithd service from ignition. It should be used when passing locksmithd service as additional config to avoid ignition failures"
   default     = false
@@ -54,7 +59,7 @@ variable "etcd_image_url" {
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.5.7"
+  default     = "v3.5.12"
 }
 
 variable "etcd_data_dir" {
@@ -69,12 +74,12 @@ variable "node_exporter_image_url" {
 
 variable "node_exporter_image_tag" {
   description = "The version of the node_exporter image to use."
-  default     = "v1.3.1"
+  default     = "v1.6.0"
 }
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify registry.k8s.io docker image version and Kubernetes binaries"
-  default     = "v1.26.3"
+  default     = "v1.29.0"
 }
 
 variable "cluster_dns" {
@@ -293,13 +298,9 @@ variable "eviction_threshold_memory_hard" {
   default     = "1073741824" # 1Gi(2^30 bytes)
 }
 
-variable "containerd_no_shim" {
-  description = "Do not user containerd shim, only used for live restore which we don't use"
-  default     = false
-  type        = bool
-}
-
 locals {
+  component_cloud_provider = can(regex("aws|gce", var.cloud_provider)) ? "external" : var.cloud_provider
+
   # Comma separated list for cli flas use, example output:
   # `ExpandPersistentVolumes=true,PodShareProcessNamespace=true,AdvancedAuditing=false`
   feature_gates_csv = join(",", formatlist("%s=%s", keys(var.feature_gates), values(var.feature_gates)))
@@ -318,7 +319,7 @@ locals {
   # cluster_dns list formatted for KubeletConfiguration yaml
   #
   # example:
-  #  clusterDNS: ${cluster_dns}
+  #  clusterDNS:${cluster_dns}
   #  ...
   #  clusterDNS:
   #    - "169.254.20.10"

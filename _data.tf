@@ -3,7 +3,7 @@ variable "node_name_command" {
 
   default = {
     ""    = "hostname -f"
-    "aws" = "curl -s http://169.254.169.254/latest/meta-data/local-hostname"
+    "aws" = "/opt/bin/aws-imdsv2 local-hostname"
     "gce" = "curl -s http://metadata.google.internal/computeMetadata/v1/instance/hostname -H Metadata-Flavor:Google"
   }
 }
@@ -13,7 +13,7 @@ variable "get_ip_command" {
 
   default = {
     ""    = "ip route get 1.2.3.4 | head  -n 1 | awk '{print $7}'"
-    "aws" = "curl -s http://169.254.169.254/latest/meta-data/local-ipv4"
+    "aws" = "/opt/bin/aws-imdsv2 local-ipv4"
     "gce" = "curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip -H Metadata-Flavor:Google"
   }
 }

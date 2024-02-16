@@ -210,7 +210,7 @@ data "template_file" "master-kubelet" {
 
   vars = {
     kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = var.cloud_provider
+    cloud_provider      = local.component_cloud_provider
     get_hostname        = var.node_name_command[var.cloud_provider]
     labels              = local.master_kubelet_labels
   }
@@ -299,7 +299,6 @@ data "template_file" "kube-apiserver" {
     service_network       = var.service_network
     master_address        = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
     master_instance_count = var.master_instance_count
-    cloud_provider        = var.cloud_provider
     oidc_issuer_url       = var.oidc_issuer_url
     oidc_client_id        = var.oidc_client_id
     feature_gates         = local.feature_gates_csv
@@ -341,7 +340,6 @@ data "template_file" "kube-controller-manager" {
 
   vars = {
     kubernetes_version = var.kubernetes_version
-    cloud_provider     = var.cloud_provider
     cloud_config       = var.kube_controller_cloud_config
     pod_network        = var.pod_network
     feature_gates      = local.feature_gates_csv
@@ -419,8 +417,13 @@ locals {
 }
 
 data "ignition_config" "master" {
+  filesystems = [
+    var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
+  ]
+
   files = concat(
     [
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.audit-policy.rendered,
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-client-config.rendered,
@@ -467,6 +470,7 @@ data "ignition_config" "master" {
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_master.rendered : "",
       !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
+      var.force_boot_reprovisioning ? data.ignition_systemd_unit.flatcar_first_boot.rendered : "",
     ],
     module.cert-refresh-master.systemd_units,
     var.master_additional_systemd_units,

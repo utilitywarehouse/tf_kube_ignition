@@ -141,7 +141,6 @@ data "ignition_file" "containerd-config" {
     content = templatefile("${path.module}/resources/containerd-config.toml",
       {
         containerd_log_level = var.containerd_log_level
-        containerd_no_shim   = tostring(var.containerd_no_shim)
       }
     )
   }
@@ -203,6 +202,50 @@ fs.inotify.max_user_watches=1048576
 fs.inotify.max_user_instances=8192
 vm.max_map_count=524288
 user.max_user_namespaces=0
+EOS
+  }
+}
+
+# `touch` /boot/flatcar/first_boot to trigger ignition to run every time:
+# https://flatcar-linux.org/docs/latest/provisioning/ignition/boot-process/#reprovisioning
+# Useful when we want to fetch ignition updates during boot.
+data "ignition_systemd_unit" "flatcar_first_boot" {
+  name    = "ensure-flatcar-first-boot.service"
+  content = <<EOS
+[Unit]
+Description=touch /boot/flatcar/first_boot to trigger new ignition run on reboot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/touch /boot/flatcar/first_boot
+RemainAfterExit=true
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOS
+}
+
+# Specifies a root filesystem where we wipe the device before filesystem
+# creation. When combined with ignition reprovisioning it can give us "fresh"
+# nodes on reboot.
+data "ignition_filesystem" "root_wipe_filesystem" {
+  device          = "/dev/disk/by-partlabel/ROOT"
+  format          = "ext4"
+  wipe_filesystem = true
+  label           = "ROOT"
+}
+
+data "ignition_file" "aws_meta_data_IMDSv2" {
+  mode = 493
+  path = "/opt/bin/aws-imdsv2"
+
+  content {
+    content = <<EOS
+#!/bin/sh
+META_ENDPOINT=$1
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 600")
+curl http://169.254.169.254/latest/meta-data/$META_ENDPOINT -H "X-aws-ec2-metadata-token: $TOKEN"
 EOS
   }
 }
