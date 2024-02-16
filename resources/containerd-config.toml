@@ -42,5 +42,11 @@ SystemdCgroup = true
 [plugins."io.containerd.grpc.v1.cri".registry]
 config_path = "/etc/containerd/certs.d"
 
+# Working way to authenticate against docker hub
+# https://github.com/containerd/containerd/pull/8614/files
+[plugins."io.containerd.grpc.v1.cri".registry.configs."registry-1.docker.io".auth]
+  username = "${dockerhub_username}"
+  password = "${dockerhub_password}"
+
 [debug]
 level = "${containerd_log_level}"
