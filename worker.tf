@@ -56,6 +56,7 @@ data "ignition_config" "worker" {
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
+      data.ignition_file.containerd_dockerio_hosts_toml.rendered,
       data.ignition_file.crictl-config.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.docker_daemon_json.rendered,
