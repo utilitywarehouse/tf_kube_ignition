@@ -237,16 +237,8 @@ variable "etcd_data_volumeids" {
   type = list(string)
 }
 
-# Our legacy workaround was to use the default docker daemon bridge address here
-# (172.17.0.1) to address registry mirror. Ideally we would use localhost, but
-# there is a bug with IPVS and using localhost:<nodeport> ::
-# https://github.com/kubernetes/kubernetes/issues/67730
-# Since Flatcar 3815.2.0 the docker bridge interface is not present by default.
-# Thus we should use this variable to pass a ClusterIP address where the
-# registry mirror will be accessible.
 variable "dockerhub_mirror_endpoint" {
   description = "DockerHub mirror endpoint"
-  default     = "http://172.17.0.1:30001"
 }
 
 variable "dockerhub_username" {
