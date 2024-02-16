@@ -13,5 +13,3 @@ server = "https://docker.io"
 # > the hosts are tried first in the order listed
 [host."https://registry-1.docker.io"]
   capabilities = ["pull", "resolve"]
-  [host."https://registry-1.docker.io".header]
-    Authorization = "Basic ${dockerhub_auth}"
