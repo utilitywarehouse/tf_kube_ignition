@@ -203,6 +203,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
+      data.ignition_file.containerd_dockerio_hosts_toml_no_mirror.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,

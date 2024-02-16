@@ -205,6 +205,7 @@ data "ignition_config" "etcd" {
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
+      data.ignition_file.containerd_dockerio_hosts_toml_no_mirror.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.etcd-prom-machine-role.rendered,
       data.ignition_file.etcd.rendered,

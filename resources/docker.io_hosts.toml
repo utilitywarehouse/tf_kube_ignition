@@ -1,0 +1,17 @@
+server = "https://docker.io"
+
+%{ if use_mirror }
+# Set mirror if endpoint is specified. It will be empty for ETCD and CFSSL
+[host."${dockerhub_mirror_endpoint}"]
+  capabilities = ["pull", "resolve"]
+  skip_verify = true
+%{ endif }
+
+# Fallback in case registry-mirror is down
+#
+# https://github.com/containerd/containerd/blob/main/docs/hosts.md#server-field
+# > the hosts are tried first in the order listed
+[host."https://registry-1.docker.io"]
+  capabilities = ["pull", "resolve"]
+  [host."https://registry-1.docker.io".header]
+    Authorization = "Basic ${dockerhub_auth}"
