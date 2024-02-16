@@ -1,8 +1,11 @@
 server = "https://docker.io"
 
+%{ if use_mirror }
+# Set mirror if endpoint is specified. It will be empty for ETCD and CFSSL
 [host."${dockerhub_mirror_endpoint}"]
   capabilities = ["pull", "resolve"]
   skip_verify = true
+%{ endif }
 
 # Fallback in case registry-mirror is down
 #

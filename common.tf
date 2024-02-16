@@ -129,6 +129,21 @@ data "ignition_file" "containerd_dockerio_hosts_toml" {
       {
         dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
         dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+        use_mirror                = true
+      }
+    )
+  }
+}
+
+data "ignition_file" "containerd_dockerio_hosts_toml_no_mirror" {
+  path = "/etc/containerd/certs.d/docker.io/hosts.toml"
+  mode = 384
+  content {
+    content = templatefile("${path.module}/resources/docker.io_hosts.toml",
+      {
+        dockerhub_auth            = base64encode("${var.dockerhub_username}:${var.dockerhub_password}"),
+        dockerhub_mirror_endpoint = var.dockerhub_mirror_endpoint,
+        use_mirror                = false
       }
     )
   }
