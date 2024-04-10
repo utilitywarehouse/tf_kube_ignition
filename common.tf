@@ -141,8 +141,8 @@ data "ignition_file" "containerd-config" {
     content = templatefile("${path.module}/resources/containerd-config.toml",
       {
         containerd_log_level = var.containerd_log_level
-        dockerhub_username = var.dockerhub_username
-        dockerhub_password = var.dockerhub_password
+        dockerhub_username   = var.dockerhub_username
+        dockerhub_password   = var.dockerhub_password
       }
     )
   }
@@ -192,8 +192,10 @@ data "ignition_file" "kubernetes_accounting_config" {
 # Same approach also mentioned here:
 # https://github.com/kubernetes/kubernetes/issues/64315#issuecomment-904103310
 #
-# vm.max_map_count=524288 adjusted for partner kafkas, which exceeded the
-# previous limit.
+# vm.max_map_count=1048576 :: higher value is needed by Partner Kafka, but also
+# matching Fedora + Arch Linux upstream:
+# - https://fedoraproject.org/wiki/Changes/IncreaseVmMaxMapCount
+# - https://archlinux.org/news/increasing-the-default-vmmax_map_count-value/
 data "ignition_file" "sysctl_kernel_vars" {
   mode = 420
   path = "/etc/sysctl.d/kernel.conf"
@@ -202,7 +204,7 @@ data "ignition_file" "sysctl_kernel_vars" {
     content = <<EOS
 fs.inotify.max_user_watches=1048576
 fs.inotify.max_user_instances=8192
-vm.max_map_count=524288
+vm.max_map_count=1048576
 user.max_user_namespaces=0
 EOS
   }
