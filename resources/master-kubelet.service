@@ -4,7 +4,6 @@ Requires=containerd.service
 After=containerd.service
 [Service]
 EnvironmentFile=-/etc/kubernetes/config/kubeletenv
-Environmnet=KUBE_NODE_LABELS=${labels}
 ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/config
 ExecStartPre=/usr/bin/truncate -s0 /etc/kubernetes/config/kubeletenv
 ExecStartPre=/bin/sh -c 'echo "NODE_HOSTNAME=$(${get_hostname})" >> /etc/kubernetes/config/kubeletenv'
@@ -24,7 +23,7 @@ ExecStart=${kubelet_binary_path} \
   --hostname-override="$${NODE_HOSTNAME}" \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --lock-file=/var/run/lock/kubelet.lock \
-  --node-labels="$${KUBE_NODE_LABELS}" \
+  --node-labels=${labels} \
   --v=0
 Restart=always
 RestartSec=10
