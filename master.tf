@@ -415,7 +415,13 @@ data "ignition_file" "master-prom-eviction-threshold" {
 data "ignition_file" "control_plane_labeller" {
   mode = 493
   path = "/opt/bin/control-plane-labeller"
-  content { content = file("${path.module}/resources/control-plane-labeller") }
+  content {
+    content = templatefile("${path.module}/resources/control-plane-labeller.tftpl",
+      {
+        get_hostname = var.node_name_command[var.cloud_provider]
+      }
+    )
+  }
 }
 
 data "ignition_systemd_unit" "control_plane_labeller" {
