@@ -1,0 +1,11 @@
+[Unit]
+Description=Add a marker label that Node is part of control-plane
+After=kubelet.service
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/bin/control-plane-labeller
+Restart=on-failure
+RestartSec=10
+[Install]
+WantedBy=multi-user.target
