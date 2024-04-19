@@ -412,6 +412,23 @@ data "ignition_file" "master-prom-eviction-threshold" {
   }
 }
 
+data "ignition_file" "control_plane_labeller" {
+  mode = 493
+  path = "/opt/bin/control-plane-labeller"
+  content {
+    content = templatefile("${path.module}/resources/control-plane-labeller.tftpl",
+      {
+        get_hostname = var.node_name_command[var.cloud_provider]
+      }
+    )
+  }
+}
+
+data "ignition_systemd_unit" "control_plane_labeller" {
+  name    = "control-plane-labeller.service"
+  content = file("${path.module}/resources/control-plane-labeller.service")
+}
+
 locals {
   kube_controller_additional_config = var.kube_controller_cloud_config == "" ? "" : data.ignition_file.kube-controller-conf.rendered
 }
@@ -431,6 +448,7 @@ data "ignition_config" "master" {
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
       data.ignition_file.containerd_dockerio_hosts_toml.rendered,
+      data.ignition_file.control_plane_labeller.rendered,
       data.ignition_file.controller-manager-kubeconfig.rendered,
       data.ignition_file.crictl-config.rendered,
       data.ignition_file.docker-config.rendered,
@@ -464,6 +482,7 @@ data "ignition_config" "master" {
   systemd = concat(
     [
       data.ignition_systemd_unit.containerd-dropin.rendered,
+      data.ignition_systemd_unit.control_plane_labeller.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.master-kubelet.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,

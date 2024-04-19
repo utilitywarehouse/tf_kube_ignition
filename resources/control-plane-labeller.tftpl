@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -euo pipefail
+
+labelsPresent="false"
+while [[ "$${labelsPresent}" == "false" ]]; do
+  echo "Attempting to label node"
+  NODE_NAME=$(${get_hostname})
+  body=$(curl -sS \
+    --cacert /etc/kubernetes/ssl/ca.pem \
+    --cert   /etc/kubernetes/ssl/apiserver-kubelet-client.pem \
+    --key    /etc/kubernetes/ssl/apiserver-kubelet-client-key.pem \
+    -H "Accept: application/json" \
+    -H "Content-Type: application/strategic-merge-patch+json" \
+    -X PATCH \
+    -d '{"metadata": {"labels":{"node-role.kubernetes.io/master": "", "node-role.kubernetes.io/control-plane": ""}}}' \
+    https://localhost:443/api/v1/nodes/$${NODE_NAME}/status)
+  echo $${body}
+  labelsPresent=$(echo $${body} | jq -r '.metadata.labels | has("node-role.kubernetes.io/master") and has("node-role.kubernetes.io/control-plane")')
+  sleep 5
+done
+echo "Node labelled"
