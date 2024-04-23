@@ -38,6 +38,7 @@ rules:
   - level: None
     users:
       - system:kube-controller-manager
+      - system:cloud-controller-manager
       - system:kube-scheduler
       - system:serviceaccount:kube-system:endpoint-controller
     verbs: ["get", "update"]
@@ -62,6 +63,7 @@ rules:
   - level: None
     users:
       - system:kube-controller-manager
+      - system:cloud-controller-manager
     verbs: ["get", "list"]
     resources:
       - group: "metrics.k8s.io"
