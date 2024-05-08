@@ -222,15 +222,15 @@ variable "cfssl_data_volumeid" {
 }
 
 variable "cfssl_version" {
-  default = "1.6.4"
+  default = "1.6.5"
 }
 
 variable "cfssl_binary_sha512" {
-  default = "sha512-816e96a4377d4430af7fafdc3a93dfe274877950e79ffeb4ad744fdb4d17fb7606d7fa6d5efd490efae64baa7d2e2857e82d6899b4f4a6a0cdbed9ddab4dc146"
+  default = "sha512-c90e56051954eb930e8f410b05c12ffdc1ac67de4625174d2996d204062367e3f73a9506c4b3ac2af274b3739e16d6d2d790a50047f2ad98b014a4fb5aac1491"
 }
 
 variable "cfssljson_binary_sha512" {
-  default = "sha512-4e787c1da296c3fe2b89dade7e2de6441aa1f60bfc7243953b978fd0166d40737a68f485443bc2f809187e80389f658c06f5fae356b76f30934099096d683268"
+  default = "sha512-32964c8babd7d64d90878006ae75cecf89bbb84a2bb0b4602005fe2ad731a04c74ed2f662586caee7e33d18173b9980f752e099bd383db8f626c77517bb1ce3f"
 }
 
 variable "etcd_data_volumeids" {
