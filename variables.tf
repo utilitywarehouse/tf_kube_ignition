@@ -79,7 +79,7 @@ variable "node_exporter_image_tag" {
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify registry.k8s.io docker image version and Kubernetes binaries"
-  default     = "v1.30.1"
+  default     = "v1.31.0"
 }
 
 variable "cluster_dns" {
@@ -251,7 +251,7 @@ variable "dockerhub_password" {
 
 variable "nginx_image" {
   description = "https://github.com/nginx/nginx/releases"
-  default     = "nginx:1.24-alpine"
+  default     = "nginx:1.27.2-alpine"
 }
 
 variable "feature_gates" {
