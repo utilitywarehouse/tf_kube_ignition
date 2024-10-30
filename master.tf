@@ -483,6 +483,7 @@ data "ignition_config" "master" {
     [
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.control_plane_labeller.rendered,
+      data.ignition_systemd_unit.coreos_metadata_sshkeys.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.master-kubelet.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,

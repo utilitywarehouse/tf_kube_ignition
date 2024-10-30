@@ -23,6 +23,11 @@ variable "enable_container_linux_locksmithd_worker" {
   default     = true
 }
 
+variable "enable_coreos_metadata_sshkeys_service" {
+  description = "Whether to enable the coreos-metadata-sshkeys@core.service"
+  default     = false
+}
+
 variable "force_boot_reprovisioning" {
   description = "Force a new Ignition run on every reboot and wipe root filesystem"
   default     = false

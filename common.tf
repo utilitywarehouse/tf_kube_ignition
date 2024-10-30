@@ -253,3 +253,8 @@ curl http://169.254.169.254/latest/meta-data/$META_ENDPOINT -H "X-aws-ec2-metada
 EOS
   }
 }
+
+data "ignition_systemd_unit" "coreos_metadata_sshkeys" {
+  name = "coreos-metadata-sshkeys@core.service"
+  mask = false == var.enable_coreos_metadata_sshkeys_service
+}
