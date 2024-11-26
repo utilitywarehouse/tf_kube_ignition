@@ -1,10 +1,6 @@
 #!/bin/sh
 
-docker run --rm \
-  -v /etc/etcd/ssl/:/etc/etcd/ssl/:rw \
-  -v /var/lib/etcd/:/var/lib/etcd/:rw \
-  --entrypoint /usr/local/bin/etcdctl \
-  ${etcd_image_url}:${etcd_image_tag} \
+exec sudo -u etcd etcdctl \
   --cacert /etc/etcd/ssl/ca.pem \
   --cert /etc/etcd/ssl/node.pem \
   --key /etc/etcd/ssl/node-key.pem \
