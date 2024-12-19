@@ -303,7 +303,7 @@ data "template_file" "kube-apiserver" {
     oidc_client_id        = var.oidc_client_id
     feature_gates         = local.feature_gates_csv
     admission_plugins     = var.admission_plugins
-    runtime_config        = join(",", [])
+    runtime_config        = join(",", var.apiserver_runtime_config)
   }
   /*
      * for the list of APIs & resources enabled by default, please see near the
