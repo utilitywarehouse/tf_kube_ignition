@@ -278,6 +278,12 @@ variable "admission_plugins" {
   default     = "NodeRestriction"
 }
 
+variable "apiserver_runtime_config" {
+  description = "https://kubernetes.io/docs/tasks/administer-cluster/enable-disable-api/"
+  default     = []
+  type        = list(string)
+}
+
 variable "system_reserved_cpu" {
   description = "Passed to nodes kubelet config as systemReserved cpu value"
   default     = "1000m"
