@@ -29,3 +29,7 @@ tlsPrivateKeyFile: "/etc/kubernetes/ssl/kubelet-key.pem"
 # be detected as a loop via CoreDNS https://coredns.io/plugins/loop/#troubleshooting
 # Flatcar discussion around the issue: https://github.com/flatcar-linux/Flatcar/issues/285
 resolvConf: "/run/systemd/resolve/resolv.conf"
+# https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/#kubelet-config-k8s-io-v1beta1-MemorySwapConfiguration
+failSwapOn: false
+memorySwap:
+  swapBehavior: LimitedSwap
