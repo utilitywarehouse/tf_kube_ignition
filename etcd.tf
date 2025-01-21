@@ -199,7 +199,6 @@ data "ignition_config" "etcd" {
 
   files = concat(
     [
-      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-client-config.rendered,
       data.ignition_file.cfssl.rendered,
@@ -212,9 +211,11 @@ data "ignition_config" "etcd" {
       data.ignition_file.format-and-mount.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
+      data.ignition_file.zram_generator_conf.rendered,
       element(data.ignition_file.etcd-cfssl-new-cert.*.rendered, count.index),
       element(data.ignition_file.etcd-restore.*.rendered, count.index),
       element(data.ignition_file.etcdctl-wrapper.*.rendered, count.index),
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       var.set_etcd_locksmithd_dropin_reboot_config ? element(data.ignition_file.locksmithd_etcd_dropin.*.rendered, count.index) : "",
     ],
     var.etcd_additional_files

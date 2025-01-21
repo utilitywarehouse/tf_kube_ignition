@@ -50,7 +50,6 @@ data "ignition_config" "worker" {
 
   files = concat(
     [
-      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-client-config.rendered,
       data.ignition_file.cfssl.rendered,
@@ -69,6 +68,8 @@ data "ignition_config" "worker" {
       data.ignition_file.node-kubelet-conf.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
+      data.ignition_file.zram_generator_conf.rendered,
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
     ],
     var.worker_additional_files
   )

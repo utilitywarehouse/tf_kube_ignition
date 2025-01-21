@@ -440,7 +440,6 @@ data "ignition_config" "master" {
 
   files = concat(
     [
-      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
       data.ignition_file.audit-policy.rendered,
       data.ignition_file.bashrc.rendered,
       data.ignition_file.cfssl-client-config.rendered,
@@ -474,6 +473,8 @@ data "ignition_config" "master" {
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.scheduler-kubeconfig.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
+      data.ignition_file.zram_generator_conf.rendered,
+      var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
     ],
     var.master_additional_files,
     [local.kube_controller_additional_config]

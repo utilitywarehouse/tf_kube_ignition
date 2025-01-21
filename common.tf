@@ -185,6 +185,19 @@ data "ignition_file" "kubernetes_accounting_config" {
   }
 }
 
+# Use the values from "zram-generator-defaults"
+data "ignition_file" "zram_generator_conf" {
+  mode = 420
+  path = "/etc/systemd/zram-generator.conf"
+
+  content {
+    content = <<EOF
+[zram0]
+zram-size = min(ram, 8192)
+EOF
+  }
+}
+
 # Updating to flatcar 2983.2.0 surfaced an issue where inotify resources are
 # exhausted on worker nodes. Increasing inotify watchers and instances was
 # tested to mitigate this issue. Using values from:
