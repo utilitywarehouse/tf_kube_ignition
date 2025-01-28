@@ -65,7 +65,7 @@ data "ignition_file" "kubelet" {
   path = "/opt/bin/kubelet"
 
   source {
-    source = "https://storage.googleapis.com/kubernetes-release/release/${var.kubernetes_version}/bin/linux/amd64/kubelet"
+    source = "https://dl.k8s.io/${var.kubernetes_version}/bin/linux/amd64/kubelet"
   }
 }
 
