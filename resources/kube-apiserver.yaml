@@ -78,10 +78,8 @@ spec:
       resources:
         limits:
           cpu: "7"
-          ephemeral-storage: 1Gi
         requests:
           cpu: "0"
-          ephemeral-storage: "0"
       ports:
         - containerPort: 443
           hostPort: 443

@@ -29,10 +29,8 @@ spec:
       resources:
         limits:
           cpu: "7"
-          ephemeral-storage: 1Gi
         requests:
           cpu: "0"
-          ephemeral-storage: "0"
       volumeMounts:
         - mountPath: /etc/kubernetes/config
           name: kubernetes-configurations
