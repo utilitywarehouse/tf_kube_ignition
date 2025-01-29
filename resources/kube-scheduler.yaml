@@ -29,7 +29,7 @@ spec:
       resources:
         limits:
           cpu: "7"
-          memory: 2000Mi
+          memory: 4Gi
         requests:
           cpu: "0"
           memory: 0Mi
