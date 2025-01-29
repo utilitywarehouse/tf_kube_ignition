@@ -37,8 +37,10 @@ spec:
       resources:
         limits:
           cpu: "7"
+          memory: 4000Mi
         requests:
           cpu: "0"
+          memory: 0Mi
       volumeMounts:
         - mountPath: /etc/kubernetes/ssl
           name: ssl-certs-kubernetes

@@ -29,8 +29,10 @@ spec:
       resources:
         limits:
           cpu: "7"
+          memory: 2000Mi
         requests:
           cpu: "0"
+          memory: 0Mi
       volumeMounts:
         - mountPath: /etc/kubernetes/config
           name: kubernetes-configurations

@@ -78,8 +78,10 @@ spec:
       resources:
         limits:
           cpu: "7"
+          memory: 10000Mi
         requests:
           cpu: "0"
+          memory: 0Mi
       ports:
         - containerPort: 443
           hostPort: 443
