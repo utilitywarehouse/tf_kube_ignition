@@ -294,16 +294,17 @@ data "template_file" "kube-apiserver" {
   template = file("${path.module}/resources/kube-apiserver.yaml")
 
   vars = {
-    kubernetes_version    = var.kubernetes_version
-    etcd_endpoints        = join(",", formatlist("https://%s:2379", var.etcd_addresses))
-    service_network       = var.service_network
-    master_address        = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
-    master_instance_count = var.master_instance_count
-    oidc_issuer_url       = var.oidc_issuer_url
-    oidc_client_id        = var.oidc_client_id
-    feature_gates         = local.feature_gates_csv
-    admission_plugins     = var.admission_plugins
-    runtime_config        = join(",", var.apiserver_runtime_config)
+    kubernetes_version           = var.kubernetes_version
+    etcd_endpoints               = join(",", formatlist("https://%s:2379", var.etcd_addresses))
+    service_network              = var.service_network
+    master_address               = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
+    master_instance_count        = var.master_instance_count
+    oidc_issuer_url              = var.oidc_issuer_url
+    oidc_client_id               = var.oidc_client_id
+    feature_gates                = local.feature_gates_csv
+    admission_plugins            = var.admission_plugins
+    runtime_config               = join(",", var.apiserver_runtime_config)
+    control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
   }
   /*
      * for the list of APIs & resources enabled by default, please see near the
@@ -339,10 +340,11 @@ data "template_file" "kube-controller-manager" {
   template = file("${path.module}/resources/kube-controller-manager.yaml")
 
   vars = {
-    kubernetes_version = var.kubernetes_version
-    cloud_config       = var.kube_controller_cloud_config
-    pod_network        = var.pod_network
-    feature_gates      = local.feature_gates_csv
+    kubernetes_version           = var.kubernetes_version
+    cloud_config                 = var.kube_controller_cloud_config
+    pod_network                  = var.pod_network
+    feature_gates                = local.feature_gates_csv
+    control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
   }
 }
 
@@ -368,8 +370,9 @@ data "template_file" "kube-scheduler" {
   template = file("${path.module}/resources/kube-scheduler.yaml")
 
   vars = {
-    kubernetes_version = var.kubernetes_version
-    feature_gates      = local.feature_gates_csv
+    kubernetes_version           = var.kubernetes_version
+    feature_gates                = local.feature_gates_csv
+    control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
   }
 }
 

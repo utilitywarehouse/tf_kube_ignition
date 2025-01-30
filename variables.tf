@@ -294,6 +294,11 @@ variable "system_reserved_memory" {
   default     = "2Gi"
 }
 
+variable "control_plane_pod_cpu_limits" {
+  description = "Set the cpu limits for the control plane static pods (kube-apiserver, kube-scheduler, etc.)"
+  default     = "6"
+}
+
 variable "eviction_threshold_memory_soft" {
   description = "Amount of available memory that triggers soft eviction. In bytes to facilitate exporting it as metric"
   default     = "2147483648" # 2Gi(2^31 bytes)

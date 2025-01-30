@@ -28,7 +28,7 @@ spec:
       # https://github.com/kubernetes/kubernetes/issues/129880
       resources:
         limits:
-          cpu: "7"
+          cpu: "${control_plane_pod_cpu_limits}"
           memory: "4Gi"
         requests:
           cpu: "0"
