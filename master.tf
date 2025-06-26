@@ -341,7 +341,6 @@ data "template_file" "kube-controller-manager" {
 
   vars = {
     kubernetes_version           = var.kubernetes_version
-    cloud_config                 = var.kube_controller_cloud_config
     pod_network                  = var.pod_network
     feature_gates                = local.feature_gates_csv
     control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
@@ -354,15 +353,6 @@ data "ignition_file" "kube-controller-manager" {
 
   content {
     content = data.template_file.kube-controller-manager.rendered
-  }
-}
-
-data "ignition_file" "kube-controller-conf" {
-  mode = 420
-  path = "/etc/kubernetes/config/cloud_provider/cloud.conf"
-
-  content {
-    content = var.kube_controller_cloud_config
   }
 }
 
@@ -432,10 +422,6 @@ data "ignition_systemd_unit" "control_plane_labeller" {
   content = file("${path.module}/resources/control-plane-labeller.service")
 }
 
-locals {
-  kube_controller_additional_config = var.kube_controller_cloud_config == "" ? "" : data.ignition_file.kube-controller-conf.rendered
-}
-
 data "ignition_config" "master" {
   filesystems = [
     var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
@@ -480,7 +466,6 @@ data "ignition_config" "master" {
       var.cloud_provider == "aws" ? data.ignition_file.aws_meta_data_IMDSv2.rendered : "",
     ],
     var.master_additional_files,
-    [local.kube_controller_additional_config]
   )
 
   systemd = concat(
