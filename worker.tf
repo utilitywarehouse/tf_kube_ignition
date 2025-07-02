@@ -3,34 +3,22 @@ data "ignition_systemd_unit" "locksmithd_worker" {
   mask = false == var.enable_container_linux_locksmithd_worker
 }
 
-data "template_file" "worker-kubelet" {
-  template = file("${path.module}/resources/node-kubelet.service")
-
-  vars = {
+data "ignition_systemd_unit" "worker-kubelet" {
+  name = "kubelet.service"
+  content = templatefile("${path.module}/resources/node-kubelet.service", {
     kubelet_binary_path = "/opt/bin/kubelet"
     cloud_provider      = local.component_cloud_provider
     get_hostname        = var.node_name_command[var.cloud_provider]
     labels              = local.worker_kubelet_labels
-  }
-}
-
-data "ignition_systemd_unit" "worker-kubelet" {
-  name    = "kubelet.service"
-  content = data.template_file.worker-kubelet.rendered
+  })
 }
 
 // Prometheus machine-role metric
-data "template_file" "prometheus-machine-role-worker" {
-  template = file("${path.module}/resources/prometheus-machine-role.service")
-
-  vars = {
-    role = "worker"
-  }
-}
-
 data "ignition_systemd_unit" "prometheus-machine-role-worker" {
-  name    = "prometheus-machine-role.service"
-  content = data.template_file.prometheus-machine-role-worker.rendered
+  name = "prometheus-machine-role.service"
+  content = templatefile("${path.module}/resources/prometheus-machine-role.service", {
+    role = "worker"
+  })
 }
 
 data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
