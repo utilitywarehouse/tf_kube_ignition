@@ -13,186 +13,141 @@ module "cert-refresh-master" {
 // with system:node role. In order to be authorized by the Node authorizer,
 // kubelets must use a credential that identifies them as being in the
 // system:nodes group, with a username of system:node:<nodeName>
-data "template_file" "master-node-cfssl-new-cert" {
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
-
-  vars = {
-    cert_name    = "node"
-    user         = "root"
-    group        = "root"
-    profile      = "client-server"
-    path         = "/etc/kubernetes/ssl"
-    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org          = "system:master-nodes"
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names  = ""
-  }
-}
-
 data "ignition_file" "master-cfssl-new-node-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-node-cert"
 
   content {
-    content = data.template_file.master-node-cfssl-new-cert.rendered
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "node"
+      user         = "root"
+      group        = "root"
+      profile      = "client-server"
+      path         = "/etc/kubernetes/ssl"
+      cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+      org          = "system:master-nodes"
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names  = ""
+    })
   }
 }
 
 // Get a cert for to kubelet serve
-data "template_file" "master-kubelet-cfssl-new-cert" {
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
-
-  vars = {
-    cert_name    = "kubelet"
-    user         = "root"
-    group        = "root"
-    profile      = "client-server"
-    path         = "/etc/kubernetes/ssl"
-    cn           = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
-    org          = "system:kubelets"
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names  = ""
-  }
-}
-
 data "ignition_file" "master-kubelet-cfssl-new-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
-    content = data.template_file.master-kubelet-cfssl-new-cert.rendered
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "kubelet"
+      user         = "root"
+      group        = "root"
+      profile      = "client-server"
+      path         = "/etc/kubernetes/ssl"
+      cn           = "system:kubelet:$(${var.node_name_command[var.cloud_provider]})"
+      org          = "system:kubelets"
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names  = ""
+    })
   }
 }
 
 // Serving certificate for the API server
-data "template_file" "master-apiserver-cfssl-new-cert" {
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
-
-  vars = {
-    cert_name    = "apiserver"
-    user         = "root"
-    group        = "root"
-    profile      = "client-server"
-    path         = "/etc/kubernetes/ssl"
-    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org          = ""
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names = join(
-      ",",
-      [
-        local.kubernetes_master_svc,
-        "kubernetes",
-        "kubernetes.default",
-        "kubernetes.default.svc",
-        "kubernetes.default.svc.cluster.local",
-        "elb.master.${var.dns_domain}",
-        "*.master.${var.dns_domain}",
-        "localhost",
-        "127.0.0.1",
-      ],
-    )
-  }
-}
-
 data "ignition_file" "master-cfssl-new-apiserver-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-apiserver-cert"
 
   content {
-    content = data.template_file.master-apiserver-cfssl-new-cert.rendered
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "apiserver"
+      user         = "root"
+      group        = "root"
+      profile      = "client-server"
+      path         = "/etc/kubernetes/ssl"
+      cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+      org          = ""
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names = join(
+        ",",
+        [
+          local.kubernetes_master_svc,
+          "kubernetes",
+          "kubernetes.default",
+          "kubernetes.default.svc",
+          "kubernetes.default.svc.cluster.local",
+          "elb.master.${var.dns_domain}",
+          "*.master.${var.dns_domain}",
+          "localhost",
+          "127.0.0.1",
+        ],
+      )
+    })
   }
 }
 
 // Client certificate for the API server to connect to the kubelets securely
-data "template_file" "master-apiserver-kubelet-client-cfssl-new-cert" {
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
-
-  vars = {
-    cert_name    = "apiserver-kubelet-client"
-    user         = "root"
-    group        = "root"
-    profile      = "client-server"
-    path         = "/etc/kubernetes/ssl"
-    cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-    org          = "system:masters"
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names  = ""
-  }
-}
-
 data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
 
   content {
-    content = data.template_file.master-apiserver-kubelet-client-cfssl-new-cert.rendered
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "apiserver-kubelet-client"
+      user         = "root"
+      group        = "root"
+      profile      = "client-server"
+      path         = "/etc/kubernetes/ssl"
+      cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+      org          = "system:masters"
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names  = ""
+    })
   }
 }
 
 // Client certificate for kube-scheduler
-data "template_file" "master-scheduler-cfssl-new-cert" {
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
-
-  vars = {
-    cert_name    = "scheduler"
-    user         = "root"
-    group        = "root"
-    profile      = "client-server"
-    path         = "/etc/kubernetes/ssl"
-    cn           = "system:kube-scheduler"
-    org          = ""
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names  = ""
-  }
-}
-
 data "ignition_file" "master-cfssl-new-scheduler-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-scheduler-cert"
 
   content {
-    content = data.template_file.master-scheduler-cfssl-new-cert.rendered
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "scheduler"
+      user         = "root"
+      group        = "root"
+      profile      = "client-server"
+      path         = "/etc/kubernetes/ssl"
+      cn           = "system:kube-scheduler"
+      org          = ""
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names  = ""
+    })
   }
 }
 
 // Client certificate for kube-controller-manager
-data "template_file" "master-controller-manager-cfssl-new-cert" {
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
-
-  vars = {
-    cert_name    = "controller-manager"
-    user         = "root"
-    group        = "root"
-    profile      = "client-server"
-    path         = "/etc/kubernetes/ssl"
-    cn           = "system:kube-controller-manager"
-    org          = ""
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names  = ""
-  }
-}
-
 data "ignition_file" "master-cfssl-new-controller-manager-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-controller-manager-cert"
 
   content {
-    content = data.template_file.master-controller-manager-cfssl-new-cert.rendered
-  }
-}
-
-data "template_file" "master-cfssl-keys-and-certs-get" {
-  template = file("${path.module}/resources/cfssl-keys-and-certs-get")
-
-  vars = {
-    path = "/etc/kubernetes/ssl"
-    auth = base64encode("apiserver:${random_id.cfssl-auth-key-apiserver.hex}")
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "controller-manager"
+      user         = "root"
+      group        = "root"
+      profile      = "client-server"
+      path         = "/etc/kubernetes/ssl"
+      cn           = "system:kube-controller-manager"
+      org          = ""
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names  = ""
+    })
   }
 }
 
@@ -201,33 +156,21 @@ data "ignition_file" "master-cfssl-keys-and-certs-get" {
   path = "/opt/bin/cfssl-keys-and-certs-get"
 
   content {
-    content = data.template_file.master-cfssl-keys-and-certs-get.rendered
-  }
-}
-
-data "template_file" "master-kubelet" {
-  template = file("${path.module}/resources/master-kubelet.service")
-
-  vars = {
-    kubelet_binary_path = "/opt/bin/kubelet"
-    cloud_provider      = local.component_cloud_provider
-    get_hostname        = var.node_name_command[var.cloud_provider]
-    labels              = local.master_kubelet_labels
+    content = templatefile("${path.module}/resources/cfssl-keys-and-certs-get", {
+      path = "/etc/kubernetes/ssl"
+      auth = base64encode("apiserver:${random_id.cfssl-auth-key-apiserver.hex}")
+    })
   }
 }
 
 data "ignition_systemd_unit" "master-kubelet" {
-  name    = "kubelet.service"
-  content = data.template_file.master-kubelet.rendered
-}
-
-data "template_file" "master-kubelet-conf" {
-  template = file("${path.module}/resources/master-kubelet-conf.yaml")
-
-  vars = {
-    cluster_dns   = local.cluster_dns_yaml
-    feature_gates = local.feature_gates_yaml_fragment
-  }
+  name = "kubelet.service"
+  content = templatefile("${path.module}/resources/master-kubelet.service", {
+    kubelet_binary_path = "/opt/bin/kubelet"
+    cloud_provider      = local.component_cloud_provider
+    get_hostname        = var.node_name_command[var.cloud_provider]
+    labels              = local.master_kubelet_labels
+  })
 }
 
 data "ignition_file" "master-kubelet-conf" {
@@ -235,15 +178,10 @@ data "ignition_file" "master-kubelet-conf" {
   path = "/etc/kubernetes/config/master-kubelet-conf.yaml"
 
   content {
-    content = data.template_file.master-kubelet-conf.rendered
-  }
-}
-
-data "template_file" "master-kubeconfig" {
-  template = file("${path.module}/resources/master-kubeconfig")
-
-  vars = {
-    master_address = "localhost:443"
+    content = templatefile("${path.module}/resources/master-kubelet-conf.yaml", {
+      cluster_dns   = local.cluster_dns_yaml
+      feature_gates = local.feature_gates_yaml_fragment
+    })
   }
 }
 
@@ -252,15 +190,9 @@ data "ignition_file" "kubelet-kubeconfig" {
   path = "/var/lib/kubelet/kubeconfig"
 
   content {
-    content = data.template_file.master-kubeconfig.rendered
-  }
-}
-
-data "template_file" "scheduler-kubeconfig" {
-  template = file("${path.module}/resources/scheduler-kubeconfig")
-
-  vars = {
-    master_address = "localhost:443"
+    content = templatefile("${path.module}/resources/master-kubeconfig", {
+      master_address = "localhost:443"
+    })
   }
 }
 
@@ -269,15 +201,9 @@ data "ignition_file" "scheduler-kubeconfig" {
   path = "/etc/kubernetes/config/scheduler.conf"
 
   content {
-    content = data.template_file.scheduler-kubeconfig.rendered
-  }
-}
-
-data "template_file" "controller-manager-kubeconfig" {
-  template = file("${path.module}/resources/controller-manager-kubeconfig")
-
-  vars = {
-    master_address = "localhost:443"
+    content = templatefile("${path.module}/resources/scheduler-kubeconfig", {
+      master_address = "localhost:443"
+    })
   }
 }
 
@@ -286,32 +212,10 @@ data "ignition_file" "controller-manager-kubeconfig" {
   path = "/etc/kubernetes/config/controller-manager.conf"
 
   content {
-    content = data.template_file.controller-manager-kubeconfig.rendered
+    content = templatefile("${path.module}/resources/controller-manager-kubeconfig", {
+      master_address = "localhost:443"
+    })
   }
-}
-
-data "template_file" "kube-apiserver" {
-  template = file("${path.module}/resources/kube-apiserver.yaml")
-
-  vars = {
-    kubernetes_version           = var.kubernetes_version
-    etcd_endpoints               = join(",", formatlist("https://%s:2379", var.etcd_addresses))
-    service_network              = var.service_network
-    master_address               = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
-    master_instance_count        = var.master_instance_count
-    oidc_issuer_url              = var.oidc_issuer_url
-    oidc_client_id               = var.oidc_client_id
-    feature_gates                = local.feature_gates_csv
-    admission_plugins            = var.admission_plugins
-    runtime_config               = join(",", var.apiserver_runtime_config)
-    control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
-  }
-  /*
-     * for the list of APIs & resources enabled by default, please see near the
-     * bottom of the file:
-     *   https://github.com/kubernetes/kubernetes/blob/<ref>/pkg/master/master.go
-     *
-     */
 }
 
 data "ignition_file" "kube-apiserver" {
@@ -319,12 +223,20 @@ data "ignition_file" "kube-apiserver" {
   path = "/etc/kubernetes/manifests/kube-apiserver.yaml"
 
   content {
-    content = data.template_file.kube-apiserver.rendered
+    content = templatefile("${path.module}/resources/kube-apiserver.yaml", {
+      kubernetes_version           = var.kubernetes_version
+      etcd_endpoints               = join(",", formatlist("https://%s:2379", var.etcd_addresses))
+      service_network              = var.service_network
+      master_address               = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
+      master_instance_count        = var.master_instance_count
+      oidc_issuer_url              = var.oidc_issuer_url
+      oidc_client_id               = var.oidc_client_id
+      feature_gates                = local.feature_gates_csv
+      admission_plugins            = var.admission_plugins
+      runtime_config               = join(",", var.apiserver_runtime_config)
+      control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
+    })
   }
-}
-
-data "template_file" "audit-policy" {
-  template = file("${path.module}/resources/audit-policy.yaml")
 }
 
 data "ignition_file" "audit-policy" {
@@ -332,18 +244,7 @@ data "ignition_file" "audit-policy" {
   path = "/etc/kubernetes/config/audit-policy.yaml"
 
   content {
-    content = data.template_file.audit-policy.rendered
-  }
-}
-
-data "template_file" "kube-controller-manager" {
-  template = file("${path.module}/resources/kube-controller-manager.yaml")
-
-  vars = {
-    kubernetes_version           = var.kubernetes_version
-    pod_network                  = var.pod_network
-    feature_gates                = local.feature_gates_csv
-    control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
+    content = file("${path.module}/resources/audit-policy.yaml")
   }
 }
 
@@ -352,17 +253,12 @@ data "ignition_file" "kube-controller-manager" {
   path = "/etc/kubernetes/manifests/kube-controller-manager.yaml"
 
   content {
-    content = data.template_file.kube-controller-manager.rendered
-  }
-}
-
-data "template_file" "kube-scheduler" {
-  template = file("${path.module}/resources/kube-scheduler.yaml")
-
-  vars = {
-    kubernetes_version           = var.kubernetes_version
-    feature_gates                = local.feature_gates_csv
-    control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
+    content = templatefile("${path.module}/resources/kube-controller-manager.yaml", {
+      kubernetes_version           = var.kubernetes_version
+      pod_network                  = var.pod_network
+      feature_gates                = local.feature_gates_csv
+      control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
+    })
   }
 }
 
@@ -371,7 +267,11 @@ data "ignition_file" "kube-scheduler" {
   path = "/etc/kubernetes/manifests/kube-scheduler.yaml"
 
   content {
-    content = data.template_file.kube-scheduler.rendered
+    content = templatefile("${path.module}/resources/kube-scheduler.yaml", {
+      kubernetes_version           = var.kubernetes_version
+      feature_gates                = local.feature_gates_csv
+      control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
+    })
   }
 }
 

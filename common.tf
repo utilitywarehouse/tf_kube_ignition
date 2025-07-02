@@ -23,32 +23,22 @@ data "ignition_file" "cfssljson" {
   }
 }
 
-data "template_file" "docker_opts_dropin" {
-  template = file("${path.module}/resources/docker-dropin.conf")
-}
-
 data "ignition_systemd_unit" "docker-opts-dropin" {
   name = "docker.service"
 
   dropin {
     name    = "10-custom-options.conf"
-    content = data.template_file.docker_opts_dropin.rendered
-  }
-}
-
-data "template_file" "node-exporter" {
-  template = file("${path.module}/resources/node-exporter.service")
-
-  vars = {
-    node_exporter_image_url = var.node_exporter_image_url
-    node_exporter_image_tag = var.node_exporter_image_tag
+    content = file("${path.module}/resources/docker-dropin.conf")
   }
 }
 
 data "ignition_systemd_unit" "node-exporter" {
   name = "node-exporter.service"
 
-  content = data.template_file.node-exporter.rendered
+  content = templatefile("${path.module}/resources/node-exporter.service", {
+    node_exporter_image_url = var.node_exporter_image_url
+    node_exporter_image_tag = var.node_exporter_image_tag
+  })
 }
 
 data "ignition_file" "format-and-mount" {

@@ -31,21 +31,24 @@ data "ignition_file" "locksmithd_etcd_dropin" {
   }
 }
 
-data "template_file" "etcd-cfssl-new-cert" {
-  count    = length(var.etcd_addresses)
-  template = file("${path.module}/resources/cfssl-new-cert.sh")
+data "ignition_file" "etcd-cfssl-new-cert" {
+  count = length(var.etcd_addresses)
+  mode  = 493 # This is decimal for 0755 octal permissions
+  path  = "/opt/bin/cfssl-new-cert"
 
-  vars = {
-    cert_name    = "node"
-    user         = "etcd"
-    group        = "etcd"
-    profile      = "client-server"
-    path         = "/etc/etcd/ssl"
-    cn           = "${count.index}.etcd.${var.dns_domain}"
-    org          = ""
-    get_ip       = var.get_ip_command[var.cloud_provider]
-    get_hostname = var.node_name_command[var.cloud_provider]
-    extra_names  = join(",", ["etcd.${var.dns_domain}"])
+  content {
+    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+      cert_name    = "node"
+      user         = "etcd"
+      group        = "etcd"
+      profile      = "client-server"
+      path         = "/etc/etcd/ssl"
+      cn           = "${count.index}.etcd.${var.dns_domain}"
+      org          = ""
+      get_ip       = var.get_ip_command[var.cloud_provider]
+      get_hostname = var.node_name_command[var.cloud_provider]
+      extra_names  = join(",", ["etcd.${var.dns_domain}"])
+    })
   }
 }
 
@@ -58,19 +61,6 @@ data "ignition_file" "etcd" {
   }
 }
 
-data "ignition_file" "etcd-cfssl-new-cert" {
-  count = length(var.etcd_addresses)
-  mode  = 493
-  path  = "/opt/bin/cfssl-new-cert"
-
-  content {
-    content = element(
-      data.template_file.etcd-cfssl-new-cert.*.rendered,
-      count.index,
-    )
-  }
-}
-
 data "ignition_file" "etcd-prom-machine-role" {
   mode = 420
   path = "/etc/prom-text-collectors/machine_role.prom"
@@ -80,47 +70,34 @@ data "ignition_file" "etcd-prom-machine-role" {
   }
 }
 
-data "template_file" "etcdctl-wrapper" {
-  count    = length(var.etcd_addresses)
-  template = file("${path.module}/resources/etcdctl-wrapper")
-
-  vars = {
-    etcd_image_url = var.etcd_image_url
-    etcd_image_tag = var.etcd_image_tag
-    private_ipv4   = var.etcd_addresses[count.index]
-  }
-}
-
 data "ignition_file" "etcdctl-wrapper" {
   count = length(var.etcd_addresses)
-  mode  = 493
+  mode  = 493 # 0755 in octal
   uid   = 500
   gid   = 500
   path  = "/opt/bin/etcdctl-wrapper"
 
   content {
-    content = element(data.template_file.etcdctl-wrapper.*.rendered, count.index)
+    content = templatefile("${path.module}/resources/etcdctl-wrapper", {
+      etcd_image_url = var.etcd_image_url
+      etcd_image_tag = var.etcd_image_tag
+      private_ipv4   = var.etcd_addresses[count.index]
+    })
   }
 }
 
-data "template_file" "etcd-disk-mounter" {
-  count    = length(var.etcd_addresses)
-  template = file("${path.module}/resources/disk-mounter.service")
+data "ignition_systemd_unit" "etcd-disk-mounter" {
+  count = length(var.etcd_addresses)
+  name  = "disk-mounter.service"
 
-  vars = {
+  content = templatefile("${path.module}/resources/disk-mounter.service", {
     script_path = "/opt/bin/format-and-mount"
     volume_id   = var.etcd_data_volumeids[count.index]
     filesystem  = "ext4"
     user        = "etcd"
     group       = "etcd"
     mountpoint  = var.etcd_data_dir
-  }
-}
-
-data "ignition_systemd_unit" "etcd-disk-mounter" {
-  count   = length(var.etcd_addresses)
-  name    = "disk-mounter.service"
-  content = data.template_file.etcd-disk-mounter[count.index].rendered
+  })
 }
 
 resource "null_resource" "etcd_member" {
@@ -131,23 +108,17 @@ resource "null_resource" "etcd_member" {
   }
 }
 
-data "template_file" "etcd-member" {
-  count    = length(var.etcd_addresses)
-  template = file("${path.module}/resources/etcd-member.service")
+data "ignition_systemd_unit" "etcd-member" {
+  count = length(var.etcd_addresses)
+  name  = "etcd-member.service"
 
-  vars = {
+  content = templatefile("${path.module}/resources/etcd-member.service", {
     etcd_version         = var.etcd_image_tag
     index                = count.index
     etcd_initial_cluster = join(",", formatlist("member%s=https://%s:2380", null_resource.etcd_member.*.triggers.index, var.etcd_addresses))
     private_ipv4         = var.etcd_addresses[count.index]
     etcd_data_dir        = var.etcd_data_dir
-  }
-}
-
-data "ignition_systemd_unit" "etcd-member" {
-  count   = length(var.etcd_addresses)
-  name    = "etcd-member.service"
-  content = element(data.template_file.etcd-member.*.rendered, count.index)
+  })
 }
 
 module "etcd-cert-fetcher" {
@@ -156,27 +127,17 @@ module "etcd-cert-fetcher" {
   on_calendar = var.cfssl_node_renew_timer
 }
 
-data "template_file" "etcd-defrag" {
-  template = file("${path.module}/resources/etcd-defrag.service")
-}
-
 data "ignition_systemd_unit" "etcd-defrag" {
   name    = "etcd-defrag.service"
   enabled = false # not enabled because this service is started by etcd-defrag.timer
-  content = data.template_file.etcd-defrag.rendered
-}
-
-data "template_file" "etcd-defrag-timer" {
-  template = file("${path.module}/resources/etcd-defrag.timer")
-
-  vars = {
-    on_calendar = "daily"
-  }
+  content = file("${path.module}/resources/etcd-defrag.service")
 }
 
 data "ignition_systemd_unit" "etcd-defrag-timer" {
-  name    = "etcd-defrag.timer"
-  content = data.template_file.etcd-defrag-timer.rendered
+  name = "etcd-defrag.timer"
+  content = templatefile("${path.module}/resources/etcd-defrag.timer", {
+    on_calendar = "daily"
+  })
 }
 
 data "ignition_file" "etcd-restore" {
