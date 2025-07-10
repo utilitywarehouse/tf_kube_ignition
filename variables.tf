@@ -64,7 +64,7 @@ variable "etcd_image_url" {
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.5.18"
+  default     = "v3.5.20"
 }
 
 variable "etcd_data_dir" {
