@@ -59,12 +59,12 @@ variable "dns_domain" {
 
 variable "etcd_image_url" {
   description = "Where to get the etcd image from."
-  default     = "quay.io/coreos/etcd"
+  default     = "gcr.io/etcd-development/etcd"
 }
 
 variable "etcd_image_tag" {
   description = "The version of the etcd image to use."
-  default     = "v3.5.20"
+  default     = "v3.6.4"
 }
 
 variable "etcd_data_dir" {
