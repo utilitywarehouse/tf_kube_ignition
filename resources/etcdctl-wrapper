@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec sudo -u etcd etcdctl \
+exec sudo -u etcd /opt/bin/etcdctl \
   --cacert /etc/etcd/ssl/ca.pem \
   --cert /etc/etcd/ssl/node.pem \
   --key /etc/etcd/ssl/node-key.pem \

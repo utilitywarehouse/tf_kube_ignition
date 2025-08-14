@@ -43,6 +43,13 @@ ExecStartPre=-+/bin/sh -c "\
   chown etcd:etcd /opt/bin/etcd"
 
 ExecStartPre=-+/bin/sh -c "\
+  test ! -f /opt/bin/etcdctl && \
+  test -f /opt/bin/etcd.tar.gz && \
+  tar --strip-components=1 -C /opt/bin \
+    -xzf /opt/bin/etcd.tar.gz etcd-${etcd_version}-linux-amd64/etcdctl && \
+  chown etcd:etcd /opt/bin/etcdctl"
+
+ExecStartPre=-+/bin/sh -c "\
   test ! -f /opt/bin/etcdutl && \
   test -f /opt/bin/etcd.tar.gz && \
   tar --strip-components=1 -C /opt/bin \
