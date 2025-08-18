@@ -1,7 +1,8 @@
 #! /bin/sh
 #
-# This script wipes etcd data and joins the cluster as a new member. The
-# join step will fail if the old membership hasn't been removed from the cluster.
+# This script wipes etcd data and joins the cluster as a new member. The join
+# step will fail if this etcd member hasn't been removed and recreated in the
+# cluster configuration.
 
 set -e
 
