@@ -155,6 +155,15 @@ data "ignition_file" "etcd-restore" {
   }
 }
 
+data "ignition_file" "etcd-reset" {
+  path = "/opt/bin/etcd-reset"
+  mode = 493
+
+  content {
+    content = file("${path.module}/resources/etcd-reset")
+  }
+}
+
 data "ignition_config" "etcd" {
   count = length(var.etcd_addresses)
 
@@ -169,6 +178,7 @@ data "ignition_config" "etcd" {
       data.ignition_file.docker-config.rendered,
       data.ignition_file.etcd-prom-machine-role.rendered,
       data.ignition_file.etcd.rendered,
+      data.ignition_file.etcd-reset.rendered,
       data.ignition_file.format-and-mount.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,

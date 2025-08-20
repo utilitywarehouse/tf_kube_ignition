@@ -1,0 +1,24 @@
+#! /bin/sh
+#
+# This script wipes etcd data and joins the cluster as a new member. The join
+# step will fail if this etcd member hasn't been removed and recreated in the
+# cluster configuration.
+
+set -e
+
+# Stop etcd
+sudo systemctl stop etcd-member.service
+
+# Cleanup etcd data dir
+sudo rm -rf /var/lib/etcd/member
+
+# Prepare etcd service to join an existing cluster
+dropin_file="override.conf"
+dropin_dir="/etc/systemd/system/etcd-member.service.d"
+printf "[Service]\nEnvironment=ETCD_INITIAL_CLUSTER_STATE=existing" > "/home/core/$dropin_file"
+sudo mkdir -p "$dropin_dir"
+sudo mv "/home/core/$dropin_file" "$dropin_dir"
+sudo systemctl daemon-reload
+
+# Restart etcd
+sudo systemctl restart etcd-member.service
