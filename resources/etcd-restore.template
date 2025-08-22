@@ -15,7 +15,9 @@ if systemctl --quiet is-active etcd-member.service; then
 fi
 
 find "${DATA_DIR}" -mindepth 1 -delete
+# https://etcd.io/docs/v3.6/op-guide/recovery/#restoring-from-snapshot
 /opt/bin/etcdutl snapshot restore "$${backup}" \
+  --bump-revision 1000000000 --mark-compacted \
   --data-dir "${DATA_DIR}" \
   --name "${MEMBER_NAME}" \
   --initial-cluster "${INITIAL_CLUSTER}" \
