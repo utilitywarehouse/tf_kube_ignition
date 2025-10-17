@@ -72,6 +72,10 @@ variable "etcd_data_dir" {
   default     = "/var/lib/etcd"
 }
 
+variable "mosh_version" {
+  description = "The version of mosh to use."
+  default     = "1.4.0"
+}
 variable "node_exporter_image_url" {
   description = "Where to get the node_exporter image from."
   default     = "quay.io/prometheus/node-exporter"

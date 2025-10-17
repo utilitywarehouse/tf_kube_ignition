@@ -181,6 +181,7 @@ data "ignition_config" "cfssl" {
       data.ignition_file.containerd_dockerio_hosts_toml.rendered,
       data.ignition_file.docker-config.rendered,
       data.ignition_file.format-and-mount.rendered,
+      data.ignition_file.mosh.rendered,
       data.ignition_file.node_textfile_inode_fd_count.rendered,
       data.ignition_file.sysctl_kernel_vars.rendered,
       data.ignition_file.zram_generator_conf.rendered,
@@ -209,4 +210,13 @@ data "ignition_config" "cfssl" {
   directories = [
     data.ignition_directory.journald.rendered
   ]
+}
+
+data "ignition_file" "mosh" {
+  mode = 493
+  path = "/opt/bin/mosh.tar.gz"
+
+  source {
+    source = "https://github.com/mobile-shell/mosh/releases/download/mosh-${var.mosh_version}/mosh-${var.mosh_version}.tar.gz"
+  }
 }
