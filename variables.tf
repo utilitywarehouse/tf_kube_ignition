@@ -74,7 +74,7 @@ variable "etcd_data_dir" {
 
 variable "mosh_version" {
   description = "The version of mosh to use."
-  default     = "1.4.0"
+  default     = "1.4.0+blink-17.3.0"
 }
 variable "node_exporter_image_url" {
   description = "Where to get the node_exporter image from."

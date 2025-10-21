@@ -214,9 +214,9 @@ data "ignition_config" "cfssl" {
 
 data "ignition_file" "mosh" {
   mode = 493
-  path = "/opt/bin/mosh.tar.gz"
+  path = "/opt/bin/mosh-server"
 
   source {
-    source = "https://github.com/mobile-shell/mosh/releases/download/mosh-${var.mosh_version}/mosh-${var.mosh_version}.tar.gz"
+    source = "https://github.com/blinksh/mosh-static-multiarch/releases/download/${var.mosh_version}/mosh-server-${var.mosh_version}-linux-amd64"
   }
 }
