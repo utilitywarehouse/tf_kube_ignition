@@ -84,7 +84,7 @@ variable "node_exporter_image_tag" {
 
 variable "kubernetes_version" {
   description = "Kubernetes version, used to specify registry.k8s.io docker image version and Kubernetes binaries"
-  default     = "v1.34.1"
+  default     = "v1.34.2"
 }
 
 variable "cluster_dns" {
