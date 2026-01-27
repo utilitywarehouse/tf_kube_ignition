@@ -16,9 +16,9 @@ fi
 [ -f proxy-ca-key.pem ] && _ca_args="-ca-key=proxy-ca-key.pem ${_ca_args}"
 
 [ -f proxy-ca-key.pem ] && [ -f proxy-ca.pem ] \
-    && (( "$(date +%s)" < "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/proxy-ca.pem | jq -r '.not_after')" +%s)" - 7 * 24 * 3600 )) \
+    && (( "$(date +%s)" < "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/proxy-ca.pem | jq -r '.not_after')" +%s)" - 90 * 24 * 3600 )) \
     || /opt/bin/cfssl gencert -initca ${_ca_args} | /opt/bin/cfssljson -bare proxy-ca -
 
 [ -f proxy-key.pem ] && [ -f proxy.pem ] \
-    && (( "$(date +%s)" < "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/proxy.pem | jq -r '.not_after')" +%s)" - 7 * 24 * 3600 )) \
+    && (( "$(date +%s)" < "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/proxy.pem | jq -r '.not_after')" +%s)" - 90 * 24 * 3600 )) \
     || /opt/bin/cfssl gencert -ca proxy-ca.pem -ca-key proxy-ca-key.pem ${_args} | /opt/bin/cfssljson -bare proxy

@@ -200,13 +200,13 @@ variable "cfssl_ca_cn" {
 }
 
 variable "cfssl_ca_expiry_hours" {
-  description = "The expiry time in hours for the CA certificate (defaults to 2 years)."
-  default     = "17520"
+  description = "The expiry time in hours for the CA certificate (defaults to 10y)."
+  default     = "87600"
 }
 
 variable "cfssl_node_expiry_hours" {
-  description = "The expiry time in hours for the nodes certificats (defaults to a week)."
-  default     = "168"
+  description = "The expiry time in hours for the nodes certificats (defaults to 1y)."
+  default     = "8760"
 }
 
 variable "cfssl_node_renew_timer" {
