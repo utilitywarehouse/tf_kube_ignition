@@ -3,5 +3,8 @@
         "algo": "ecdsa",
         "size": 256
     },
-    "CN": "proxyClientCA"
+    "CN": "proxyClientCA",
+    "ca": {
+        "expiry": "${ca_expiry_hours}h"
+    }
 }
