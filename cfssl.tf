@@ -75,7 +75,9 @@ data "ignition_file" "cfssl-proxy-ca-csr-json" {
   path = "/etc/cfssl/proxy-ca-csr.json"
 
   content {
-    content = file("${path.module}/resources/cfssl-proxy-ca-csr.json")
+    content = templatefile("${path.module}/resources/cfssl-proxy-ca-csr.json", {
+      ca_expiry_hours = var.cfssl_ca_expiry_hours
+    })
   }
 }
 
