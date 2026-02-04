@@ -1,4 +1,10 @@
 // common items
+
+# Unused auth key for CFSSL's "default" profile. This profile is never used
+# (all cert requests explicitly specify a profile), but CFSSL requires the
+# default profile to reference a valid auth key. This acts as a security
+# feature: if the default profile is somehow invoked, requests will fail
+# because no node possesses this key.
 resource "random_id" "cfssl-auth-key-unused" {
   byte_length = 16
 }
@@ -7,7 +13,21 @@ resource "random_id" "cfssl-auth-key-client" {
   byte_length = 16
 }
 
+# HTTP Basic Auth key for fetching special certificates (signing key, proxy certs)
+# from CFSSL server. This is separate from CFSSL profile auth keys.
 resource "random_id" "cfssl-auth-key-apiserver" {
+  byte_length = 16
+}
+
+resource "random_id" "cfssl-auth-key-worker" {
+  byte_length = 16
+}
+
+resource "random_id" "cfssl-auth-key-master" {
+  byte_length = 16
+}
+
+resource "random_id" "cfssl-auth-key-etcd" {
   byte_length = 16
 }
 
@@ -90,15 +110,33 @@ data "ignition_file" "cfssl-proxy-csr-json" {
   }
 }
 
+# CFSSL server configuration file. The 'default' profile uses the 'unused'
+# auth key as a security measure. All cert requests explicitly specify a
+# profile (worker-client, master-client-server, etc), so this default is never
+# used. If it's somehow invoked, requests fail because no node has the unused
+# auth key.
+#
+# NOTE: The shared system:node:* and system:kubelet:* CN patterns in worker
+# and master profiles is safe and intentional. Both workers and masters use
+# system:nodes organization and get identical kubelet permissions via the
+# Kubernetes Node authorizer (which grants permissions based on CN pattern
+# alone, not Organization). The security separation between worker-auth and
+# master-auth keys prevents workers from requesting certificates for master
+# control plane components (scheduler, controller-manager). The real privilege
+# separation occurs at the component level (scheduler, controller-manager,
+# apiserver, etcd) which have separate auth keys and dedicated CN patterns.
 data "ignition_file" "cfssl-server-config" {
   mode = 384
   path = "/etc/cfssl/config.json"
 
   content {
     content = templatefile("${path.module}/resources/cfssl-server-config.json", {
-      expiry_hours     = var.cfssl_node_expiry_hours
-      cfssl_unused_key = random_id.cfssl-auth-key-unused.hex
-      cfssl_auth_key   = random_id.cfssl-auth-key-client.hex
+      expiry_hours          = var.cfssl_node_expiry_hours
+      cfssl_unused_key      = random_id.cfssl-auth-key-unused.hex
+      cfssl_auth_key        = random_id.cfssl-auth-key-client.hex
+      cfssl_worker_auth_key = random_id.cfssl-auth-key-worker.hex
+      cfssl_master_auth_key = random_id.cfssl-auth-key-master.hex
+      cfssl_etcd_auth_key   = random_id.cfssl-auth-key-etcd.hex
     })
   }
 }

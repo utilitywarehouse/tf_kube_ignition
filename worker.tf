@@ -3,6 +3,18 @@ data "ignition_systemd_unit" "locksmithd_worker" {
   mask = false == var.enable_container_linux_locksmithd_worker
 }
 
+data "ignition_file" "cfssl-worker-client-config" {
+  mode = 384
+  path = "/etc/cfssl/config.json"
+
+  content {
+    content = templatefile("${path.module}/resources/cfssl-worker-client-config.json", {
+      cfssl_server_endpoint = var.cfssl_server_address
+      cfssl_worker_auth_key = random_id.cfssl-auth-key-worker.hex
+    })
+  }
+}
+
 data "ignition_systemd_unit" "worker-kubelet" {
   name = "kubelet.service"
   content = templatefile("${path.module}/resources/node-kubelet.service", {
@@ -39,7 +51,7 @@ data "ignition_config" "worker" {
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
-      data.ignition_file.cfssl-client-config.rendered,
+      data.ignition_file.cfssl-worker-client-config.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,

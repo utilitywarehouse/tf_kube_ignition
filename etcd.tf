@@ -5,6 +5,18 @@ data "ignition_systemd_unit" "locksmithd_etcd" {
   mask = false == var.enable_container_linux_locksmithd_etcd
 }
 
+data "ignition_file" "etcd-client-config" {
+  mode = 384
+  path = "/etc/cfssl/config.json"
+
+  content {
+    content = templatefile("${path.module}/resources/cfssl-etcd-client-config.json", {
+      cfssl_server_endpoint = var.cfssl_server_address
+      cfssl_etcd_auth_key   = random_id.cfssl-auth-key-etcd.hex
+    })
+  }
+}
+
 # Create locksmithd dropin configuration as a separate ignition file. This can
 # be useful in cases one wants to pass a custom locksmithd service instead of
 # the one defined in this module (using `omit_locksmithd_service` variable and
@@ -31,6 +43,9 @@ data "ignition_file" "locksmithd_etcd_dropin" {
   }
 }
 
+// ETCD peer certificate (client-server). ETCD peers communicate by IP address,
+// not hostname, so only get_ip is populated. The get_hostname is empty because
+// ETCD doesn't use hostname-based peer discovery in this configuration.
 data "ignition_file" "etcd-cfssl-new-cert" {
   count = length(var.etcd_addresses)
   mode  = 493 # This is decimal for 0755 octal permissions
@@ -41,12 +56,12 @@ data "ignition_file" "etcd-cfssl-new-cert" {
       cert_name    = "node"
       user         = "etcd"
       group        = "etcd"
-      profile      = "client-server"
+      profile      = "etcd-client-server"
       path         = "/etc/etcd/ssl"
       cn           = "${count.index}.etcd.${var.dns_domain}"
       org          = ""
       get_ip       = var.get_ip_command[var.cloud_provider]
-      get_hostname = var.node_name_command[var.cloud_provider]
+      get_hostname = ""
       extra_names  = join(",", ["etcd.${var.dns_domain}"])
     })
   }
@@ -170,7 +185,7 @@ data "ignition_config" "etcd" {
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
-      data.ignition_file.cfssl-client-config.rendered,
+      data.ignition_file.etcd-client-config.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
