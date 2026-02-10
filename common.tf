@@ -50,15 +50,6 @@ data "ignition_file" "format-and-mount" {
   }
 }
 
-data "ignition_file" "kubelet" {
-  mode = 493
-  path = "/opt/bin/kubelet"
-
-  source {
-    source = "https://dl.k8s.io/${var.kubernetes_version}/bin/linux/amd64/kubelet"
-  }
-}
-
 # Dir used by systemd to store logs in disk instead of memory
 data "ignition_directory" "journald" {
   path = "/var/log/journal"
