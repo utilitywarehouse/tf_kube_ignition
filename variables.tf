@@ -87,6 +87,16 @@ variable "kubernetes_version" {
   default     = "v1.35.0"
 }
 
+variable "kubernetes_control_plane_version" {
+  description = "Kubernetes version for control plane nodes, used to specify registry.k8s.io docker image version and Kubernetes binaries. If not set it defaults to var.kubernetes_version"
+  default     = null
+}
+
+variable "kubernetes_worker_node_version" {
+  description = "Kubernetes version for worker nodes, used to specify registry.k8s.io docker image version and Kubernetes binaries. If not set it defaults to var.kubernetes_version"
+  default     = null
+}
+
 variable "cluster_dns" {
   description = "List of DNS server IP addresses. Used by kubelet."
   type        = list(string)
@@ -336,4 +346,8 @@ locals {
   # Kubelet labels
   master_kubelet_labels = join(",", concat(["role=master"], formatlist("%s=%s", keys(var.master_additional_labels), values(var.master_additional_labels))))
   worker_kubelet_labels = join(",", concat(["role=worker"], formatlist("%s=%s", keys(var.worker_additional_labels), values(var.worker_additional_labels))))
+
+  # Kube version
+  kubernetes_control_plane_version = var.kubernetes_control_plane_version == null ? var.kubernetes_version : var.kubernetes_control_plane_version
+  kubernetes_worker_node_version   = var.kubernetes_worker_node_version == null ? var.kubernetes_version : var.kubernetes_worker_node_version
 }
