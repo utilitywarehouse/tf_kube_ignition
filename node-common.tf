@@ -1,3 +1,13 @@
+data "ignition_file" "node_kubelet" {
+  mode = 493
+  path = "/opt/bin/kubelet"
+
+  source {
+    source = "https://dl.k8s.io/${local.kubernetes_worker_node_version}/bin/linux/amd64/kubelet"
+  }
+}
+
+
 // All nodes should belong to system:nodes group
 data "ignition_file" "node-cfssl-new-cert" {
   mode = 493

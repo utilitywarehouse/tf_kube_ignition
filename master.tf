@@ -224,7 +224,7 @@ data "ignition_file" "kube-apiserver" {
 
   content {
     content = templatefile("${path.module}/resources/kube-apiserver.yaml", {
-      kubernetes_version           = var.kubernetes_version
+      kubernetes_version           = local.kubernetes_control_plane_version
       etcd_endpoints               = join(",", formatlist("https://%s:2379", var.etcd_addresses))
       service_network              = var.service_network
       master_address               = var.external_apiserver_address == "" ? var.master_address : var.external_apiserver_address
@@ -254,7 +254,7 @@ data "ignition_file" "kube-controller-manager" {
 
   content {
     content = templatefile("${path.module}/resources/kube-controller-manager.yaml", {
-      kubernetes_version           = var.kubernetes_version
+      kubernetes_version           = local.kubernetes_control_plane_version
       pod_network                  = var.pod_network
       feature_gates                = local.feature_gates_csv
       control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
@@ -268,10 +268,19 @@ data "ignition_file" "kube-scheduler" {
 
   content {
     content = templatefile("${path.module}/resources/kube-scheduler.yaml", {
-      kubernetes_version           = var.kubernetes_version
+      kubernetes_version           = local.kubernetes_control_plane_version
       feature_gates                = local.feature_gates_csv
       control_plane_pod_cpu_limits = var.control_plane_pod_cpu_limits
     })
+  }
+}
+
+data "ignition_file" "master_kubelet" {
+  mode = 493
+  path = "/opt/bin/kubelet"
+
+  source {
+    source = "https://dl.k8s.io/${local.kubernetes_control_plane_version}/bin/linux/amd64/kubelet"
   }
 }
 
@@ -347,7 +356,7 @@ data "ignition_config" "master" {
       data.ignition_file.kube-scheduler.rendered,
       data.ignition_file.kubelet-docker-config.rendered,
       data.ignition_file.kubelet-kubeconfig.rendered,
-      data.ignition_file.kubelet.rendered,
+      data.ignition_file.master_kubelet.rendered,
       data.ignition_file.kubernetes_accounting_config.rendered,
       data.ignition_file.master-cfssl-keys-and-certs-get.rendered,
       data.ignition_file.master-cfssl-new-apiserver-cert.rendered,
