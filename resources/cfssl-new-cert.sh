@@ -8,6 +8,12 @@ cd ${path}
 _ip="$(${get_ip})"
 _hostname="$(${get_hostname})"
 
+while [ "$_hostname" = "localhost" ] || [ "$_hostname" = "localhost.localdomain" ]; do
+  echo "Waiting for hostname to be populated..."
+  sleep 2
+  _hostname="$(${get_hostname})"
+done
+
 /opt/bin/cfssl gencert \
   -config=/etc/cfssl/config.json \
   -profile=${profile} \
