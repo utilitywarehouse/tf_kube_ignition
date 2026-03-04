@@ -36,19 +36,6 @@ data "ignition_systemd_unit" "locksmithd_cfssl" {
   mask = false == var.enable_container_linux_locksmithd_cfssl
 }
 
-// used by clients
-data "ignition_file" "cfssl-client-config" {
-  mode = 384
-  path = "/etc/cfssl/config.json"
-
-  content {
-    content = templatefile("${path.module}/resources/cfssl-client-config.json", {
-      cfssl_server_endpoint = var.cfssl_server_address
-      cfssl_auth_key        = random_id.cfssl-auth-key-client.hex
-    })
-  }
-}
-
 data "ignition_systemd_unit" "cfssl-disk-mounter" {
   name = "disk-mounter.service"
   content = templatefile("${path.module}/resources/disk-mounter.service", {

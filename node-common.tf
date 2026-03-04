@@ -1,23 +1,18 @@
-// All nodes should belong to system:nodes group
-// This is a client-only certificate (used for authentication to apiserver).
-// Client certs don't need SANs (hostname/IP), so get_ip and get_hostname are
-// empty. Only server certs need SANs for TLS validation.
+// All nodes should belong to system:nodes group.
+// Client-only: no SANs needed, kubelet uses this to authenticate to apiserver.
 data "ignition_file" "node-cfssl-new-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
-      cert_name    = "node"
-      user         = "root"
-      group        = "root"
-      profile      = "worker-client"
-      path         = "/etc/kubernetes/ssl"
-      cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-      org          = "system:nodes"
-      get_ip       = ""
-      get_hostname = ""
-      extra_names  = ""
+    content = templatefile("${path.module}/resources/cfssl-new-client-cert.sh", {
+      cert_name = "node"
+      user      = "root"
+      group     = "root"
+      profile   = "worker-client"
+      path      = "/etc/kubernetes/ssl"
+      cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+      org       = "system:nodes"
     })
   }
 }
@@ -28,7 +23,7 @@ data "ignition_file" "node-kubelet-cfssl-new-cert" {
   path = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+    content = templatefile("${path.module}/resources/cfssl-new-server-cert.sh", {
       cert_name    = "kubelet"
       user         = "root"
       group        = "root"

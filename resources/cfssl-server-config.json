@@ -54,18 +54,7 @@
                     "client auth"
                 ],
                 "auth_key": "master-auth",
-                "name_whitelist": "^(system:node:.*|system:kubelet:.*|system:kube-scheduler|system:kube-controller-manager|[^:]+)$"
-            },
-            "apiserver-client-server": {
-                "expiry": "${expiry_hours}h",
-                "usages": [
-                    "signing",
-                    "key encipherment",
-                    "server auth",
-                    "client auth"
-                ],
-                "auth_key": "master-auth",
-                "name_whitelist": "^(system:node:.*|system:kube-apiserver-kubelet-client|kubernetes.*|localhost|[^:]+)$"
+                "name_whitelist": "^(system:node:.*|system:kubelet:.*|system:kube-scheduler|system:kube-controller-manager|system:kube-apiserver-kubelet-client|[^:]+)$"
             },
             "etcd-client-server": {
                 "expiry": "${expiry_hours}h",
@@ -76,7 +65,7 @@
                     "client auth"
                 ],
                 "auth_key": "etcd-auth",
-                "name_whitelist": "^([0-9]+\\.etcd\\..*|etcd\\..*|[^:]+)$"
+                "name_whitelist": "^([0-9]+\\.etcd\\..*|etcd\\..*)$"
             }
         }
     },

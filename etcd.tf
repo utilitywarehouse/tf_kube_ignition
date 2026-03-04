@@ -52,7 +52,7 @@ data "ignition_file" "etcd-cfssl-new-cert" {
   path  = "/opt/bin/cfssl-new-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+    content = templatefile("${path.module}/resources/cfssl-new-server-cert.sh", {
       cert_name    = "node"
       user         = "etcd"
       group        = "etcd"

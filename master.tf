@@ -28,25 +28,20 @@ module "cert-refresh-master" {
 // workers from requesting master component certs (scheduler, controller-manager)
 // via the separate master-auth key requirement.
 //
-// This is a client-only certificate (used for kubelet authentication to
-// apiserver). Client certs don't need SANs, so get_ip and get_hostname are
-// empty. Only server certs need SANs for TLS validation.
+// Client-only: no SANs needed, kubelet uses this to authenticate to apiserver.
 data "ignition_file" "master-cfssl-new-node-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-node-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
-      cert_name    = "node"
-      user         = "root"
-      group        = "root"
-      profile      = "master-client-server"
-      path         = "/etc/kubernetes/ssl"
-      cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-      org          = "system:nodes"
-      get_ip       = ""
-      get_hostname = ""
-      extra_names  = ""
+    content = templatefile("${path.module}/resources/cfssl-new-client-cert.sh", {
+      cert_name = "node"
+      user      = "root"
+      group     = "root"
+      profile   = "master-client-server"
+      path      = "/etc/kubernetes/ssl"
+      cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+      org       = "system:nodes"
     })
   }
 }
@@ -57,7 +52,7 @@ data "ignition_file" "master-kubelet-cfssl-new-cert" {
   path = "/opt/bin/cfssl-new-kubelet-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+    content = templatefile("${path.module}/resources/cfssl-new-server-cert.sh", {
       cert_name    = "kubelet"
       user         = "root"
       group        = "root"
@@ -78,11 +73,11 @@ data "ignition_file" "master-cfssl-new-apiserver-cert" {
   path = "/opt/bin/cfssl-new-apiserver-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
+    content = templatefile("${path.module}/resources/cfssl-new-server-cert.sh", {
       cert_name    = "apiserver"
       user         = "root"
       group        = "root"
-      profile      = "apiserver-client-server"
+      profile      = "master-client-server"
       path         = "/etc/kubernetes/ssl"
       cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
       org          = ""
@@ -107,73 +102,59 @@ data "ignition_file" "master-cfssl-new-apiserver-cert" {
 }
 
 // Client certificate for the API server to connect to the kubelets securely.
-// This is a client-only certificate (apiserver uses it to authenticate to
-// kubelet). Client certs don't need SANs, so get_ip and get_hostname are
-// empty. Only server certs need SANs for TLS validation.
+// Client-only: no SANs needed, apiserver uses this to authenticate to kubelet.
 data "ignition_file" "master-cfssl-new-apiserver-kubelet-client-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-apiserver-kubelet-client-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
-      cert_name    = "apiserver-kubelet-client"
-      user         = "root"
-      group        = "root"
-      profile      = "apiserver-client-server"
-      path         = "/etc/kubernetes/ssl"
-      cn           = "system:node:$(${var.node_name_command[var.cloud_provider]})"
-      org          = "system:masters"
-      get_ip       = ""
-      get_hostname = ""
-      extra_names  = ""
+    content = templatefile("${path.module}/resources/cfssl-new-client-cert.sh", {
+      cert_name = "apiserver-kubelet-client"
+      user      = "root"
+      group     = "root"
+      profile   = "master-client-server"
+      path      = "/etc/kubernetes/ssl"
+      cn        = "system:node:$(${var.node_name_command[var.cloud_provider]})"
+      org       = "system:masters"
     })
   }
 }
 
 // Client certificate for kube-scheduler.
-// This is a client-only certificate (scheduler uses it to authenticate to
-// apiserver). Client certs don't need SANs, so get_ip and get_hostname are
-// empty. Only server certs need SANs for TLS validation.
+// Client-only: no SANs needed, scheduler uses this to authenticate to apiserver.
 data "ignition_file" "master-cfssl-new-scheduler-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-scheduler-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
-      cert_name    = "scheduler"
-      user         = "root"
-      group        = "root"
-      profile      = "master-client-server"
-      path         = "/etc/kubernetes/ssl"
-      cn           = "system:kube-scheduler"
-      org          = ""
-      get_ip       = ""
-      get_hostname = ""
-      extra_names  = ""
+    content = templatefile("${path.module}/resources/cfssl-new-client-cert.sh", {
+      cert_name = "scheduler"
+      user      = "root"
+      group     = "root"
+      profile   = "master-client-server"
+      path      = "/etc/kubernetes/ssl"
+      cn        = "system:kube-scheduler"
+      org       = ""
     })
   }
 }
 
 // Client certificate for kube-controller-manager.
-// This is a client-only certificate (controller-manager uses it to
-// authenticate to apiserver). Client certs don't need SANs, so get_ip and
-// get_hostname are empty. Only server certs need SANs for TLS validation.
+// Client-only: no SANs needed, controller-manager uses this to authenticate
+// to apiserver.
 data "ignition_file" "master-cfssl-new-controller-manager-cert" {
   mode = 493
   path = "/opt/bin/cfssl-new-controller-manager-cert"
 
   content {
-    content = templatefile("${path.module}/resources/cfssl-new-cert.sh", {
-      cert_name    = "controller-manager"
-      user         = "root"
-      group        = "root"
-      profile      = "master-client-server"
-      path         = "/etc/kubernetes/ssl"
-      cn           = "system:kube-controller-manager"
-      org          = ""
-      get_ip       = ""
-      get_hostname = ""
-      extra_names  = ""
+    content = templatefile("${path.module}/resources/cfssl-new-client-cert.sh", {
+      cert_name = "controller-manager"
+      user      = "root"
+      group     = "root"
+      profile   = "master-client-server"
+      path      = "/etc/kubernetes/ssl"
+      cn        = "system:kube-controller-manager"
+      org       = ""
     })
   }
 }

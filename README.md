@@ -58,9 +58,8 @@ Certificates are fetched from a central CFSSL server. Workers cannot impersonate
 |---------|----------|------------|---------------|---------|
 | `worker-client` | `worker-auth` | `system:node:*`, `system:kubelet:*`, `[^:]+` | No | Worker node certs |
 | `worker-client-server` | `worker-auth` | `system:node:*`, `system:kubelet:*`, `[^:]+` | Yes | Worker kubelet serving |
-| `master-client-server` | `master-auth` | `system:node:*`, `system:kubelet:*`, `system:kube-scheduler`, `system:kube-controller-manager`, `[^:]+` | Mixed | Master certs |
-| `apiserver-client-server` | `master-auth` | `system:node:*`, `system:kube-apiserver-kubelet-client`, `kubernetes.*`, `localhost`, `[^:]+` | Yes | API server certs |
-| `etcd-client-server` | `etcd-auth` | `*.etcd.*`, `etcd.*`, `[^:]+` | No (IP only) | ETCD certs |
+| `master-client-server` | `master-auth` | `system:node:*`, `system:kubelet:*`, `system:kube-scheduler`, `system:kube-controller-manager`, `system:kube-apiserver-kubelet-client`, `[^:]+` | Mixed | All master certs |
+| `etcd-client-server` | `etcd-auth` | `*.etcd.*`, `etcd.*` | No (IP only) | ETCD certs |
 
 **Master auth key:** All master components run on the same node with shared filesystem access to `/etc/kubernetes/ssl/`. Any compromised master component can read all certificate private keys from disk, so separate auth keys per component would be ineffective.
 
