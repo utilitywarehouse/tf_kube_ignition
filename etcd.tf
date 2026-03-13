@@ -5,7 +5,7 @@ data "ignition_systemd_unit" "locksmithd_etcd" {
   mask = false == var.enable_container_linux_locksmithd_etcd
 }
 
-data "ignition_file" "etcd-client-config" {
+data "ignition_file" "cfssl-etcd-client-config" {
   mode = 384
   path = "/etc/cfssl/config.json"
 
@@ -185,7 +185,7 @@ data "ignition_config" "etcd" {
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
-      data.ignition_file.etcd-client-config.rendered,
+      data.ignition_file.cfssl-etcd-client-config.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
       data.ignition_file.containerd-config.rendered,
