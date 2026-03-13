@@ -5,6 +5,7 @@ set -o errexit
 mkdir -p ${path}
 cd ${path}
 
+
 /opt/bin/cfssl gencert \
   -config=/etc/cfssl/config.json \
   -profile=${profile} \
