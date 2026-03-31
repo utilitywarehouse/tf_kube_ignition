@@ -23,6 +23,49 @@
                     "client auth"
                 ],
                 "auth_key": "client"
+            },
+            "worker-client": {
+                "expiry": "${expiry_hours}h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "client auth"
+                ],
+                "auth_key": "worker-auth",
+                "name_whitelist": "^(system:node:.*|system:kubelet:.*|[^:]+)$"
+            },
+            "worker-client-server": {
+                "expiry": "${expiry_hours}h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth",
+                    "client auth"
+                ],
+                "auth_key": "worker-auth",
+                "name_whitelist": "^(system:node:.*|system:kubelet:.*|[^:]+)$"
+            },
+            "master-client-server": {
+                "expiry": "${expiry_hours}h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth",
+                    "client auth"
+                ],
+                "auth_key": "master-auth",
+                "name_whitelist": "^(system:node:.*|system:kubelet:.*|system:kube-scheduler|system:kube-controller-manager|system:kube-apiserver-kubelet-client|[^:]+)$"
+            },
+            "etcd-client-server": {
+                "expiry": "${expiry_hours}h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth",
+                    "client auth"
+                ],
+                "auth_key": "etcd-auth",
+                "name_whitelist": "^([0-9]+\\.etcd\\..*|etcd\\..*)$"
             }
         }
     },
@@ -34,6 +77,18 @@
         "unused": {
             "type": "standard",
             "key": "${cfssl_unused_key}"
+        },
+        "worker-auth": {
+            "type": "standard",
+            "key": "${cfssl_worker_auth_key}"
+        },
+        "master-auth": {
+            "type": "standard",
+            "key": "${cfssl_master_auth_key}"
+        },
+        "etcd-auth": {
+            "type": "standard",
+            "key": "${cfssl_etcd_auth_key}"
         }
     }
 }

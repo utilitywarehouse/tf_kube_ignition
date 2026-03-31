@@ -1,0 +1,19 @@
+{
+    "signing": {
+        "default": {
+            "auth_remote": {
+                "remote": "server",
+                "auth_key": "etcd-auth"
+            }
+        }
+    },
+    "auth_keys": {
+        "etcd-auth": {
+            "type": "standard",
+            "key": "${cfssl_etcd_auth_key}"
+        }
+    },
+    "remotes": {
+        "server": "${cfssl_server_endpoint}"
+    }
+}

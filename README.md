@@ -47,67 +47,46 @@ module "ignition" {
 
 ## Certificates
 
-Certificates for the cluster components are fetched from the `cfssl` server, and they all use the same `CA`.
+Certificates are fetched from a central CFSSL server. Workers cannot impersonate master components because:
+- Workers use `worker-auth` key (only grants access to worker profiles)
+- Worker profiles enforce CN patterns: `system:node:*` or `system:kubelet:*` only
+- Pattern `[^:]+` allows hostnames but blocks all `system:*` privileged CNs (Kubernetes privileged components use `system:` prefix with colons, DNS hostnames cannot contain colons per RFC 952/1123)
 
-As part of `kubelet` systemd service pre start processes we fetch all the needed certificates, following `kubeadm` [docs](https://kubernetes.io/docs/reference/setup-tools/kubeadm/implementation-details/#generate-the-necessary-certificates). All kube components authenticate against apiservers using a client certificate and in particular `CN` as RBAC user and `ORG` as RBAC group.
+### CFSSL Profiles
 
-We get the following certificates on every `kubelet` service restart:
+| Profile | Auth Key | CN Pattern | Hostname SANs | Used By |
+|---------|----------|------------|---------------|---------|
+| `worker-client` | `worker-auth` | `system:node:*`, `system:kubelet:*`, `[^:]+` | No | Worker node certs |
+| `worker-client-server` | `worker-auth` | `system:node:*`, `system:kubelet:*`, `[^:]+` | Yes | Worker kubelet serving |
+| `master-client-server` | `master-auth` | `system:node:*`, `system:kubelet:*`, `system:kube-scheduler`, `system:kube-controller-manager`, `system:kube-apiserver-kubelet-client`, `[^:]+` | Mixed | All master certs |
+| `etcd-client-server` | `etcd-auth` | `*.etcd.*`, `etcd.*` | No (IP only) | ETCD certs |
 
-### Master
+**Master auth key:** All master components run on the same node with shared filesystem access to `/etc/kubernetes/ssl/`. Any compromised master component can read all certificate private keys from disk, so separate auth keys per component would be ineffective.
 
-#### Kubelet
+**Kubernetes RBAC:** Authorization uses certificate CN (username) and Organization fields (groups) only. SANs are for TLS validation, not RBAC.
 
-- A `node` certificate to be used by kubelet kubeconfig to authenticate against apiserver
-```
-CN=system:node:<node_name>
-ORG=system:master-nodes
-```
 
-- A `kubelet` certificate to serve apiserver requests on port `:10250`, based on [doc](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet)
-```
-CN=system:kubelet:<node_name>
-ORG=system:kubelets
-```
 
-#### Apiserver
+### Certificate Inventory
 
-- A serving certificate for the API server (`apiserver`)
-Common Name and Organisation are not important here as the cert will not be used to authenticate against apiservers, but the certificate need to specify all the alternative DNS names that the apiservers listen to.
+Certificates auto-renew on a timer (configurable via `cfssl_node_renew_timer`) and are fetched at systemd service startup:
 
-- A client certificate for the API server to connect to the kubelets securely (`apiserver-kubelet-client`)
-```
-CN=system:node:<node_name>
-ORG=system:masters
-```
+#### ETCD Nodes (1 cert)
+- `node.pem` - CN=`<index>.etcd.<dns_domain>`, SANs: `etcd.<dns_domain>`, node IP
 
-#### Kube Scheduler
+#### Worker Nodes (2 certs)
+- `node.pem` - CN=`system:node:<node_name>`, ORG=`system:nodes` (no SANs - client only)
+- `kubelet.pem` - CN=`system:kubelet:<node_name>`, ORG=`system:kubelets`, SANs: node IP, hostname
 
-- A `scheduler` certificate to be used in kube-scheduler's kubeconfig file to communicate with apiservers.
-```
-CN=system:kube-scheduler
-ORG=
-```
+#### Master Nodes (6 certs)
+- `node.pem` - CN=`system:node:<node_name>`, ORG=`system:nodes` (no SANs - client only)
+- `kubelet.pem` - CN=`system:kubelet:<node_name>`, ORG=`system:kubelets`, SANs: node IP, hostname
+- `apiserver.pem` - CN=`system:node:<node_name>`, SANs: kubernetes.*, service IP, master DNS, localhost, node IP/hostname
+- `apiserver-kubelet-client.pem` - CN=`system:node:<node_name>`, ORG=`system:masters` (no SANs - client only)
+- `scheduler.pem` - CN=`system:kube-scheduler` (no SANs - client only)
+- `controller-manager.pem` - CN=`system:kube-controller-manager` (no SANs - client only)
 
-#### Kube Controller Manager
-
-- A `controller-manager` certificate to be used in kube-controller-manager's kubeconfig file to communicate with apiservers.
-```
-CN=system:kube-controller-manager
-ORG=
-```
-
-### Node
-
-#### Kubelet
-
-- A `node` certificate to be used by kubelet kubeconfig to authenticate against apiserver
-```
-CN=system:node:<node_name>
-ORG=system:nodes
-```
-
-- A `kubelet` certificate to serve apiserver requests on port `:10250`, based on [doc](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet)
-```
-CN=system:kubelet:<node_name>
-ORG=system:kubelets
-```
+#### Special Certificates (HTTP basic auth to CFSSL port 8889, masters only)
+- `signing-key.pem` - Service account token signing/verification
+- `proxy-ca.pem` - API aggregation layer CA
+- `proxy.pem` - API aggregation layer client (CN=aggregator, ORG=system:masters)
