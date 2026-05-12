@@ -6,16 +6,7 @@ mkdir -p ${path}
 cd ${path}
 
 _ip="$(${get_ip})"
-_hostname=""
-
-%{ if get_hostname != "" ~}
 _hostname="$(${get_hostname})"
-while [ "$_hostname" = "localhost" ] || [ "$_hostname" = "localhost.localdomain" ]; do
-  echo "Waiting for hostname to be populated..."
-  sleep 2
-  _hostname="$(${get_hostname})"
-done
-%{ endif ~}
 
 _hostname_san=""
 if [ -n "$_hostname" ]; then
