@@ -2,7 +2,7 @@ variable "node_name_command" {
   type = map(string)
 
   default = {
-    ""    = "hostname -f"
+    ""    = "until h=$(hostname -f); [ \"$h\" != \"localhost\" ] && [ \"$h\" != \"localhost.localdomain\" ]; do sleep 2; done; echo $h"
     "aws" = "/opt/bin/aws-imdsv2 local-hostname"
     "gce" = "curl -s http://metadata.google.internal/computeMetadata/v1/instance/hostname -H Metadata-Flavor:Google"
   }
