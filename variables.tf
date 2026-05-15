@@ -261,7 +261,7 @@ variable "dockerhub_password" {
 
 variable "nginx_image" {
   description = "https://github.com/nginx/nginx/releases"
-  default     = "nginx:1.30.0-alpine"
+  default     = "nginx:1.31.0-alpine"
 }
 
 variable "feature_gates" {
