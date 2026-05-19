@@ -43,6 +43,9 @@ data "ignition_file" "locksmithd_etcd_dropin" {
   }
 }
 
+// ETCD peer certificate (client-server). ETCD peers communicate by IP address,
+// not hostname, so only get_ip is populated. The get_hostname is empty because
+// ETCD doesn't use hostname-based peer discovery in this configuration.
 data "ignition_file" "etcd-cfssl-new-cert" {
   count = length(var.etcd_addresses)
   mode  = 493 # This is decimal for 0755 octal permissions
@@ -58,7 +61,7 @@ data "ignition_file" "etcd-cfssl-new-cert" {
       cn           = "${count.index}.etcd.${var.dns_domain}"
       org          = ""
       get_ip       = var.get_ip_command[var.cloud_provider]
-      get_hostname = var.node_name_command[var.cloud_provider]
+      get_hostname = ""
       extra_names  = join(",", ["etcd.${var.dns_domain}"])
     })
   }

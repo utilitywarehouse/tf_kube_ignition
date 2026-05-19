@@ -65,7 +65,7 @@
                     "client auth"
                 ],
                 "auth_key": "etcd-auth",
-                "name_whitelist": "^([0-9]+\\.etcd\\..*|etcd(-[0-9]+)?\\..*)$"
+                "name_whitelist": "^([0-9]+\\.etcd\\..*|etcd\\..*)$"
             }
         }
     },
