@@ -199,7 +199,6 @@ data "ignition_file" "sysctl_kernel_vars" {
 fs.inotify.max_user_watches=1048576
 fs.inotify.max_user_instances=8192
 vm.max_map_count=1048576
-user.max_user_namespaces=0
 EOS
   }
 }
