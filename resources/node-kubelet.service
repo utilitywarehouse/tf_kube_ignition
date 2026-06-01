@@ -25,7 +25,9 @@ ExecStart=${kubelet_binary_path} \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --lock-file=/var/run/lock/kubelet.lock \
   --node-labels="$${LABELS}" \
-  ${taints == "" ? "" : "--register-with-taints=${taints}"} \
+%{~ if taints != "" }
+  --register-with-taints=${taints} \
+%{~ endif }
   --v=0
 Restart=always
 RestartSec=10
