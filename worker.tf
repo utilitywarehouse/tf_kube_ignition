@@ -15,13 +15,15 @@ data "ignition_file" "cfssl-worker-client-config" {
   }
 }
 
-data "ignition_systemd_unit" "worker-kubelet" {
-  name = "kubelet.service"
+data "ignition_systemd_unit" "worker_kubelet" {
+  for_each = locals.all_worker_groups
+  name     = "kubelet.service"
   content = templatefile("${path.module}/resources/node-kubelet.service", {
     kubelet_binary_path = "/opt/bin/kubelet"
     cloud_provider      = local.component_cloud_provider
     get_hostname        = var.node_name_command[var.cloud_provider]
-    labels              = local.worker_kubelet_labels
+    labels              = join(",", concat([local.worker_kubelet_labels], formatlist("%s=%s", keys(each.value.labels), values(each.value.labels))))
+    taints              = join(",", each.value.taints)
   })
 }
 
@@ -42,8 +44,9 @@ data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
   )
 }
 
-// data.ignition_file.worker-prom-machine-role.rendered,
-data "ignition_config" "worker" {
+data "ignition_config" "worker_config" {
+  for_each = locals.all_worker_groups
+
   filesystems = [
     var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
   ]
@@ -84,7 +87,7 @@ data "ignition_config" "worker" {
       data.ignition_systemd_unit.prometheus-eviction-threshold-worker.rendered,
       data.ignition_systemd_unit.prometheus-machine-role-worker.rendered,
       data.ignition_systemd_unit.prometheus-tmpfs-dir.rendered,
-      data.ignition_systemd_unit.worker-kubelet.rendered,
+      data.ignition_systemd_unit.worker_kubelet[each.key].rendered,
       !var.omit_locksmithd_service ? data.ignition_systemd_unit.locksmithd_worker.rendered : "",
       !var.omit_update_engine_service ? data.ignition_systemd_unit.update-engine.rendered : "",
       var.force_boot_reprovisioning ? data.ignition_systemd_unit.flatcar_first_boot.rendered : "",
