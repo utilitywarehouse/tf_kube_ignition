@@ -11,8 +11,13 @@ output "worker" {
 }
 
 output "worker_ignition_configs" {
-  description = "Map of rendered ignition configs for all worker groups, keyed by group name. The 'default' key is the standard untainted worker config; other keys correspond to entries in worker_groups."
-  value       = { for k, v in data.ignition_config.worker_config : k => v.rendered }
+  description = "Map of ignition config objects for all worker groups, keyed by group name. The 'default' key is the standard untainted worker config; other keys correspond to entries in worker_groups. Each object exposes rendered, systemd, files, and directories."
+  value = { for k, v in data.ignition_config.worker_config : k => {
+    rendered    = v.rendered
+    systemd     = v.systemd
+    files       = v.files
+    directories = v.directories
+  } }
 }
 
 output "etcd" {
