@@ -16,7 +16,7 @@ data "ignition_file" "cfssl-worker-client-config" {
 }
 
 data "ignition_systemd_unit" "worker_kubelet" {
-  for_each = locals.all_worker_groups
+  for_each = local.all_worker_groups
   name     = "kubelet.service"
   content = templatefile("${path.module}/resources/node-kubelet.service", {
     kubelet_binary_path = "/opt/bin/kubelet"
@@ -45,7 +45,7 @@ data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
 }
 
 data "ignition_config" "worker_config" {
-  for_each = locals.all_worker_groups
+  for_each = local.all_worker_groups
 
   filesystems = [
     var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
