@@ -205,6 +205,15 @@ variable "worker_additional_labels" {
   default     = {}
 }
 
+variable "worker_groups" {
+  description = "Map of named worker node groups. The 'default' key produces the standard untainted worker ignition config; any other key produces a variant with the specified taints and labels merged on top of worker_additional_labels. Each group is available in the worker_ignition_configs output."
+  type = map(object({
+    taints = optional(list(string), [])
+    labels = optional(map(string), {})
+  }))
+  default = {}
+}
+
 variable "cfssl_ca_cn" {
   description = "The Common Name for the CA certificate."
 }
@@ -350,4 +359,8 @@ locals {
   # Kube version
   kubernetes_control_plane_version = var.kubernetes_control_plane_version == null ? var.kubernetes_version : var.kubernetes_control_plane_version
   kubernetes_worker_node_version   = var.kubernetes_worker_node_version == null ? var.kubernetes_version : var.kubernetes_worker_node_version
+
+  # "default" group always exists — it is the standard untainted worker config.
+  # Any other key in var.worker_groups produces a variant with its taints/labels.
+  all_worker_groups = merge({ default = { taints = [], labels = {} } }, var.worker_groups)
 }
