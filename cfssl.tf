@@ -9,10 +9,6 @@ resource "random_id" "cfssl-auth-key-unused" {
   byte_length = 16
 }
 
-resource "random_id" "cfssl-auth-key-client" {
-  byte_length = 16
-}
-
 # HTTP Basic Auth key for fetching special certificates (signing key, proxy certs)
 # from CFSSL server. This is separate from CFSSL profile auth keys.
 resource "random_id" "cfssl-auth-key-apiserver" {
@@ -120,7 +116,6 @@ data "ignition_file" "cfssl-server-config" {
     content = templatefile("${path.module}/resources/cfssl-server-config.json", {
       expiry_hours          = var.cfssl_node_expiry_hours
       cfssl_unused_key      = random_id.cfssl-auth-key-unused.hex
-      cfssl_auth_key        = random_id.cfssl-auth-key-client.hex
       cfssl_worker_auth_key = random_id.cfssl-auth-key-worker.hex
       cfssl_master_auth_key = random_id.cfssl-auth-key-master.hex
       cfssl_etcd_auth_key   = random_id.cfssl-auth-key-etcd.hex
