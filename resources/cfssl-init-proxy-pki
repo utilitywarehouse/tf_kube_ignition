@@ -21,4 +21,4 @@ fi
 
 [ -f proxy-key.pem ] && [ -f proxy.pem ] \
     && (( "$(date +%s)" < "$(date -d "$(/opt/bin/cfssl certinfo -cert=/var/lib/cfssl/proxy.pem | jq -r '.not_after')" +%s)" - 90 * 24 * 3600 )) \
-    || /opt/bin/cfssl gencert -ca proxy-ca.pem -ca-key proxy-ca-key.pem -config=/etc/cfssl/config.json -profile=client ${_args} | /opt/bin/cfssljson -bare proxy
+    || /opt/bin/cfssl gencert -ca proxy-ca.pem -ca-key proxy-ca-key.pem -config=/etc/cfssl/config.json -profile=master-client-server ${_args} | /opt/bin/cfssljson -bare proxy
