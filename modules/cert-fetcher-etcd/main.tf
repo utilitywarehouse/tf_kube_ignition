@@ -24,7 +24,7 @@ Description=Fetch new certificates from cfssl server
 [Timer]
 OnCalendar=${var.on_calendar}
 AccuracySec=1s
-RandomizedDelaySec=60min
+RandomizedDelaySec=180min
 [Install]
 WantedBy=timers.target
 EOS
