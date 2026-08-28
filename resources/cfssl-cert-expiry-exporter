@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Writes not_after (unix epoch) for each cert given as name:path args to a
+# node-exporter textfile collector, e.g.:
+#   cfssl-cert-expiry-exporter apiserver:/etc/kubernetes/ssl/apiserver.pem
+
+textfile_collector_dir=/etc/prom-text-collectors
+metric_name=cfssl_cert_expiry_timestamp_seconds
+tmp="${textfile_collector_dir}/${metric_name}.prom.$$"
+
+: > "${tmp}"
+
+for entry in "$@"; do
+  name="${entry%%:*}"
+  cert="${entry#*:}"
+
+  [ -f "${cert}" ] || continue
+
+  not_after="$(/opt/bin/cfssl certinfo -cert="${cert}" | jq -r '.not_after')"
+  echo "${metric_name}{cert=\"${name}\"} $(date -d "${not_after}" +%s)" >> "${tmp}"
+done
+
+mv "${tmp}" "${textfile_collector_dir}/${metric_name}.prom"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodically export cfssl-issued certificate expiry timestamps
+
+[Timer]
+OnBootSec=120
+OnUnitInactiveSec=30min
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

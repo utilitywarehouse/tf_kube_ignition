@@ -179,12 +179,25 @@ data "ignition_file" "etcd-reset" {
   }
 }
 
+data "ignition_systemd_unit" "etcd_cert_expiry_exporter" {
+  name = "cert-expiry-exporter.service"
+
+  content = <<EOS
+[Unit]
+Description=Export cfssl-issued certificate expiry timestamps
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/cfssl-cert-expiry-exporter node:/etc/etcd/ssl/node.pem
+EOS
+}
+
 data "ignition_config" "etcd" {
   count = length(var.etcd_addresses)
 
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
+      data.ignition_file.cfssl_cert_expiry_exporter.rendered,
       data.ignition_file.cfssl-etcd-client-config.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
@@ -209,8 +222,10 @@ data "ignition_config" "etcd" {
 
   systemd = concat(
     [
+      data.ignition_systemd_unit.cert_expiry_exporter_timer.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.etcd_cert_expiry_exporter.rendered,
       data.ignition_systemd_unit.etcd-defrag-timer.rendered,
       data.ignition_systemd_unit.etcd-defrag.rendered,
       data.ignition_systemd_unit.node-exporter.rendered,

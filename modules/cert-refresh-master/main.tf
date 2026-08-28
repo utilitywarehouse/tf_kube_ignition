@@ -12,6 +12,7 @@ Requires=containerd.service
 After=network-online.target
 [Service]
 Type=oneshot
+ExecCondition=/bin/sh -c '[ ! -f /etc/kubernetes/ssl/apiserver.pem ] || ! openssl x509 -checkend 7776000 -noout -in /etc/kubernetes/ssl/apiserver.pem'
 ExecStart=/opt/bin/cfssl-keys-and-certs-get
 ExecStart=/opt/bin/cfssl-new-node-cert
 ExecStart=/opt/bin/cfssl-new-kubelet-cert
