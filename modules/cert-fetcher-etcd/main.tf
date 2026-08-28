@@ -9,6 +9,7 @@ Description=Fetch new certificates from cfssl server
 After=network-online.target
 [Service]
 Type=oneshot
+ExecCondition=/bin/sh -c '[ ! -f /etc/etcd/ssl/node.pem ] || ! openssl x509 -checkend 7776000 -noout -in /etc/etcd/ssl/node.pem'
 ExecStart=/bin/sh -c 'while ! /opt/bin/cfssl-new-cert; do echo "cfssl not ready, sleeping 5 seconds";sleep 5; done'
 [Install]
 WantedBy=multi-user.target

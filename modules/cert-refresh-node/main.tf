@@ -12,6 +12,7 @@ Requires=containerd.service
 After=network-online.target
 [Service]
 Type=oneshot
+ExecCondition=/bin/sh -c '[ ! -f /etc/kubernetes/ssl/kubelet.pem ] || ! openssl x509 -checkend 7776000 -noout -in /etc/kubernetes/ssl/kubelet.pem'
 ExecStart=/opt/bin/cfssl-new-cert
 ExecStart=/opt/bin/cfssl-new-kubelet-cert
 # Hack to reload certs on control plane tier

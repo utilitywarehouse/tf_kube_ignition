@@ -44,6 +44,18 @@ data "ignition_systemd_unit" "prometheus-eviction-threshold-worker" {
   )
 }
 
+data "ignition_systemd_unit" "node_cert_expiry_exporter" {
+  name = "cert-expiry-exporter.service"
+
+  content = <<EOS
+[Unit]
+Description=Export cfssl-issued certificate expiry timestamps
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/cfssl-cert-expiry-exporter node:/etc/kubernetes/ssl/node.pem kubelet:/etc/kubernetes/ssl/kubelet.pem
+EOS
+}
+
 data "ignition_config" "worker_config" {
   for_each = local.all_worker_groups
 
@@ -54,6 +66,7 @@ data "ignition_config" "worker_config" {
   files = concat(
     [
       data.ignition_file.bashrc.rendered,
+      data.ignition_file.cfssl_cert_expiry_exporter.rendered,
       data.ignition_file.cfssl-worker-client-config.rendered,
       data.ignition_file.cfssl.rendered,
       data.ignition_file.cfssljson.rendered,
@@ -79,9 +92,11 @@ data "ignition_config" "worker_config" {
 
   systemd = concat(
     [
+      data.ignition_systemd_unit.cert_expiry_exporter_timer.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.coreos_metadata_sshkeys.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
+      data.ignition_systemd_unit.node_cert_expiry_exporter.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_timer.rendered,
       data.ignition_systemd_unit.prometheus-eviction-threshold-worker.rendered,

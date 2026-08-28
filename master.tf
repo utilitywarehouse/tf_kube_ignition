@@ -339,6 +339,18 @@ data "ignition_systemd_unit" "control_plane_labeller" {
   content = file("${path.module}/resources/control-plane-labeller.service")
 }
 
+data "ignition_systemd_unit" "master_cert_expiry_exporter" {
+  name = "cert-expiry-exporter.service"
+
+  content = <<EOS
+[Unit]
+Description=Export cfssl-issued certificate expiry timestamps
+[Service]
+Type=oneshot
+ExecStart=/opt/bin/cfssl-cert-expiry-exporter node:/etc/kubernetes/ssl/node.pem kubelet:/etc/kubernetes/ssl/kubelet.pem apiserver:/etc/kubernetes/ssl/apiserver.pem apiserver-kubelet-client:/etc/kubernetes/ssl/apiserver-kubelet-client.pem scheduler:/etc/kubernetes/ssl/scheduler.pem controller-manager:/etc/kubernetes/ssl/controller-manager.pem
+EOS
+}
+
 data "ignition_config" "master" {
   filesystems = [
     var.force_boot_reprovisioning ? data.ignition_filesystem.root_wipe_filesystem.rendered : "",
@@ -366,6 +378,7 @@ data "ignition_config" "master" {
       data.ignition_file.kubelet-kubeconfig.rendered,
       data.ignition_file.master_kubelet.rendered,
       data.ignition_file.kubernetes_accounting_config.rendered,
+      data.ignition_file.cfssl_cert_expiry_exporter.rendered,
       data.ignition_file.master-cfssl-keys-and-certs-get.rendered,
       data.ignition_file.master-cfssl-new-apiserver-cert.rendered,
       data.ignition_file.master-cfssl-new-apiserver-kubelet-client-cert.rendered,
@@ -387,9 +400,11 @@ data "ignition_config" "master" {
 
   systemd = concat(
     [
+      data.ignition_systemd_unit.cert_expiry_exporter_timer.rendered,
       data.ignition_systemd_unit.containerd-dropin.rendered,
       data.ignition_systemd_unit.control_plane_labeller.rendered,
       data.ignition_systemd_unit.coreos_metadata_sshkeys.rendered,
+      data.ignition_systemd_unit.master_cert_expiry_exporter.rendered,
       data.ignition_systemd_unit.docker-opts-dropin.rendered,
       data.ignition_systemd_unit.master-kubelet.rendered,
       data.ignition_systemd_unit.node_textfile_inode_fd_count_service.rendered,

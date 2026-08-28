@@ -23,6 +23,15 @@ data "ignition_file" "cfssljson" {
   }
 }
 
+data "ignition_file" "cfssl_cert_expiry_exporter" {
+  path = "/opt/bin/cfssl-cert-expiry-exporter"
+  mode = 493
+
+  content {
+    content = file("${path.module}/resources/cfssl-cert-expiry-exporter")
+  }
+}
+
 data "ignition_systemd_unit" "docker-opts-dropin" {
   name = "docker.service"
 
